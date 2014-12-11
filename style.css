@@ -1,0 +1,229 @@
+/*
+Copyright 2014 Google Inc. All rights reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+body {
+  font-family: Sans-Serif;
+  background: #fff;
+  font-size: 10px;
+  margin: 30px;
+  width: 1280px;
+}
+
+textarea { color: #369; }
+
+h2 {
+  margin: 10px 0 0 0;
+}
+
+h3 {
+  margin: 10px 0 0 0;
+}
+
+.test-table .index { width: 30px; text-align: right; }
+.test-table .status {
+  width: 20px;
+  color: #fff;
+  text-align: right;
+}
+
+.test-table .status_current {
+  width: 20px;
+  text-align: right;
+}
+
+.test-table .desc { width: 200px; }
+.test-table .state { width: 30px; text-align: center; }
+.test-table .failstate { width: 30px; text-align: center; }
+
+.test-table {
+  table-layout: fixed;
+  font-family: Sans-Serif;
+  width: 380px;
+  border-collapse: collapse;
+  text-align: left;
+  margin: 0px;
+  display: inline-block;
+  white-space:nowrap;
+}
+
+.test-table th {
+  font-size: 120%;
+  font-weight: bolder;
+  color: #039;
+  border-bottom: 2px solid #6678b1;
+  padding: 10px 8px 4px;
+}
+
+.test-table td {
+  font-size: 90%;
+  color: #669;
+  border-bottom: 1px solid #e6e8f1;
+  padding: 9px 8px 0;
+}
+
+.test-table td.failstate {
+  font-size: 90%;
+  color: #f00;
+  border-bottom: 1px solid #e6e8f1;
+  padding: 9px 8px 0;
+}
+
+.test-table td.small {
+  font-size: 60%;
+  color: #0a0;
+  border-bottom: 1px solid #e6e8f1;
+  padding: 9px 8px 0;
+}
+
+.compact-list .cell-category {
+  font-weight: bold;
+  color: #039;
+  border-bottom: 2px solid #6678b1;
+}
+
+.compact-list .cell-divider {
+  width: 5px;
+}
+
+.compact-list .cell-status-normal {
+  min-width: 30px;
+  text-align: center;
+}
+
+.compact-list .cell-status-running {
+  min-width: 30px;
+  text-align: center;
+}
+
+.compact-list .cell-status-fail {
+  min-width: 30px;
+  background-color: #800;
+  color: #FFF;
+  text-align: center;
+}
+
+.compact-list .cell-status-pass {
+  min-width: 30px;
+  background-color: #080;
+  color: #FFF;
+  text-align: center;
+}
+
+.compact-list .test-status-none {
+  width: 5px;
+}
+
+.compact-list .test-status-running {
+  width: 5px;
+  background-color: #880;
+}
+
+.compact-list .test-status-fail {
+  width: 5px;
+  background-color: #800;
+}
+
+.compact-list .test-status-pass {
+  width: 5px;
+  background-color: #080;
+}
+
+.compact-list .test-status-optional-fail {
+  width: 3px;
+  border-style: solid;
+  border-color: #800;
+  border-width: 2px;
+  padding: 0px;
+}
+
+ul {
+  padding-left: 20px;
+  margin-top: 5px;
+}
+
+div.container {
+  width:100%;
+  margin:5px 0 5px 0;
+  padding:5px 0 5px 0;
+  overflow:hidden;
+}
+
+div.container_hidden {
+  width:100%;
+  margin:10px 0 10px 0;
+  overflow:hidden;
+  display:none;
+}
+
+.box-left {
+  width:740px;
+  float:left;
+  border-collapse:collapse;
+}
+
+.box-right {
+  width:420px;
+  margin-top:2cm;
+  border-collapse:collapse;
+}
+
+.desc-expl-popup {
+  position: absolute;
+  padding: 0.5em;
+  max-width: 20em;
+  z-index: 100;
+  background-color: white;
+  border: solid 1px black;
+  box-shadow: 3px 3px 4px #000;
+  white-space: normal;
+  display: none;
+}
+
+.desc-expl-point:hover .desc-expl-popup {
+  display: inline-block;
+}
+
+span.nowrap {
+  display: inline-block;
+  white-space: nowrap;
+  margin: 0px 10px 0px 0px;
+  width: 200px;
+}
+
+span.code {
+  font-family: Courier;
+}
+
+.rightmargin20 {
+  margin-left: 0px;
+  margin-right: 20px;
+}
+
+.rightmargin20new {
+  margin-left: 0px;
+  margin-right: 20px;
+  color: #f00;
+  font-weight: bold;
+}
+
+a:focus {
+  border-width: 1px;
+  border-style: solid;
+}
+
+a.title_link {
+  color: #000;
+}
