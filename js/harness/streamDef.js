@@ -46,7 +46,7 @@ function getStreamDef(index) {
       Video1MB: ['media/test-video-1MB.mp4', 1031034, 1.04],
       ProgressiveLow: ['media/car_20130125_18.mp4', 15477531, 181.55],
       ProgressiveNormal: ['media/car_20130125_22.mp4', 55163609, 181.55],
-      ProgressiveHigh: ['media/car_20130125_37.mp4', 106389491, 181.55],
+      ProgressiveHigh: [],
     }, {
       AudioType: 'audio/webm; codecs="vorbis"',
       VideoType: 'video/webm; codecs="vp9"',
