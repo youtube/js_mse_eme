@@ -28,7 +28,7 @@ function FullTestView(mainPage, fields) {
     this.addSwitch('Loop: ', 'loop');
     this.addSwitch('Stop on failure: ', 'stoponfailure');
     this.addSwitch('Log: ', 'logging');
-    this.addSwitch('WebM/VP9 (tip-only): ', 'enablewebm');
+    this.addSwitch('WebM/VP9 (2015/tip only): ', 'enablewebm');
 
     this.addCommand('Select All', 'select-all', 'Select all tests.',
                     this.testList.selectAll.bind(this.testList));

@@ -28,7 +28,7 @@ function CompactTestView(mainPage, fields, style) {
     this.addSwitch('Loop: ', 'loop');
     this.addSwitch('Stop on failure: ', 'stoponfailure');
     this.addSwitch('Log: ', 'logging');
-    this.addSwitch('WebM/VP9 (tip-only): ', 'enablewebm');
+    this.addSwitch('WebM/VP9 (2015/tip only): ', 'enablewebm');
 
     this.addCommand('Run All', 'run-selected', 'Run all tests in order.',
         function(e) {

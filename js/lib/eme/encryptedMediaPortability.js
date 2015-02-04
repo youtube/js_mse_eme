@@ -115,6 +115,57 @@ function extractBMFFClearKeyID(initData) {
   return initData;
 }
 
+function base64_encode(arr) {
+  var b64dict = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+  var b64pad = "=";
+
+  var i;
+  var hexStr = "";
+  for (i = 0; i < arr.length; i++) {
+    var hex = arr[i].toString(16);
+    hexStr += hex.length == 1 ? "0" + hex : hex;
+  }
+
+  var dest = "";
+  var c;
+  for (i = 0; i+3 <= hexStr.length; i+=3) {
+    c = parseInt(hexStr.substring(i, i+3), 16);
+    dest += b64dict.charAt(c >> 6) + b64dict.charAt(c & 63);
+  }
+  if (i+1 == hexStr.length) {
+    c = parseInt(hexStr.substring(i, i+1), 16);
+    dest += b64dict.charAt(c << 2);
+  } else if (i+2 == hexStr.length) {
+    c = parseInt(hexStr.substring(i, i+2), 16);
+    dest += b64dict.charAt(c >> 2) + b64dict.charAt((c & 3) << 4);
+  }
+  
+  while ((dest.length & 3) > 0) {
+    dest += b64pad;
+  }
+
+  return dest;
+}
+
+function b64tob64url(s) {
+  var b64urlStr = removePadding(s);
+  b64urlStr = b64urlStr.replace(/\+/g, "-");
+  b64urlStr = b64urlStr.replace(/\//g, "_");
+  return b64urlStr;
+}
+
+function removePadding(s) {
+  return s.replace(/\=/g, "");
+}
+
+function base64NoPadding_encode(arr) {
+  return removePadding(base64_encode(arr));
+}
+
+function base64url_encode(arr) {
+  return b64tob64url(base64_encode(arr));
+}
+
 (function() {
   var dlog = function() {
     var forward = window.dlog || console.log.bind(console);
@@ -123,8 +174,9 @@ function extractBMFFClearKeyID(initData) {
 
   var proto = window.HTMLMediaElement.prototype;
 
-  if (proto.addKey)
+  if (proto.addKey || proto.setMediaKeys) {
     return;  // Non-prefix version, needn't wrap.
+  }
 
   if (!proto.webkitAddKey) {
     dlog(1, 'EME is not available');

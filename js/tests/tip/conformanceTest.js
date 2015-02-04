@@ -1,42 +1,30 @@
 /*
-Copyright 2014 Google Inc. All rights reserved.
+   Copyright 2014 Google Inc. All rights reserved.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
 
-   http://www.apache.org/licenses/LICENSE-2.0
+http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-*/
+ */
 'use strict';
 
 var ConformanceTest = function() {
 
 var tests = [];
 var info = 'No MSE Support!';
-if (window.MediaSource)
+if (window.MediaSource) {
   info = 'MSE Version: ' + MediaSource.prototype.version;
+}
 info += ' / Default Timeout: ' + TestBase.timeout + 'ms';
 
 var fields = ['passes', 'failures', 'timeouts'];
-
-var containerTypes = [
-  'video/mp4; codecs="avc1.640028"',
-  'video/webm; codecs="vorbis,vp8"',
-  'video/webm; codecs="vorbis,vp9"'
-];
-
-var testVideos = [
-  ['media/oops_cenc-20121114-145-no-clear-start.mp4']
-];
-
-var mediaIndex = 0; // Index into containerTypes and testVideos
-
 
 var createConformanceTest = function(name, category, mandatory) {
   var t = createMSTest(name);
@@ -53,8 +41,9 @@ var createConformanceTest = function(name, category, mandatory) {
 };
 
 
-function setupBaseEmeTest(video, xhrManager, bufferSize, cbSpies) {
+function setupBaseEmeTest(video, runner, media, bufferSize, cbSpies) {
   var ms = new MediaSource();
+  var media = media;
   var testEmeHandler = new EMEHandler();
   var src = null;
   if (cbSpies) {
@@ -64,24 +53,14 @@ function setupBaseEmeTest(video, xhrManager, bufferSize, cbSpies) {
     }
   }
 
-  testEmeHandler.init(video);
-  testEmeHandler.setFlavor({
-    clearkey: 'http://dash-mse-test.appspot.com/api/drm/clearkey?' +
-              'drm_system=clearkey&source=YOUTUBE&video_id=03681262dc412c06&' +
-              'ip=0.0.0.0&ipbits=0&expire=19000000000&' +
-              'sparams=ip,ipbits,expire,drm_system,source,video_id&' +
-              'signature=065297462DF2ACB0EFC28506C5BA5E2E509864D3.' +
-              '1FEC674BBB2420DE6B0C7FE3ECD8740C58A43420&key=test_key1'
-  }, 'clearkey');
-
   function onError(e) {
     runner.fail('Error reported in TestClearKeyNeedKey');
   }
 
   function onSourceOpen(e) {
-    src = ms.addSourceBuffer(containerTypes[mediaIndex]);
-    var xhr = xhrManager.createRequest(
-      testVideos[mediaIndex][0],
+    src = ms.addSourceBuffer(StreamDef.VideoType);
+    var xhr = runner.XHRManager.createRequest(
+      media,
       function(e) {
         src.appendBuffer(this.getResponseData());
       }, 0, bufferSize);
@@ -93,6 +72,8 @@ function setupBaseEmeTest(video, xhrManager, bufferSize, cbSpies) {
   video.addEventListener('error', onError);
   video.src = window.URL.createObjectURL(ms);
   video.load();
+
+  return testEmeHandler;
 }
 
 
@@ -1628,8 +1609,12 @@ testCanPlayClearKey.prototype.start = function(runner, video) {
       video.canPlayType(
           StreamDef.AudioType, 'webkit-org.w3.clearkey') === 'probably',
       "canPlay doesn't support audio and clearkey properly");
-
-  setupBaseEmeTest(video, runner.XHRManager, 1000000, null);
+  try {
+    var testEmeHandler = setupBaseEmeTest(video, runner, StreamDef.VideoStreamYTCenc.src, 1000000, null);
+    testEmeHandler.init(video, StreamDef.VideoType, 'clearkey', 'clearkey');
+  } catch(err) {
+    runner.fail(err);
+  }
   video.addEventListener('timeupdate', function onTimeUpdate(e) {
     if (!video.paused && video.currentTime >= 1) {
       video.removeEventListener('timeupdate', onTimeUpdate);
@@ -1725,48 +1710,27 @@ testWidevineSupport.prototype.onsourceopen = function() {
     this.runner.checkEq(
         DoAudioTest('codecs="vp9,vorbis"', 'com.widevine.alpha'), '',
             'canPlayType result');
-
-    // Try a semi-valid key.
-    var keySystem = 'com.widevine.alpha';
-    var initData = new Uint8Array([
-        0x53, 0xa6, 0xcb, 0x3a, 0xd8, 0xfb, 0x58, 0x8f,
-        0xbe, 0x92, 0xe6, 0xdc, 0x72, 0x65, 0x0c, 0x86]);
-    var self = this;
-
-    var keyerrorCb = function(e) {
-      video.removeEventListener('keyerror', keyerrorCb);
-      video.removeEventListener('webkitkeyerror', keyerrorCb);
-      if (e instanceof MediaKeyEvent) {
-        self.runner.checkNE(e.errorCode.code,
-            MediaKeyError.MEDIA_KEYERR_CLIENT);
-      } else if ((e instanceof MediaKeyErrorEvent) ||
-                 (e instanceof MediaKeyError)) {
-        self.runner.checkNE(e.code, MediaKeyError.MEDIA_KEYERR_CLIENT);
-      }
-      self.runner.succeed();
-    };
-    video.addEventListener('keyerror', keyerrorCb);
-    video.addEventListener('webkitkeyerror', keyerrorCb);
-
-    var keymessageCb = function(keymessage) {
-      video.removeEventListener('keymessage', keymessageCb);
-      video.removeEventListener('webkitkeymessage', keymessageCb);
-      self.runner.succeed();
-    };
-    video.addEventListener('keymessage', keymessageCb);
-    video.addEventListener('webkitkeymessage', keymessageCb);
-
-    try {
-      if (video.generateKeyRequest) {
-        video.generateKeyRequest(keySystem, initData);
-      } else {
-        video.webkitGenerateKeyRequest(keySystem, initData);
-      }
-    } catch (e) {
-      this.runner.checkNE(e.name, 'NotSupportedError');
-      this.runner.succeed();
-    }
+    this.runner.succeed();
   }
+};
+
+
+var testInvalidKey = createConformanceTest('InvalidKey', 'EME');
+testInvalidKey.prototype.title =
+    'Test if an invalid key will produce the expected error.';
+testInvalidKey.prototype.start = function(runner, video) {
+  try {
+    var testEmeHandler = setupBaseEmeTest(video, runner, StreamDef.VideoStreamYTCenc.src, 1000000, null);
+    var self = this;
+    testEmeHandler.init(video, StreamDef.VideoType, 'invalid_widevine', 'widevine', function(e) {
+      self.runner.checkEq(e.code, 15);
+      self.runner.checkEq(e.name, 'InvalidAccessError');
+      self.runner.succeed();
+    });
+  } catch(err) {
+    runner.fail(err);
+  }
+  video.play();
 };
 
 
@@ -1775,10 +1739,6 @@ testClearKeyAudio.prototype.title =
     'Test if we can play audio encrypted with ClearKey encryption.';
 testClearKeyAudio.prototype.onsourceopen = function() {
   var runner = this.runner;
-  if (StreamDef.isWebM()) {
-    runner.succeed();
-    return;
-  }
 
   var media = this.video;
   var videoChain = new ResetInit(
@@ -1786,23 +1746,12 @@ testClearKeyAudio.prototype.onsourceopen = function() {
                      runner.timeouts));
   var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
   var audioChain = new ResetInit(
-      new FileSource('media/car_cenc-20120827-8c.mp4', runner.XHRManager,
+      new FileSource(StreamDef.AudioNormalClearKey.src, runner.XHRManager,
                      runner.timeouts));
   var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
 
-  media.addEventListener('needkey', function(e) {
-    e.target.generateKeyRequest('org.w3.clearkey', e.initData);
-  });
-
-  media.addEventListener('keymessage', function(e) {
-    var key = new Uint8Array([
-        0x1a, 0x8a, 0x20, 0x95, 0xe4, 0xde, 0xb2, 0xd2,
-        0x9e, 0xc8, 0x16, 0xac, 0x7b, 0xae, 0x20, 0x82]);
-    var keyId = new Uint8Array([
-        0x60, 0x06, 0x1e, 0x01, 0x7e, 0x47, 0x7e, 0x87,
-        0x7e, 0x57, 0xd0, 0x0d, 0x1e, 0xd0, 0x0d, 0x1e]);
-    e.target.addKey('org.w3.clearkey', key, keyId, e.sessionId);
-  });
+  var testEmeHandler = new EMEHandler();
+  testEmeHandler.init(media, StreamDef.AudioType, 'audio_clearkey', 'clearkey');
 
   appendUntil(runner.timeouts, media, videoSb, videoChain, 5, function() {
     appendUntil(runner.timeouts, media, audioSb, audioChain, 5, function() {
@@ -1823,14 +1772,10 @@ testClearKeyVideo.prototype.title =
     'Test if we can play video encrypted with ClearKey encryption.';
 testClearKeyVideo.prototype.onsourceopen = function() {
   var runner = this.runner;
-  if (StreamDef.isWebM()) {
-    runner.succeed();
-    return;
-  }
 
   var media = this.video;
   var videoChain = new ResetInit(
-      new FileSource('media/car_cenc-20120827-86.mp4', runner.XHRManager,
+      new FileSource(StreamDef.VideoNormalClearKey.src, runner.XHRManager,
           runner.timeouts));
   var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
   var audioChain = new ResetInit(
@@ -1838,19 +1783,8 @@ testClearKeyVideo.prototype.onsourceopen = function() {
           runner.timeouts));
   var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
 
-  media.addEventListener('needkey', function(e) {
-    e.target.generateKeyRequest('org.w3.clearkey', e.initData);
-  });
-
-  media.addEventListener('keymessage', function(e) {
-    var key = new Uint8Array([
-        0x1a, 0x8a, 0x20, 0x95, 0xe4, 0xde, 0xb2, 0xd2,
-        0x9e, 0xc8, 0x16, 0xac, 0x7b, 0xae, 0x20, 0x82]);
-    var keyId = new Uint8Array([
-        0x60, 0x06, 0x1e, 0x01, 0x7e, 0x47, 0x7e, 0x87,
-        0x7e, 0x57, 0xd0, 0x0d, 0x1e, 0xd0, 0x0d, 0x1e]);
-    e.target.addKey('org.w3.clearkey', key, keyId, e.sessionId);
-  });
+  var testEmeHandler = new EMEHandler();
+  testEmeHandler.init(media, StreamDef.VideoType, 'video_clearkey', 'clearkey');
 
   appendUntil(runner.timeouts, media, videoSb, videoChain, 5, function() {
     appendUntil(runner.timeouts, media, audioSb, audioChain, 5, function() {
@@ -1869,97 +1803,23 @@ testClearKeyVideo.prototype.onsourceopen = function() {
 var testDualKey = createConformanceTest('DualKey', 'EME');
 testDualKey.prototype.title = 'Tests multiple video keys';
 testDualKey.prototype.start = function(runner, video) {
-  if (StreamDef.isWebM()) {
-    runner.succeed();
-    return;
-  }
-
   var ms = new MediaSource();
   var testEmeHandler = new EMEHandler();
+  testEmeHandler.init(video, StreamDef.VideoType, ['clearkey', 'clearkey2'], 'clearkey');
 
-  var firstLicense = null;
-  var licenseTestPass = false;
-  testEmeHandler['_onLoad'] = testEmeHandler['onLoad'];
-  testEmeHandler['onLoad'] = function(initData, session, e) {
-    try {
-      testEmeHandler._onLoad(initData, session, e);
-    } catch (exp) {
-      if (firstLicense)
-        runner.fail('Adding second key failed. Perhaps the system does not ' +
-                    'support more than one video key?');
-      else
-        runner.fail('Failed to add first key.');
-    }
-
-    var licenseString = arrayToString(
-        new Uint8Array(e.target.response)).split('\r\n').pop();
-    if (!firstLicense)
-      firstLicense = licenseString;
-    else if (firstLicense !== licenseString)
-      licenseTestPass = true;
-    else
-      runner.fail('Somehow, the same key was used. ' +
-                  'This is a failure of the test video selection.');
-  };
-
-  testEmeHandler.init(video);
-
-  var kFlavorMap = {
-    playready: 'http://dash-mse-test.appspot.com/api/drm/playready' +
-               '?drm_system=playready&source=YOUTUBE&' +
-               'video_id=03681262dc412c06&ip=0.0.0.0&ipbits=0&' +
-               'expire=19000000000&' +
-               'sparams=ip,ipbits,expire,drm_system,source,video_id&' +
-               'signature=3BB038322E72D0B027F7233A733CD67D518AF675.' +
-               '2B7C39053DA46498D23F3BCB87596EF8FD8B1669&key=test_key1',
-    clearkey: 'http://dash-mse-test.appspot.com/api/drm/clearkey?' +
-              'drm_system=clearkey&source=YOUTUBE&video_id=03681262dc412c06&' +
-              'ip=0.0.0.0&ipbits=0&expire=19000000000&' +
-              'sparams=ip,ipbits,expire,drm_system,source,video_id&' +
-              'signature=065297462DF2ACB0EFC28506C5BA5E2E509864D3.' +
-              '1FEC674BBB2420DE6B0C7FE3ECD8740C58A43420&key=test_key1'
-  };
-
-  var kFlavorFiles = {
-    playready: [
-      'media/oops_cenc-20121114-145-no-clear-start.mp4',
-      'media/oops_cenc-20121114-145-143.mp4'],
-    clearkey: [
-      'media/oops_cenc-20121114-145-no-clear-start.mp4',
-      'media/oops_cenc-20121114-143-no-clear-start.mp4']
-  };
-
-  var keySystem = 'clearkey';
-  var keySystemQuery = /keysystem=([^&]*)/.exec(document.location.search);
-  if (keySystemQuery && kFlavorMap[keySystemQuery[1]]) {
-    keySystem = keySystemQuery[1];
-  }
-  try {
-    testEmeHandler.setFlavor(kFlavorMap, keySystem);
-  } catch (e) {
-    runner.fail('Browser does not support the requested key system: ' +
-                keySystem);
-    return;
-  }
-
-  function onError(e) {
-    runner.fail('Error reported in TestClearKeyNeedKey');
-  }
-
-  // Open two sources. When the second source finishes, it should also call
-  // onLoad above. onLoad will then check if the two keys are dissimilar.
+  // Open two sources with two distinct licenses.
   function onSourceOpen(e) {
-    var sb = ms.addSourceBuffer('video/mp4; codecs="avc1.640028"');
+    var sb = ms.addSourceBuffer(StreamDef.VideoType);
 
     var firstFile = new ResetInit(new FileSource(
-      kFlavorFiles[keySystem][0],
+      StreamDef.VideoStreamYTCenc.src,
       runner.XHRManager, runner.timeouts));
 
     appendUntil(runner.timeouts, video, sb, firstFile, 5, function() {
       sb.abort();
 
       var secondFile = new ResetInit(new FileSource(
-        kFlavorFiles[keySystem][1],
+        StreamDef.VideoSmallStreamYTCenc.src,
         runner.XHRManager, runner.timeouts));
 
       appendInit(video, sb, secondFile, 0, function() {
@@ -1980,166 +1840,79 @@ testDualKey.prototype.start = function(runner, video) {
 
   ms.addEventListener('sourceopen', onSourceOpen);
   ms.addEventListener('webkitsourceopen', onSourceOpen);
-  video.addEventListener('error', onError);
   video.src = window.URL.createObjectURL(ms);
   video.load();
 };
 
 
-var testClearKeyNeedKey = createConformanceTest('CKNeedKey', 'Optional EME',
+var testEncryptedEvent = createConformanceTest('EncryptedEvent', 'EME',
                                                 false);
-testClearKeyNeedKey.prototype.title = 'Test ClearKey needkey callback';
-testClearKeyNeedKey.prototype.start = function(runner, video) {
-  setupBaseEmeTest(video, runner.XHRManager, 100000, {
-    onNeedKey: function(e) {
-      runner.succeed();
-    }
-  });
-};
-
-
-var testClearKeyGenerateKeyRequest = createConformanceTest(
-    'CKGenKeyRequest', 'Optional EME', false);
-testClearKeyGenerateKeyRequest.prototype.title =
-    'Test ClearKey generateKeyRequest input validation';
-testClearKeyGenerateKeyRequest.prototype.start = function(runner, video) {
-  setupBaseEmeTest(video, runner.XHRManager, 100000, {
-    onNeedKey: function(evt) {
-      try {
-        video.generateKeyRequest(null, evt.initData);
-        runner.fail('Expecting an exception to be thrown.');
-        return;
-      } catch (e) {
-        // Caught exception, continue.
-      }
-
-      try {
-        video.generateKeyRequest('foobar.notarealkeysystem', evt.initData);
-        runner.fail('Expecting an expeption to be thrown.');
-      } catch (e) {
+testEncryptedEvent.prototype.title = 'Test encrypted event';
+testEncryptedEvent.prototype.start = function(runner, video) {
+  try {
+    var testEmeHandler = setupBaseEmeTest(video, runner, StreamDef.VideoStreamYTCenc.src, 100000, {
+      onEncrypted: function(e) {
         runner.succeed();
-        return;
       }
-    }
-  });
+    });
+    testEmeHandler.init(video, StreamDef.VideoType, 'clearkey', 'clearkey');
+  } catch(err) {
+    runner.fail(err);
+  }
 };
 
 
-var testClearKeyKeyMessage = createConformanceTest('CKKeyMessage',
-                                                   'Optional EME', false);
-testClearKeyKeyMessage.prototype.title = 'Test ClearKey keymessage event';
-testClearKeyKeyMessage.prototype.start = function(runner, video) {
-  setupBaseEmeTest(video, runner.XHRManager, 100000, {
-    onKeyMessage: function(evt) {
-      runner.succeed();
-    }
-  });
+var testInvalidKeySystem = createConformanceTest(
+    'InvalidKeySystem', 'EME', false);
+testInvalidKeySystem.prototype.title =
+    'Test that invalid key systems throw exception.';
+testInvalidKeySystem.prototype.start = function(runner, video) {
+  try {
+    var testEmeHandler = setupBaseEmeTest(video, runner, StreamDef.VideoStreamYTCenc.src, 100000, {
+      onEncrypted: function(evt) {
+        var exceptionCount = 0;
+        var promise = navigator.requestMediaKeySystemAccess(null);
+        promise.catch(
+          function(e) {
+            exceptionCount++;
+            if (exceptionCount == 2) {
+              runner.succeed();
+            }
+          }
+        );
+
+        promise = navigator.requestMediaKeySystemAccess('foobar.notarealkeysystem');
+        promise.catch(
+          function(e) {
+            exceptionCount++;
+            if (exceptionCount == 2) {
+              runner.succeed();
+            }
+          }
+        );
+      }
+    });
+    testEmeHandler.init(video, StreamDef.VideoType, 'clearkey', 'clearkey');
+  } catch(err) {
+    runner.fail(err);
+  }
 };
 
 
-var testClearKeyAddKey = createConformanceTest('CKAddKey', 'Optional EME',
-                                               false);
-testClearKeyAddKey.prototype.title = 'Test ClearKey addKey function';
-testClearKeyAddKey.prototype.start = function(runner, video) {
-  setupBaseEmeTest(video, runner.XHRManager, 100000, {
-    onLoad: function(initData, session, evt) {
-      if (evt.target.status < 200 || evt.target.status > 299)
-        throw 'Bad XHR status: ' + evt.target.statusText;
-
-      // Parse "GLS/1.0 0 OK\r\nHeader: Value\r\n\r\n<xml>HERE BE SOAP</xml>
-      var responseString = arrayToString(
-          new Uint8Array(evt.target.response)).split('\r\n').pop();
-      var license = stringToArray(responseString);
-
-      var failed = false;
-      try {
-        video.addKey(null, license, initData, session);
-        failed = true;
-      } catch (e) {
-        checkDOMError(runner, e);
+var testMessageEvent = createConformanceTest('MessageEvent',
+                                                   'EME', false);
+testMessageEvent.prototype.title = 'Test message event.';
+testMessageEvent.prototype.start = function(runner, video) {
+  try {
+    var testEmeHandler = setupBaseEmeTest(video, runner,StreamDef.VideoStreamYTCenc.src, 100000, {
+      onMessage: function(evt) {
+        runner.succeed();
       }
-      if (failed)
-        runner.fail('First argument is null. This should throw an exception.');
-
-      try {
-        video.addKey(this.keySystem, null, initData, session);
-        failed = true;
-      } catch (e) {
-        checkDOMError(runner, e);
-      }
-      if (failed)
-        runner.fail('Second argument is null. This should throw an exception.');
-
-      try {
-        video.addKey(null, null, initData, session);
-        failed = true;
-      } catch (e) {
-        checkDOMError(runner, e);
-      }
-      if (failed)
-        runner.fail('First and second arguments are null. ' +
-                    'This should throw an exception.');
-
-      try {
-        video.addKey(this.keySystem, new Uint8Array(0), initData, session);
-        failed = true;
-      } catch (e) {
-        checkDOMError(runner, e, DOMException.TYPE_MISMATCH_ERR,
-            'TypeMismatchError');
-      }
-      if (failed)
-        runner.fail('Second argument is unexpectedly empty.');
-
-      try {
-        video.addKey(this.keySystem, license, initData, 'badsessionid');
-        // Have to use a flag since runner.fail will be caught otherwise.
-        failed = true;
-      } catch (e) {
-        checkDOMError(runner, e, DOMException.INVALID_ACCESS_ERR,
-            'InvalidAccessError');
-      }
-      if (failed)
-        runner.fail('"badsessionid" is an invalid session ID, ' +
-                    'and thus should fail.');
-
-      try {
-        video.addKey(this.keySystem, license, initData, session);
-      } catch (e) {
-        runner.fail('Should not error on valid key.');
-      }
-      runner.succeed();
-    }
-  });
-};
-
-
-var testClearKeyAddKeyAsyncEvents = createConformanceTest(
-    'CKAddKeyAsyncEvents', 'Optional EME', false);
-testClearKeyAddKeyAsyncEvents.prototype.title =
-    'Test ClearKey addKey response events';
-testClearKeyAddKeyAsyncEvents.prototype.start = function(runner, video) {
-  var messagesFired = {};
-
-  setupBaseEmeTest(video, runner.XHRManager, 100000, {
-    onLoad: function(initData, session, evt) {
-      video.addEventListener('keyadded', function(e) {
-        messagesFired['keyadded'] = true;
-        setTimeout(function() {
-          if (messagesFired['keymessage'])
-            runner.fail('keymessage was also fired in addition to keyadded.');
-          else
-            runner.succeed();
-        }, 2000);
-      });
-      video.addEventListener('keymessage', function(e) {
-        if (messagesFired['keyadded']) {
-          messagesFired['keymessage'] = true;
-        }
-      });
-
-      this._onLoad(initData, session, evt);
-    }
-  });
+    });
+    testEmeHandler.init(video, StreamDef.VideoType, 'clearkey', 'clearkey');
+  } catch(err) {
+    runner.fail(err);
+  }
 };
 
 
