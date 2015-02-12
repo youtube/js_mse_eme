@@ -1845,8 +1845,7 @@ testDualKey.prototype.start = function(runner, video) {
 };
 
 
-var testEncryptedEvent = createConformanceTest('EncryptedEvent', 'EME',
-                                                false);
+var testEncryptedEvent = createConformanceTest('EncryptedEvent', 'EME');
 testEncryptedEvent.prototype.title = 'Test encrypted event';
 testEncryptedEvent.prototype.start = function(runner, video) {
   try {
@@ -1863,7 +1862,7 @@ testEncryptedEvent.prototype.start = function(runner, video) {
 
 
 var testInvalidKeySystem = createConformanceTest(
-    'InvalidKeySystem', 'EME', false);
+    'InvalidKeySystem', 'EME');
 testInvalidKeySystem.prototype.title =
     'Test that invalid key systems throw exception.';
 testInvalidKeySystem.prototype.start = function(runner, video) {
@@ -1899,8 +1898,7 @@ testInvalidKeySystem.prototype.start = function(runner, video) {
 };
 
 
-var testMessageEvent = createConformanceTest('MessageEvent',
-                                                   'EME', false);
+var testMessageEvent = createConformanceTest('MessageEvent', 'EME');
 testMessageEvent.prototype.title = 'Test message event.';
 testMessageEvent.prototype.start = function(runner, video) {
   try {
