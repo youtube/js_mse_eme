@@ -66,10 +66,11 @@ function TestView(runner) {
     links.push({text: text, href: href});
   };
 
-  this.generate = function() {
-    var HEADING = testTypes[currentTestType].heading + ' (v REVISION)';
+  this.generate = function(mseSpec) {
+    var heading = '[' + mseSpec + '] ' +
+        testTypes[currentTestType].heading + ' (v REVISION)';
     document.title = testTypes[currentTestType].title;
-    document.body.appendChild(createElement('h3', 'title', null, HEADING));
+    document.body.appendChild(createElement('h3', 'title', null, heading));
     document.body.appendChild(createElement('h4', 'info'));
     document.body.appendChild(createElement('h4', 'usage'));
     document.body.appendChild(createElement('div', 'testview'));

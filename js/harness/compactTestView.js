@@ -53,8 +53,8 @@ function CompactTestView(mainPage, fields, style) {
     return this.testList.addTest(desc);
   };
 
-  this.generate = function() {
-    CompactTestView.prototype.generate.call(this);
+  this.generate = function(mseSpec) {
+    CompactTestView.prototype.generate.call(this, mseSpec);
     document.getElementById('run-selected').focus();
 
     var USAGE = 'Use &uarr;&darr;&rarr;&larr; to move around, ' +

@@ -284,7 +284,7 @@ TestRunner.prototype.initialize = function(mainPageName) {
     this.testView.addTest(this.testList[i].prototype);
   }
 
-  this.testView.generate();
+  this.testView.generate(this.mseSpec);
 
   document.getElementById('info').innerText = this.info;
   this.log('Media Source and Encrypted Media Conformance Tests ' +

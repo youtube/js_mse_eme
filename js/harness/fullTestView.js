@@ -58,8 +58,8 @@ function FullTestView(mainPage, fields) {
     return this.testList.addTest(desc);
   };
 
-  this.generate = function(div) {
-    FullTestView.prototype.generate.call(this);
+  this.generate = function(mseSpec) {
+    FullTestView.prototype.generate.call(this, mseSpec);
     document.getElementById('run-selected').focus();
   };
 
