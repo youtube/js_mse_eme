@@ -53,9 +53,11 @@ var createOneShotTest = function(stream) {
 
     var xhr = runner.XHRManager.createRequest(stream.src,
       function(e) {
-        sb.append(xhr.getResponseData());
-        var end = util.Round(sb.buffered.end(0), 2);
+        sb.appendBuffer(xhr.getResponseData());
+        console.log("sb.buffered.length = "+sb.buffered.length)
+        var end = stream.duration;
         media.addEventListener('timeupdate', function(e) {
+          console.log("t = "+ media.currentTime + "end = " + end);
           if (!media.paused && media.currentTime > end - 1) {
             media.pause();
             runner.succeed();
