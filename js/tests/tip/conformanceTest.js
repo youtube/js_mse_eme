@@ -1685,30 +1685,30 @@ testWidevineSupport.prototype.onsourceopen = function() {
     this.runner.checkEq(DoAudioTest(null, 'com.widevine.alpha'), 'maybe',
         'canPlayType result');
 
-    this.runner.checkEq(DoVideoTest('codecs="vp9"', 'com.widevine.'), '',
+    this.runner.checkEq(DoVideoTest('vp9', 'com.widevine.'), '',
         'canPlayType result');
-    this.runner.checkEq(DoVideoTest('codecs="vp9"', 'com.widevine.foo'), '',
+    this.runner.checkEq(DoVideoTest('vp9', 'com.widevine.foo'), '',
         'canPlayType result');
-    this.runner.checkEq(DoVideoTest('codecs="vp9"', 'com.widevine.alpha.'), '',
+    this.runner.checkEq(DoVideoTest('vp9', 'com.widevine.alpha.'), '',
         'canPlayType result');
-    this.runner.checkEq(DoVideoTest('codecs="vp9"', 'com.widevine.alpha.foo'),
+    this.runner.checkEq(DoVideoTest('vp9', 'com.widevine.alpha.foo'),
         '', 'canPlayType result');
-    this.runner.checkEq(DoVideoTest('codecs="vp9"', 'com.widevine.alph'), '',
+    this.runner.checkEq(DoVideoTest('vp9', 'com.widevine.alph'), '',
         'canPlayType result');
-    this.runner.checkEq(DoVideoTest('codecs="vp9"', 'com.widevine.alphb'), '',
+    this.runner.checkEq(DoVideoTest('vp9', 'com.widevine.alphb'), '',
         'canPlayType result');
-    this.runner.checkEq(DoVideoTest('codecs="vp9"', 'com.widevine.alphaa'), '',
+    this.runner.checkEq(DoVideoTest('vp9', 'com.widevine.alphaa'), '',
         'canPlayType result');
-    this.runner.checkEq(DoVideoTest('codecs="mp4a"', 'com.widevine.alpha'), '',
+    this.runner.checkEq(DoVideoTest('mp4a', 'com.widevine.alpha'), '',
         'canPlayType result');
 
-    this.runner.checkEq(DoAudioTest('codecs="vp9"', 'com.widevine'), '',
+    this.runner.checkEq(DoAudioTest('vp9', 'com.widevine'), '',
         'canPlayType result');
     this.runner.checkEq(
-        DoAudioTest('codecs="vp9,vorbis"', 'com.widevine.alpha'), '',
+        DoAudioTest('vp9,vorbis', 'com.widevine.alpha'), '',
             'canPlayType result');
     this.runner.checkEq(
-        DoAudioTest('codecs="vp9,vorbis"', 'com.widevine.alpha'), '',
+        DoAudioTest('vp9,vorbis', 'com.widevine.alpha'), '',
             'canPlayType result');
     this.runner.succeed();
   }

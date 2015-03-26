@@ -117,22 +117,24 @@ util.Round = function(value, digits) {
   return Math.round(value * Math.pow(10, digits)) / Math.pow(10, digits);
 };
 
-util.SizeToText = function(sizeInBytes) {
+util.SizeToText = function(size, unitType) {
   var unit = 'B';
-  sizeInBytes *= 8;
-  if (sizeInBytes >= 1024 * 1024) {
-    sizeInBytes /= 1024 * 1024;
+  if (!!unitType && (unitType == 'B' || unitType == 'b')) {
+    unit = unitType;
+  }
+  if (size >= 1024 * 1024) {
+    size /= 1024 * 1024;
     unit = 'M';
-  } else if (sizeInBytes >= 1024) {
-    sizeInBytes /= 1024;
+  } else if (size >= 1024) {
+    size /= 1024;
     unit = 'K';
   }
-  if ((sizeInBytes - Math.floor(sizeInBytes)) * 10 <
-      Math.floor(sizeInBytes))
-    sizeInBytes = Math.floor(sizeInBytes);
+  if ((size - Math.floor(size)) * 10 <
+      Math.floor(size))
+    size = Math.floor(size);
   else
-    sizeInBytes = util.Round(sizeInBytes, 3);
-  return sizeInBytes + unit;
+    size = util.Round(size, 3);
+  return size + unit;
 };
 
 util.formatStatus = function(status) {

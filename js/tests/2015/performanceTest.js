@@ -164,24 +164,26 @@ var createAppendTest = function(stream, size, times, refPC, refDevice) {
   test.prototype.title = 'Measure source buffer append performance.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
+    var chunkSize = size / times;
     var sb = this.ms.addSourceBuffer(stream.type);
     var xhr = runner.XHRManager.createRequest(stream.src,
       function(e) {
         var profiler = new Profiler;
         var responseData = xhr.getResponseData();
         test.prototype.times = 0;
-        for (var i = 0; i < times; ++i) {
-          sb.appendBuffer(responseData);
-          sb.abort();
-          sb.timestampOffset = sb.buffered.end(sb.buffered.length - 1);
+        sb.addEventListener('update', function(e) {
           profiler.tick();
           ++test.prototype.times;
           test.prototype.min = profiler.min;
           test.prototype.max = profiler.max;
           test.prototype.average = util.Round(profiler.average, 3);
           runner.updateStatus();
-        }
-        runner.succeed();
+          sb.appendBuffer(responseData.subarray(chunkSize * times, chunkSize * (times + 1)));
+          if (test.prototype.times >= times) {
+            runner.succeed();
+          }
+        });
+        sb.appendBuffer(responseData.subarray(0, chunkSize));
       }, 0, size);
     xhr.send();
   };
@@ -211,7 +213,6 @@ var createSeekAccuracyTest = function(stream, size, times, step) {
         test.prototype.min = Infinity;
         test.prototype.max = 0;
         sb.appendBuffer(xhr.getResponseData());
-        sb.abort();
         media.addEventListener('timeupdate', function(e) {
           if (media.currentTime < minimumTimeAfterSeek)
             minimumTimeAfterSeek = media.currentTime;
@@ -296,22 +297,39 @@ var createSeekBackwardsTest = function(audio, video) {
       video_chain.seek(seekTime, video_src);
       media.currentTime = seekTime;
 
-      audio_chain.pull(function(data) {
-        audio_src.appendBuffer(data);
-        audio_chain.pull(function(data) {
-          audio_src.appendBuffer(data);
-          video_chain.pull(function(data) {
-            video_src.appendBuffer(data);
-            video_chain.pull(function(data) {
-              video_src.appendBuffer(data);
-              video_chain.pull(function(data) {
-                video_src.appendBuffer(data);
-                doingSeek = false;
-              });
-            });
+      var finishedAppends = 0;
+      var finishAppend = function() {
+        if (finishedAppends >= 2) {
+          video_src.removeEventListener('update', finishAppend);
+          audio_src.removeEventListener('update', finishAppend);
+          doingSeek = false;
+        }
+      };
+
+      var append = function(src, chain, maxAppends) {
+        var numAppends = 0;
+        var appendCb = function() {
+          src.removeEventListener('update', appendCb);
+          chain.pull(function(data) {
+            numAppends++;
+            if (numAppends < maxAppends) {
+              src.addEventListener('update', appendCb);
+            } else {
+              finishedAppends++;
+              src.addEventListener('update', finishAppend);
+            }
+            src.appendBuffer(data);
           });
+        };
+        chain.pull(function(data) {
+          src.addEventListener('update', appendCb);
+          src.appendBuffer(data);
+          numAppends++;
         });
-      });
+      };
+
+      append(audio_src, audio_chain, 2);
+      append(video_src, video_chain, 3);
     };
 
     this.ms.duration = 100000000;  // Ensure that we can seek to any position.
@@ -340,30 +358,22 @@ var createBufferSizeTest = function(stream, refPC, refDevice) {
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
     var sb = this.ms.addSourceBuffer(stream.type);
-    function startXHR() {
-      var size = Math.min(stream.size, 1024 * 1024);
-      var xhr = runner.XHRManager.createRequest(
-          stream.src,
-          function() {
-            var buf = xhr.getResponseData();
-            while (true) {
-              var old_end = sb.buffered.length ? sb.buffered.end(0) : 0;
-              sb.timestampOffset = old_end;
-              sb.appendBuffer(buf);
-              sb.abort();
-              var new_end = sb.buffered.length ? sb.buffered.end(0) : 0;
-              test.prototype.min = Math.floor(new_end);
-              test.prototype.max = Math.floor(new_end);
-              test.prototype.average = Math.floor(new_end);
-              runner.updateStatus();
-              if (new_end <= old_end && new_end !== 0)
-                break;
-            }
-            runner.succeed();
-          }, 0, size);
-      xhr.send();
-    };
-    startXHR();
+    var size = Math.min(stream.size, 1024 * 1024);
+    var xhr = runner.XHRManager.createRequest(stream.src, function() {
+      var buf = xhr.getResponseData();
+      sb.addEventListener('update', function() {
+        var new_end = sb.buffered.length ? sb.buffered.end(0) : 0;
+        test.prototype.min = Math.floor(new_end);
+        test.prototype.max = Math.floor(new_end);
+        test.prototype.average = Math.floor(new_end);
+        runner.updateStatus();
+        runner.succeed();
+      });
+      var old_end = sb.buffered.length ? sb.buffered.end(0) : 0;
+      sb.timestampOffset = old_end;
+      sb.appendBuffer(buf);
+    }, 0, size);
+    xhr.send();
   };
 };
 
@@ -386,6 +396,8 @@ var createPrerollSizeTest = function(stream, refPC, refDevice) {
       'types and qualites.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
+    var size = Math.min(stream.size, 5 * 1024 * 1024);
+    var buf = new Uint8Array(size);
     var sb = this.ms.addSourceBuffer(stream.type);
     var end = 0;
 
@@ -401,34 +413,30 @@ var createPrerollSizeTest = function(stream, refPC, refDevice) {
       }
     };
 
-    function appendBuffer(buf) {
-      var size = buf.length;
-      while (buf.length) {
+    function appendBuffer() {
+      if (sb.buffered.length && sb.buffered.end(0) - end > 0.1) {
+        end = sb.buffered.end(0);
+        test.prototype.min = util.Round(end, 3); 
+        test.prototype.max = util.Round(end, 3); 
+        test.prototype.average = util.Round(end, 3);
+        runner.updateStatus();
+        runner.timeouts.setTimeout(appendBuffer.bind(null, buf), 500);
+      } else {
+        sb.removeEventListener('update', appendBuffer);
+        sb.addEventListener('update', appendBuffer);
         var appendSize = Math.min(1, buf.length);
         sb.appendBuffer(buf.subarray(0, appendSize));
         buf = buf.subarray(appendSize);
         ++test.prototype.times;
-        if (sb.buffered.length && sb.buffered.end(0) - end > 0.1) {
-          end = sb.buffered.end(0);
-          break;
-        }
       }
-
-      test.prototype.min = util.Round(end, 3);
-      test.prototype.max = util.Round(end, 3);
-      test.prototype.average = util.Round(end, 3);
-      runner.updateStatus();
-      runner.timeouts.setTimeout(append.bind(null, buf), 500);
     };
 
     function startXHR() {
-      var size = Math.min(stream.size, 5 * 1024 * 1024);
       var xhr = runner.XHRManager.createRequest(
           stream.src,
           function() {
-            var buf = new Uint8Array(size);
             buf.set(xhr.getResponseData());
-            appendBuffer(buf);
+            appendBuffer();
           }, 0, size);
       xhr.send();
     };
