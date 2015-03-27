@@ -142,9 +142,7 @@ var startRunner = function(testSuite, mseSpec) {
     output.value = text + '\n' + output.value;
   };
 
-  var currentUrl = window.location.pathname;
-  var currentPageName = currentUrl.substring(currentUrl.lastIndexOf('/') + 1);
-  runner.initialize(currentPageName);
+  runner.initialize();
   if (command === 'run')
     runner.startTest(0, runner.testList.length);
 };

@@ -23,36 +23,31 @@ var XHR_TIMEOUT_LIMIT = 5000;
 window.testTypes = {
   'conformance-test': {
     name: 'Conformance Tests',
-    public: true,
+    supported: 'all',
     title: 'Media Source and Encrypted Media Conformance Tests',
     heading: 'MSE and EME Conformance Tests'
   },
   'performance-test': {
     name: 'Performance Tests',
-    public: true,
+    supported: 'all',
     title: 'Media Source and Encrypted Media Conformance Tests',
     heading: 'MSE and EME Performance Tests'
   },
   'endurance-test': {
     name: 'Endurance Tests',
-    public: true,
+    supported: 'all',
     title: 'Media Source and Encrypted Media Conformance Tests',
     heading: 'MSE and EME Endurance Tests'
   },
   'progressive-test': {
     name: 'Progressive Tests',
-    public: true,
+    supported: 'all',
     title: 'HTML Media Element Conformance Tests',
     heading: 'HTML Media Element Conformance Tests'
   }
 };
 
-if (document.location.host === 'media-element-test.appspot.com') {
-  window.kDefaultTestType = 'progressive-test';
-} else {
-  window.kDefaultTestType = 'conformance-test';
-}
-
+window.kDefaultTestType = 'conformance-test';
 
 window.currentTestType = null;
 window.recycleVideoTag = true;
@@ -265,15 +260,15 @@ TestRunner.prototype.updateStatus = function() {
   this.testView.getTest(this.currentTestIdx).updateStatus();
 };
 
-TestRunner.prototype.initialize = function(mainPageName) {
+TestRunner.prototype.initialize = function() {
   var self = this;
   if (this.viewType === 'extra compact')
-    this.testView = compactTestView.create(mainPageName, this.fields,
+    this.testView = compactTestView.create(this.mseSpec, this.fields,
                                            this.viewType);
   else if (this.viewType === 'compact')
-    this.testView = compactTestView.create(mainPageName, this.fields);
+    this.testView = compactTestView.create(this.mseSpec, this.fields);
   else
-    this.testView = fullTestView.create(mainPageName, this.fields);
+    this.testView = fullTestView.create(this.mseSpec, this.fields);
 
   this.testView.onrunselected = function() {
     self.startTest(0, self.testList.length);

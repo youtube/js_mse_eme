@@ -17,7 +17,7 @@ limitations under the License.
 
 var fullTestView = (function() {
 
-function FullTestView(mainPage, fields) {
+function FullTestView(fields) {
   var self = this;
   this.divId = 'testview';
   this.testCount = 0;
@@ -46,20 +46,15 @@ function FullTestView(mainPage, fields) {
     this.addLink('Changelog', 'main.html');
     this.addLink('Download', 'download.tar.gz');
 
-    for (var testType in testTypes) {
-      if (testType !== currentTestType && testTypes[testType].public) {
-        this.addLink(testTypes[testType].name,
-                     mainPage + '?test_type=' + testType);
-      }
-    }
+    this.addTestSuites(testTypes);
   };
 
   this.addTest = function(desc) {
     return this.testList.addTest(desc);
   };
 
-  this.generate = function(mseSpec) {
-    FullTestView.prototype.generate.call(this, mseSpec);
+  this.generate = function() {
+    FullTestView.prototype.generate.call(this);
     document.getElementById('run-selected').focus();
   };
 
@@ -81,12 +76,14 @@ function FullTestView(mainPage, fields) {
   this.initialize();
 };
 
-FullTestView.prototype = TestView.create();
-FullTestView.prototype.constructor = FullTestView;
+//FullTestView.prototype = TestView.create();
+//FullTestView.prototype.constructor = FullTestView;
 
 return {
-  create: function(mainPage, fields) {
-    return new FullTestView(mainPage, fields);
+  create: function(mseSpec, fields) {
+    FullTestView.prototype = TestView.create(mseSpec);
+    FullTestView.prototype.constructor = FullTestView;
+    return new FullTestView(fields);
   }
 };
 

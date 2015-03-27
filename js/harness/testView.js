@@ -30,13 +30,14 @@ var createOption = function(text, value) {
   return option;
 };
 
-function TestView(runner) {
-  this.runner = runner;
+function TestView(mseSpec) {
+  this.mseSpec = mseSpec;
   this.testList = null;
 
   var selectors = [];
   var switches = [];
   var commands = [];
+  var testSuites = [];
   var links = [];
 
   this.addSelector = function(text, optionTexts, values, callback) {
@@ -62,12 +63,38 @@ function TestView(runner) {
     commands.push({text: text, id: id, title: title, onclick: onclick});
   };
 
+  this.addTestSuite = function(text, href) {
+    testSuites.push({text: text, href: href});
+  };
+
+  this.addTestSuites = function(testTypes) {
+    var isTestTypeSupported = function(testType) {
+      var supported = testTypes[testType].supported;
+      if (typeof supported === 'string' && supported == 'all') {
+        return true;
+      } else if (typeof supported === 'object') {
+        for (var index in supported) {
+          if (supported[index] == mseSpec) {
+            return true;
+          }
+        }
+      }
+      return false;
+    };
+
+    for (var testType in testTypes) {
+      if (testType !== currentTestType && isTestTypeSupported(testType)) {
+        this.addTestSuite(testTypes[testType].name, '?test_type=' + testType);
+      }
+    }
+  }
+
   this.addLink = function(text, href) {
     links.push({text: text, href: href});
   };
 
-  this.generate = function(mseSpec) {
-    var heading = '[' + mseSpec + '] ' +
+  this.generate = function() {
+    var heading = '[' + this.mseSpec + '] ' +
         testTypes[currentTestType].heading + ' (v REVISION)';
     document.title = testTypes[currentTestType].title;
     document.body.appendChild(createElement('h3', 'title', null, heading));
@@ -77,6 +104,7 @@ function TestView(runner) {
 
     var div = document.getElementById(this.divId);
     div.innerHTML = '';
+    div.appendChild(createElement('div', 'testsuites', 'container'));
     div.appendChild(createElement('div', 'switches', 'container'));
     div.appendChild(createElement('div', 'controls', 'container'));
 
@@ -120,17 +148,23 @@ function TestView(runner) {
     switchDiv.appendChild(
         createElement('span', 'finish-count', null, '0 tests finished'));
 
-    var controlDiv = document.getElementById('controls');
+    var controlsDiv = document.getElementById('controls');
     for (var i = 0; i < commands.length; ++i) {
-      controlDiv.appendChild(createAnchor(commands[i].text, commands[i].id));
-      controlDiv.lastChild.href = 'javascript:;';
-      controlDiv.lastChild.onclick = commands[i].onclick;
-      controlDiv.lastChild.title = commands[i].title;
+      controlsDiv.appendChild(createAnchor(commands[i].text, commands[i].id));
+      controlsDiv.lastChild.href = 'javascript:;';
+      controlsDiv.lastChild.onclick = commands[i].onclick;
+      controlsDiv.lastChild.title = commands[i].title;
     }
 
     for (var i = 0; i < links.length; ++i) {
-      controlDiv.appendChild(createAnchor(links[i].text));
-      controlDiv.lastChild.href = links[i].href;
+      controlsDiv.appendChild(createAnchor(links[i].text));
+      controlsDiv.lastChild.href = links[i].href;
+    }
+
+    var testSuitesDiv = document.getElementById('testsuites');
+    for (var i = 0; i < testSuites.length; ++i) {
+      testSuitesDiv.appendChild(createAnchor(testSuites[i].text));
+      testSuitesDiv.lastChild.href = testSuites[i].href;
     }
 
     this.testList.generate(document.getElementById('testlist'));
@@ -146,8 +180,8 @@ function TestView(runner) {
 };
 
 return {
-  create: function() {
-    return new TestView();
+  create: function(mseSpec) {
+    return new TestView(mseSpec);
   }};
 
 })();

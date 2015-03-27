@@ -17,7 +17,7 @@ limitations under the License.
 
 var compactTestView = (function() {
 
-function CompactTestView(mainPage, fields, style) {
+function CompactTestView(fields, style) {
   var self = this;
   this.divId = 'testview';
   this.testCount = 0;
@@ -41,20 +41,15 @@ function CompactTestView(mainPage, fields, style) {
     this.addLink('Changelog', 'main.html');
     this.addLink('Download', 'download.tar.gz');
 
-    for (var testType in testTypes) {
-      if (testType !== currentTestType && testTypes[testType].public) {
-        this.addLink(testTypes[testType].name,
-                     mainPage + '?test_type=' + testType);
-      }
-    }
+    this.addTestSuites(testTypes);
   };
 
   this.addTest = function(desc) {
     return this.testList.addTest(desc);
   };
 
-  this.generate = function(mseSpec) {
-    CompactTestView.prototype.generate.call(this, mseSpec);
+  this.generate = function() {
+    CompactTestView.prototype.generate.call(this);
     document.getElementById('run-selected').focus();
 
     var USAGE = 'Use &uarr;&darr;&rarr;&larr; to move around, ' +
@@ -85,8 +80,10 @@ CompactTestView.prototype = TestView.create();
 CompactTestView.prototype.constructor = CompactTestView;
 
 return {
-  create: function(mainPage, fields, style) {
-    return new CompactTestView(mainPage, fields, style);
+  create: function(mseSpec, fields, style) {
+    CompactTestView.prototype = TestView.create(mseSpec);
+    CompactTestView.prototype.constructor = CompactTestView;
+    return new CompactTestView(fields, style);
   }
 };
 
