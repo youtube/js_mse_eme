@@ -194,7 +194,10 @@ EMEHandler.prototype.onKeyMessage = function(e) {
   var initData = this.initDataQueue.shift();
   var xhr = new XMLHttpRequest();
   xhr.open('POST', this.licenseServerURL);
-  xhr.addEventListener('load', this.onLoad.bind(this, initData, e.sessionId));
+  if(window.MediaKeys)
+    xhr.addEventListener('load', this.onLoad.bind(this, initData, e.srcElement));
+  else
+    xhr.addEventListener('load', this.onLoad.bind(this, initData, e.sessionId));
   xhr.responseType = 'arraybuffer';
   xhr.send(message);
 };

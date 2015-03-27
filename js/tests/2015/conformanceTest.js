@@ -2051,6 +2051,10 @@ testClearKeyAddKey.prototype.start = function(runner, video) {
           new Uint8Array(evt.target.response)).split('\r\n').pop();
       var license = stringToArray(responseString);
 
+      // Required if browser supports both v0.1b and the OO APIs
+      if (window.MediaKeys)
+         session = session.sessionId;
+
       var failed = false;
       try {
         video.addKey(null, license, initData, session);
