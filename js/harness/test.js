@@ -27,6 +27,12 @@ window.testTypes = {
     title: 'Media Source and Encrypted Media Conformance Tests',
     heading: 'MSE and EME Conformance Tests'
   },
+  'encryptedmedia-test': {
+    name: 'Encrypted Media Extensions Tests',
+    supported: ['2015', 'tip'],
+    title: 'Encrypted Media Extensions Conformance Tests',
+    heading: 'EME Conformance Tests'
+   },
   'performance-test': {
     name: 'Performance Tests',
     supported: 'all',

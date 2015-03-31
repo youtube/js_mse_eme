@@ -42,6 +42,7 @@ function getStreamDef(index) {
       VideoNormalClearKey: ['media/car_cenc-20120827-86.mp4', 15795193, 181.44],
       VideoHugeClearKey: ['media/car_cenc-20120827-89.mp4', 95488313, 181.44],
       VideoStreamYTCenc: ['media/oops_cenc-20121114-145-no-clear-start.mp4', 39980507, 242.71],
+      VideoTinyStreamYTCenc: ['media/oops_cenc-20121114-145-143.mp4', 7229257, 30.03],
       VideoSmallStreamYTCenc: ['media/oops_cenc-20121114-143-no-clear-start.mp4', 12045546, 242.71],
       Audio1MB: ['media/car-audio-1MB-trunc.mp4', 1048576, 65.875],
       Video1MB: ['media/test-video-1MB.mp4', 1031034, 1.04],
@@ -70,6 +71,7 @@ function getStreamDef(index) {
       VideoNormalClearKey: [],
       VideoHugeClearKey: [],
       VideoStreamYTCenc: [],
+      VideoTinyStreamYTCenc: [],
       VideoSmallStreamYTCenc: [],
       Audio1MB: ['media/feelings_vp9-audio-1MB-trunc.webm', 1104437, 40.02],
       Video1MB: ['media/feelings_vp9-video-1MB-trunc.webm', 1042881, 0.99],
@@ -112,6 +114,7 @@ function getStreamDef(index) {
   d.VideoHugeClearKey = CreateVideoDef.apply(this, streamDefinitions[index]['VideoHugeClearKey']);
 
   d.VideoStreamYTCenc = CreateVideoDef.apply(this, streamDefinitions[index]['VideoStreamYTCenc']);
+  d.VideoTinyStreamYTCenc = CreateVideoDef.apply(this, streamDefinitions[index]['VideoTinyStreamYTCenc']);
   d.VideoSmallStreamYTCenc = CreateVideoDef.apply(this, streamDefinitions[index]['VideoSmallStreamYTCenc']);
 
   d.Audio1MB = CreateAudioDef.apply(this, streamDefinitions[index]['Audio1MB']);
