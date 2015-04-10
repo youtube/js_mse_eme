@@ -479,13 +479,16 @@ window.appendUntil = function(timeoutManager, mp, sb, chain, t, cb) {
     var appendCbs = 0;
     var shouldCallCb = false;
     var postAppendBufferCb = null;
+    var started = false;
 
     function startedAppendBuffer(cb) {
       totalAppends++;
       postAppendBufferCb = cb;
+      started = true;
     }
 
     function appendBufferFinished() {
+      if (!started) return;
       appendCbs++;
 
       buffered_end = findBufferedRangeEndForTime(sb, buffered_end);
