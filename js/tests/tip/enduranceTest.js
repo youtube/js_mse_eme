@@ -119,19 +119,6 @@ var createInfiniteAVLoopTest = function(audio, video, desc) {
 
     enableProgressUpdate(test, runner, media);
 
-    media.addEventListener('needkey', function(e) {
-      e.target.generateKeyRequest('org.w3.clearkey', e.initData);
-    });
-
-    media.addEventListener('keymessage', function(e) {
-      var key = new Uint8Array([
-          0x1a, 0x8a, 0x20, 0x95, 0xe4, 0xde, 0xb2, 0xd2,
-          0x9e, 0xc8, 0x16, 0xac, 0x7b, 0xae, 0x20, 0x82]);
-      var key_id = new Uint8Array([
-          0x60, 0x06, 0x1e, 0x01, 0x7e, 0x47, 0x7e, 0x87,
-          0x7e, 0x57, 0xd0, 0x0d, 0x1e, 0xd0, 0x0d, 0x1e]);
-      e.target.addKey('org.w3.clearkey', key, key_id, e.sessionId);
-    });
     appendUntil(timeouts, media, video_src, video_chain, 1, function() {
       appendUntil(timeouts, media, audio_src, audio_chain, 1, function() {
         media.play();
