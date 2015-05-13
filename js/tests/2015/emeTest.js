@@ -17,12 +17,15 @@ limitations under the License.
 
 var EncryptedmediaTest = function() {
 
+var emeVersion = '19 July 2012 (v0.1b)';
+var webkitPrefix = MediaSource.prototype.version.indexOf('webkit') >= 0;
 var tests = [];
 var info = 'No MSE Support!';
 if (window.MediaSource) {
-  info = 'MSE Version: ' + MediaSource.prototype.version;
+  info = 'EME Spec Version: ' + emeVersion;
+  info += ' | webkit prefix: ' + webkitPrefix.toString();
 }
-info += ' / Default Timeout: ' + TestBase.timeout + 'ms';
+info += ' | Default Timeout: ' + TestBase.timeout + 'ms';
 
 var fields = ['passes', 'failures', 'timeouts'];
 

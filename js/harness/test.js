@@ -22,28 +22,28 @@ var XHR_TIMEOUT_LIMIT = 5000;
 
 window.testTypes = {
   'conformance-test': {
-    name: 'Conformance Tests',
+    name: 'MSE Conformance Tests',
     supported: 'all',
     title: 'Media Source and Encrypted Media Conformance Tests',
-    heading: 'MSE and EME Conformance Tests'
+    heading: 'MSE Conformance Tests'
   },
   'encryptedmedia-test': {
-    name: 'Encrypted Media Extensions Tests',
+    name: 'EME Conformance Tests',
     supported: ['2015', 'tip'],
     title: 'Encrypted Media Extensions Conformance Tests',
     heading: 'EME Conformance Tests'
    },
   'performance-test': {
-    name: 'Performance Tests',
+    name: 'MSE Performance Tests',
     supported: 'all',
     title: 'Media Source and Encrypted Media Conformance Tests',
-    heading: 'MSE and EME Performance Tests'
+    heading: 'MSE Performance Tests'
   },
   'endurance-test': {
-    name: 'Endurance Tests',
+    name: 'MSE Endurance Tests',
     supported: 'all',
     title: 'Media Source and Encrypted Media Conformance Tests',
-    heading: 'MSE and EME Endurance Tests'
+    heading: 'MSE Endurance Tests'
   },
   'progressive-test': {
     name: 'Progressive Tests',

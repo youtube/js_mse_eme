@@ -17,12 +17,15 @@ limitations under the License.
 
 var ConformanceTest = function() {
 
+var mseVersion = 'Current Editor\'s Draft';
+var webkitPrefix = MediaSource.prototype.version.indexOf('webkit') >= 0;
 var tests = [];
 var info = 'No MSE Support!';
 if (window.MediaSource) {
-  info = 'MSE Version: ' + MediaSource.prototype.version;
+  info = 'MSE Spec Version: ' + mseVersion;
+  info += ' | webkit prefix: ' + webkitPrefix.toString();
 }
-info += ' / Default Timeout: ' + TestBase.timeout + 'ms';
+info += ' | Default Timeout: ' + TestBase.timeout + 'ms';
 
 var fields = ['passes', 'failures', 'timeouts'];
 

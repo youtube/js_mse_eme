@@ -15,9 +15,7 @@ limitations under the License.
 */
 'use strict';
 
-/* The code tries to wrap the following four cases: MediaSource ver 0.6 with or
- * without Webkit prefix and MediaSource ver 0.5 with or without Webkit prefix.
- */
+// The code tries to wrap MediaSource with or without Webkit prefix.
 function setupMsePortability(mseSpec) {
   var dlog = function() {
     var forward = window.dlog || console.log.bind(console);
