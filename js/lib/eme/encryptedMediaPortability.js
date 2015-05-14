@@ -184,27 +184,19 @@ function base64url_encode(arr) {
   }
 
   proto.generateKeyRequest = function(keySystem, initData) {
-    if (keySystem === 'org.w3.clearkey')
-      keySystem = 'webkit-org.w3.clearkey';
     return proto.webkitGenerateKeyRequest.call(this, keySystem, initData);
   };
 
   proto.addKey = function(keySystem, key, initData, sessionId) {
-    if (keySystem === 'org.w3.clearkey')
-      keySystem = 'webkit-org.w3.clearkey';
     return proto.webkitAddKey.call(this, keySystem, key, initData, sessionId);
   };
 
   proto.cancelKeyRequest = function(keySystem, sessionId) {
-    if (keySystem === 'org.w3.clearkey')
-      keySystem = 'webkit-org.w3.clearkey';
     return proto.webkitCancelKeyRequest.call(this, keySystem, sessionId);
   };
 
   var ael = proto.addEventListener;
   var eventWrapper = function(listener, e) {
-    if (e.keySystem === 'webkit-org.w3.clearkey')
-      e.keySystem = 'org.w3.clearkey';
     listener.call(this, e);
   };
 
