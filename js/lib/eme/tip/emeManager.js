@@ -15,14 +15,8 @@ limitations under the License.
 */
 'use strict';
 
-// Lifted out of dash-eme.js from the DASH EME tests.
 function EMEHandler() {}
 
-/**
- * Main initialization function.
- * @param {HTMLVideoElement} video The video element this EME Handler wraps.
- * @return {EMEHandler} Returns 'this'.
- */
 EMEHandler.prototype.init = function(video, mime, keyType, flavor, keySessionErrorCb) {
   this.video = video;
   this.mime = mime;
@@ -100,8 +94,7 @@ EMEHandler.kFlavorToSystem = {
 
 /**
  * Internal function to sets the DRM flavor to use.
- * @param {string} flavor Optional string to specify specific flavor
- *     keystring.
+ * @param {string} flavor Optional string to specify specific flavor keystring.
  */
 EMEHandler.prototype.setFlavor = function(flavor) {
   if (!window.MediaKeys || !MediaKeys.isTypeSupported) {

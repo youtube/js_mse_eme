@@ -15,16 +15,39 @@ limitations under the License.
 */
 'use strict';
 
-// Lifted out of dash-eme.js from the DASH EME tests.
 function EMEHandler() {}
 
-/**
- * Main initialization function.
- * @param {HTMLVideoElement} video The video element this EME Handler wraps.
- * @return {EMEHandler} Returns 'this'.
- */
-EMEHandler.prototype.init = function(video) {
+EMEHandler.prototype.init = function(video, mime, keyType, flavor, keyErrorCb) {
   this.video = video;
+  this.mime = mime;
+  // Expecting mime to have a space separating the container format and codecs.
+  this.format = mime.split(" ")[0];
+
+  this.keys = new Array();
+  this.keys['clearkey'] = new Uint8Array([
+      233, 122, 210, 133, 203, 93, 59, 228,
+      167, 150, 27, 122, 246, 145, 112, 218]);
+  this.keys['clearkey2'] = new Uint8Array([
+      131, 162, 92, 175, 153, 178, 172, 41,
+      2, 167, 251, 126, 233, 215, 230, 185]);
+  this.keys['invalid_widevine'] = new Uint8Array([
+      0x53, 0xa6, 0xcb, 0x3a, 0xd8, 0xfb, 0x58, 0x8f,
+      0xbe, 0x92, 0xe6, 0xdc, 0x72, 0x65, 0x0c, 0x86]);
+  this.keys['audio_clearkey'] = new Uint8Array([
+      0x1a, 0x8a, 0x20, 0x95, 0xe4, 0xde, 0xb2, 0xd2,
+      0x9e, 0xc8, 0x16, 0xac, 0x7b, 0xae, 0x20, 0x82]);
+  this.keys['video_clearkey'] = new Uint8Array([
+      0x1a, 0x8a, 0x20, 0x95, 0xe4, 0xde, 0xb2, 0xd2,
+      0x9e, 0xc8, 0x16, 0xac, 0x7b, 0xae, 0x20, 0x82]);
+
+  this.kids = new Array();
+  this.kids['audio_clearkey'] = new Uint8Array([
+      0x60, 0x06, 0x1e, 0x01, 0x7e, 0x47, 0x7e, 0x87,
+      0x7e, 0x57, 0xd0, 0x0d, 0x1e, 0xd0, 0x0d, 0x1e]);
+  this.kids['video_clearkey'] = new Uint8Array([
+      0x60, 0x06, 0x1e, 0x01, 0x7e, 0x47, 0x7e, 0x87,
+      0x7e, 0x57, 0xd0, 0x0d, 0x1e, 0xd0, 0x0d, 0x1e]);
+
   normalizeAttribute(video, 'generateKeyRequest');
   normalizeAttribute(video, 'addKey');
 
@@ -32,7 +55,9 @@ EMEHandler.prototype.init = function(video) {
 
   this.flavor = null;
   this.keySystem = null;
-  this.licenseServerURL = null;
+  this.keyType = keyType instanceof Array ? keyType : [keyType];
+
+  this.keyErrorCb = (!!keyErrorCb ? keyErrorCb : function(e) {});
 
   var attr = prefixedAttributeName(video, 'needkey', 'on');
   if (!attr) {
@@ -66,6 +91,9 @@ EMEHandler.prototype.init = function(video) {
   }
 
   normalizeAttribute(video, 'setMediaKeys');
+
+  this.setFlavor(flavor);
+
   return this;
 };
 
@@ -73,12 +101,6 @@ EMEHandler.prototype.init = function(video) {
  * Register EMEHandler.
  */
 window.EMEHandler = EMEHandler;
-
-/**
- * The default mime type to use. We only use BMFF for this demo player (soon to
- * change though).
- */
-EMEHandler.kMime = 'video/mp4; codecs="avc1.640028"';
 
 /**
  * Mapping between DRM flavors to the accepted keysystem strings.
@@ -90,44 +112,17 @@ EMEHandler.kFlavorToSystem = {
 };
 
 /**
- * Sets the DRM flavor to use.
- * @param {object} licenseMap Mapping from DRM flavors to their license servers.
- * @param {string} optFlavor Optional string to specify specific flavor
- *     keystring.
- */
-EMEHandler.prototype.setFlavor = function(licenseMap, optFlavor) {
-  this.chooseFlavor(EMEHandler.kMime, licenseMap, optFlavor);
-  this.isClearKey = this.flavor == 'clearkey';
-};
-
-/**
  * Internal function to sets the DRM flavor to use.
- * @param {string} mime Mime type of the video stream.
- * @param {object} licenseMap Mapping from DRM flavors to their license servers.
- * @param {string} optFlavor Optional string to specify specific flavor
- *     keystring.
+ * @param {string} flavor Optional string to specify specific flavor keystring.
  */
-EMEHandler.prototype.chooseFlavor = function(mime, licenseMap, optFlavor) {
-  for (var flavor in licenseMap) {
-    if (optFlavor && flavor != optFlavor) continue;
-    var systems = EMEHandler.kFlavorToSystem[flavor];
-    if (!systems)
-      continue;
+EMEHandler.prototype.setFlavor = function(flavor) {
+  var systems = EMEHandler.kFlavorToSystem[flavor];
+  for (var i in systems) {
+    if (!this.video.canPlayType(this.mime, systems[i])) continue;
 
-    for (var i in systems) {
-      if (window.MediaKeys && MediaKeys.isTypeSupported) {
-        if (!MediaKeys.isTypeSupported(systems[i], mime) &&
-            !MediaKeys.isTypeSupported(mime, systems[i]))
-          continue;
-      } else if (!this.video.canPlayType(mime, systems[i])) {
-        continue;
-      }
-
-      this.flavor = flavor;
-      this.keySystem = systems[i];
-      this.licenseServerURL = licenseMap[flavor];
-      return;
-    }
+    this.flavor = flavor;
+    this.keySystem = systems[i];
+    return;
   }
   throw 'Could not find a compatible key system';
 };
@@ -147,36 +142,8 @@ EMEHandler.prototype.onNeedKey = function(e) {
     return;
   }
 
-  var initData = e.initData;
-  if (this.isClearKey) {
-    initData = extractBMFFClearKeyID(e.initData);
-  }
-
-  if (!window.MediaKeys) {
-    this.video.generateKeyRequest(this.keySystem, initData);
-  } else {
-    if (!this.mediaKeys) {
-      try {
-        this.mediaKeys = new MediaKeys(this.keySystem);
-        this.video.setMediaKeys(this.mediaKeys);
-      } catch (e) {
-        // Looks like we don't really support MediaKeys,
-        // so we'll try falling back.
-        this.video.generateKeyRequest(this.keySystem, initData);
-      }
-    }
-    if (this.mediaKeys) {
-      var session = this.mediaKeys.createSession(EMEHandler.kMime, initData);
-      session.addEventListener('keymessage', this.onKeyMessage.bind(this));
-      session.addEventListener('keyerror', this.onKeyError.bind(this));
-      session.addEventListener(
-          this.mediaKeysPrefix + 'keymessage', this.onKeyMessage.bind(this));
-      session.addEventListener(
-          this.mediaKeysPrefix + 'keyerror', this.onKeyError.bind(this));
-    }
-  }
-
-  this.initDataQueue.push(initData);
+  this.video.generateKeyRequest(this.keySystem, e.initData);
+  this.initDataQueue.push(e.initData);
 };
 
 /**
@@ -186,17 +153,20 @@ EMEHandler.prototype.onNeedKey = function(e) {
 EMEHandler.prototype.onKeyMessage = function(e) {
   dlog(2, 'onKeyMessage()');
   var message = e.message;
-  if (this.keySystem == 'com.microsoft.playready') {
+  var initData = this.initDataQueue.shift();
+  var keyType = this.keyType.shift();
+  if (keyType in this.kids) {
+    var kid = this.kids[keyType];
+  } else if (this.keySystem == 'com.microsoft.playready') {
     message = parsePlayReadyKeyMessage(message);
     if (!message)
       throw 1;
+  } else {
+    var kid = extractBMFFClearKeyID(initData);
   }
-  var initData = this.initDataQueue.shift();
-  var xhr = new XMLHttpRequest();
-  xhr.open('POST', this.licenseServerURL);
-  xhr.addEventListener('load', this.onLoad.bind(this, initData, e.sessionId));
-  xhr.responseType = 'arraybuffer';
-  xhr.send(message);
+
+  var key = this.keys[keyType];
+  this.video.addKey(this.keySystem, key, kid, e.sessionId);
 };
 
 /**
@@ -207,27 +177,5 @@ EMEHandler.prototype.onKeyError = function(e) {
   dlog(2,
        'onKeyError(' + e.keySystem + ', ' +
        e.errorCode.code + ', ' + e.systemCode + ')');
-};
-
-/**
- * Default callback for onLoad event from EME system.
- * @param {ArrayBuffer} initData Initialization data for stream.
- * @param {string} session Session ID given by the underlying EME system.
- * @param {Event} e Event passed in by the EME system.
- */
-EMEHandler.prototype.onLoad = function(initData, session, e) {
-  dlog(2, 'onLoad(' + this.licenseServerURL + ')');
-  if (e.target.status < 200 || e.target.status > 299)
-    throw 'Bad XHR status: ' + e.target.statusText;
-
-  // Parse "GLS/1.0 0 OK\r\nHeader: Value\r\n\r\n<xml>HERE BE SOAP</xml>
-  var responseString = arrayToString(
-      new Uint8Array(e.target.response)).split('\r\n').pop();
-  var license = stringToArray(responseString);
-
-  if (window.MediaKeys && this.mediaKeys) {
-    session.update(license);
-  } else {
-    this.video.addKey(this.keySystem, license, initData, session);
-  }
+  this.keyErrorCb(e);
 };
