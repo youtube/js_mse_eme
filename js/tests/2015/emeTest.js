@@ -211,23 +211,6 @@ testWidevineSupport.prototype.onsourceopen = function() {
   }
 }
 
-var testInvalidKey = createEmeTest('InvalidKey');
-testInvalidKey.prototype.title = 
-    'Test if an invalid key will produce the expected error.';
-testInvalidKey.prototype.start = function(runner, video) {
-  try {
-    var testEmeHandler = setupBaseEmeTest(video, runner, StreamDef.VideoStreamYTCenc.src, 1000000);
-    var self = this;
-    testEmeHandler.init(video, StreamDef.VideoType, 'invalid_widevine', 'widevine', function(e) {
-      self.runner.checkEq(e.errorCode.code, 1);
-      self.runner.succeed();
-    });
-  } catch(err) {
-    runner.fail(err);
-  }
-  video.play();
-};
-
 
 var testClearKeyAudio = createEmeTest('ClearKeyAudio');
 testClearKeyAudio.prototype.title =
@@ -337,6 +320,24 @@ testDualKey.prototype.start = function(runner, video) {
   ms.addEventListener('webkitsourceopen', onSourceOpen);
   video.src = window.URL.createObjectURL(ms);
   video.load();
+};
+
+
+var testInvalidKey = createEmeTest('InvalidKey', 'Optional EME', false);
+testInvalidKey.prototype.title =
+    'Test if an invalid key will produce the expected error.';
+testInvalidKey.prototype.start = function(runner, video) {
+  try { 
+    var testEmeHandler = setupBaseEmeTest(video, runner, StreamDef.VideoStreamYTCenc.src, 1000000);
+    var self = this;
+    testEmeHandler.init(video, StreamDef.VideoType, 'invalid_widevine', 'widevine', function(e) {
+      self.runner.checkEq(e.errorCode.code, 1);
+      self.runner.succeed();
+    });
+  } catch(err) {
+    runner.fail(err);
+  }
+  video.play();
 };
 
 
