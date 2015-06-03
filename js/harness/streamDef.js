@@ -45,7 +45,7 @@ function getStreamDef(index) {
       VideoTinyStreamYTCenc: ['media/oops_cenc-20121114-145-143.mp4', 7229257, 30.03],
       VideoSmallStreamYTCenc: ['media/oops_cenc-20121114-143-no-clear-start.mp4', 12045546, 242.71],
       Audio1MB: ['media/car-audio-1MB-trunc.mp4', 1048576, 65.875],
-      Video1MB: ['media/test-video-1MB.mp4', 1031034, 1.04],
+      Video1MB: ['media/test-video-1MB.mp4', 1053406, 1.04],
       ProgressiveLow: ['media/car_20130125_18.mp4', 15477531, 181.55],
       ProgressiveNormal: ['media/car_20130125_22.mp4', 55163609, 181.55],
       ProgressiveHigh: [],
