@@ -74,7 +74,7 @@ function getStreamDef(index) {
       VideoTinyStreamYTCenc: [],
       VideoSmallStreamYTCenc: [],
       Audio1MB: ['media/feelings_vp9-audio-1MB-trunc.webm', 1104437, 40.02],
-      Video1MB: ['media/feelings_vp9-video-1MB-trunc.webm', 1042881, 0.99],
+      Video1MB: ['media/vp9-video-1mb.webm', 1103716, 1.00],
       ProgressiveLow: [],
       ProgressiveNormal: [],
       ProgressiveHigh: [],
