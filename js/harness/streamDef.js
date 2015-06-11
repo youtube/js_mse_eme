@@ -50,30 +50,30 @@ function getStreamDef(index) {
       ProgressiveNormal: ['media/car_20130125_22.mp4', 55163609, 181.55],
       ProgressiveHigh: [],
     }, {
-      AudioType: 'audio/webm; codecs="vorbis"',
+      AudioType: 'audio/mp4; codecs="mp4a.40.2"',
       VideoType: 'video/webm; codecs="vp9"',
-      AudioTiny: ['media/feelings_vp9-20130806-171.webm', 2061225, 135.60],
-      AudioNormal: ['media/feelings_vp9-20130806-172.webm', 2985979, 135.61, {
-          200000: 10.26}],
-      AudioNormalAdv: ['media/feelings_vp9-audio-normal.webm', 2675548, 135.67, {
-          200000: 10.26}],
-      AudioHuge: ['media/feelings_vp9-20130806-172.webm', 2985979, 135.61, {
-          'appendAudioOffset': 15.26}],
+      AudioTiny: ['media/car-20120827-8b.mp4', 717502, 181.62],
+      AudioNormal: ['media/car-20120827-8c.mp4', 2884572, 181.58, {
+          200000: 12.42}],
+      AudioNormalAdv: ['media/car-20120827-8c.mp4', 2884572, 181.58, {
+          200000: 12.42}],
+      AudioHuge: ['media/car-20120827-8d.mp4', 5789853, 181.58, {
+          'appendAudioOffset': 17.42}],
       VideoTiny: ['media/feelings_vp9-20130806-242.webm', 4478156, 135.46, {
           'videoChangeRate': 15.35}],
       VideoNormal: ['media/feelings_vp9-20130806-243.webm', 7902885, 135.46, {
           'mediaSourceDuration': 135.469}],
       VideoHuge: ['media/feelings_vp9-20130806-247.webm', 27757852, 135.46],
-      AudioTinyClearKey: [],
-      AudioNormalClearKey: [],
-      AudioHugeClearKey: [],
+      AudioTinyClearKey: ['media/car_cenc-20120827-8b.mp4', 783470, 181.62],
+      AudioNormalClearKey: ['media/car_cenc-20120827-8c.mp4', 3013084, 181.58],
+      AudioHugeClearKey: ['media/car_cenc-20120827-8d.mp4', 5918365, 181.58],
       VideoTinyClearKey: [],
       VideoNormalClearKey: [],
       VideoHugeClearKey: [],
       VideoStreamYTCenc: [],
       VideoTinyStreamYTCenc: [],
       VideoSmallStreamYTCenc: [],
-      Audio1MB: ['media/feelings_vp9-audio-1MB-trunc.webm', 1104437, 40.02],
+      Audio1MB: ['media/car-audio-1MB-trunc.mp4', 1048576, 65.875],
       Video1MB: ['media/vp9-video-1mb.webm', 1103716, 1.00],
       ProgressiveLow: [],
       ProgressiveNormal: [],
