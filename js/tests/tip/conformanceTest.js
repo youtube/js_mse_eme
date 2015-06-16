@@ -1336,8 +1336,7 @@ testBufUnbufSeek.prototype.onsourceopen = function() {
 };
 
 
-var createDelayedTest = function(delayedName, delayedType,
-    nonDelayedName, nonDelayedType) {
+var createDelayedTest = function(delayed, delayedType, nonDelayed) {
   var test = createConformanceTest('Delayed' +
       util.MakeCapitalName(delayedType), 'MSE');
   test.prototype.title = 'Test if we can play properly when there' +
@@ -1346,8 +1345,12 @@ var createDelayedTest = function(delayedName, delayedType,
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
     var media = this.video;
-    var delayed = StreamDef[delayedName];
-    var nonDelayed = StreamDef[nonDelayedName];
+    // Chrome allows for 3 seconds of underflow for streams that have audio
+    // but are video starved. See code.google.com/p/chromium/issues/detail?id=423801
+    var underflowTime = 0.0;
+    if (delayedType == 'video') {
+      underflowTime = 3.0;
+    }
     var chain = new FixedAppendSize(
       new ResetInit(
         new FileSource(nonDelayed.src, runner.XHRManager, runner.timeouts)
@@ -1358,11 +1361,11 @@ var createDelayedTest = function(delayedName, delayedType,
         new FileSource(delayed.src, runner.XHRManager, runner.timeouts)
       ), 16384);
     var delayedSrc = this.ms.addSourceBuffer(delayed.type);
-    var self = this;
+    var self = this; 
     var ontimeupdate = function(e) {
       if (!media.paused) {
         var end = delayedSrc.buffered.end(0);
-        runner.checkLE(media.currentTime, end + 1.0,
+        runner.checkLE(media.currentTime, end + 1.0 + underflowTime,
           'media.currentTime (' + media.readyState + ')');
       }
     };
@@ -1375,10 +1378,9 @@ var createDelayedTest = function(delayedName, delayedType,
                  test.prototype.desc + ' data.');
         media.play();
         media.addEventListener('timeupdate', ontimeupdate);
-        waitUntil(runner.timeouts, media, delayedSrc.buffered.end(0) + 3,
-            function() {
-          runner.checkLE(media.currentTime, end + 1.0, 'media.currentTime');
-          runner.checkGr(media.currentTime, end - 1.0, 'media.currentTime');
+        waitUntil(runner.timeouts, media, end + 3, function() {
+          runner.checkLE(media.currentTime, end + 1.0 + underflowTime, 'media.currentTime');
+          runner.checkGr(media.currentTime, end - 1.0 - underflowTime, 'media.currentTime');
           runner.succeed();
         });
       });
@@ -1386,8 +1388,8 @@ var createDelayedTest = function(delayedName, delayedType,
   };
 };
 
-createDelayedTest('AudioNormal', 'audio', 'VideoNormal', 'video');
-createDelayedTest('VideoNormal', 'video', 'AudioNormal', 'audio');
+createDelayedTest(StreamDef.AudioNormal, 'audio', StreamDef.VideoNormal);
+createDelayedTest(StreamDef.VideoNormal, 'video', StreamDef.AudioNormal);
 
 
 var testFrameGaps = createConformanceTest('FrameGaps', 'MSE');
