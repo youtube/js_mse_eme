@@ -142,71 +142,39 @@ testWidevineSupport.prototype.title =
     'Test if canPlay return is correct for Widevine.';
 testWidevineSupport.prototype.onsourceopen = function() {
   var video = this.video;
-
-  function createWidevineTest(video, mediaType) {
-    return function(codecs, keySystem) {
-      var codecString = mediaType;
-      if (codecs != null) 
-        codecString += '; codecs="' + codecs + '"';
-      
-      return video.canPlayType(codecString, keySystem);
-    }
-  }
-
-  var DoAudioTest = createWidevineTest(video, 'audio/webm');
-  var DoVideoTest = createWidevineTest(video, 'video/webm');
-
-  if (DoVideoTest('vp9', 'com.widevine.alpha') === '') {
+  if (!StreamDef.isWebM()) {
     this.runner.checkEq(
-        video.canPlayType('video/mp4; codecs="avc1.640028"', 'com.widevine.alpha'), '',
+        video.canPlayType('video/mp4; codecs="avc1.640028"', 'com.widevine.alpha'), 'probably',
         'canPlayType result');
     this.runner.checkEq(
-        video.canPlayType('audio/mp4; codecs="mp4a.40.2"', 'com.widevine.alpha'), '',
+        video.canPlayType('video/mp4', 'com.widevine.alpha'), 'maybe',
         'canPlayType result');
-
+    this.runner.checkEq(
+        video.canPlayType('audio/mp4; codecs="mp4a.40.2"', 'com.widevine.alpha'), 'probably',
+        'canPlayType result');
+    this.runner.checkEq(
+         video.canPlayType('audio/mp4', 'com.widevine.alpha'), 'maybe',
+        'canPlayType result');
     this.runner.succeed();
   } else {
-    this.runner.checkEq(DoVideoTest('vp9', 'com.widevine.alpha'), 'probably',
-        'canPlayType result');
-    this.runner.checkEq(DoVideoTest('vp9.0', 'com.widevine.alpha'), 'probably',
-        'canPlayType result');
-    this.runner.checkEq(DoVideoTest('vorbis', 'com.widevine.alpha'), 'probably',
-        'canPlayType result');
-    this.runner.checkEq(DoVideoTest('vp9,vp9.0,vorbis', 'com.widevine.alpha'),
-        'probably', 'canPlayType result');
-    this.runner.checkEq(DoVideoTest(null, 'com.widevine.alpha'), 'maybe',
-        'canPlayType result');
-
-    this.runner.checkEq(DoAudioTest('vorbis', 'com.widevine.alpha'), 'probably',
-        'canPlayType result');
-    this.runner.checkEq(DoAudioTest(null, 'com.widevine.alpha'), 'maybe',
-        'canPlayType result');
-
-    this.runner.checkEq(DoVideoTest('codecs="vp9"', 'com.widevine.'), '',
-        'canPlayType result');
-    this.runner.checkEq(DoVideoTest('codecs="vp9"', 'com.widevine.foo'), '',
-        'canPlayType result');
-    this.runner.checkEq(DoVideoTest('codecs="vp9"', 'com.widevine.alpha.'), '',
-        'canPlayType result');
-    this.runner.checkEq(DoVideoTest('codecs="vp9"', 'com.widevine.alpha.foo'),
-        '', 'canPlayType result');
-    this.runner.checkEq(DoVideoTest('codecs="vp9"', 'com.widevine.alph'), '',
-        'canPlayType result');
-    this.runner.checkEq(DoVideoTest('codecs="vp9"', 'com.widevine.alphb'), '',
-        'canPlayType result');
-    this.runner.checkEq(DoVideoTest('codecs="vp9"', 'com.widevine.alphaa'), '',
-        'canPlayType result');
-    this.runner.checkEq(DoVideoTest('codecs="mp4a"', 'com.widevine.alpha'), '',
-        'canPlayType result');
-
-    this.runner.checkEq(DoAudioTest('codecs="vp9"', 'com.widevine'), '',
+    this.runner.checkEq(
+        video.canPlayType('video/webm; codecs="vp9"', 'com.widevine.alpha'), 'probably',
         'canPlayType result');
     this.runner.checkEq(
-        DoAudioTest('codecs="vp9,vorbis"', 'com.widevine.alpha'), '',
-            'canPlayType result');
+        video.canPlayType('video/webm; codecs="vp9.0"', 'com.widevine.alpha'), 'probably',
+        'canPlayType result');
     this.runner.checkEq(
-        DoAudioTest('codecs="vp9,vorbis"', 'com.widevine.alpha'), '',
-            'canPlayType result');
+        video.canPlayType('video/webm; codecs="vp9,vp9.0"', 'com.widevine.alpha'), 'probably',
+        'canPlayType result');
+    this.runner.checkEq(
+        video.canPlayType('video/webm', 'com.widevine.alpha'), 'maybe',
+        'canPlayType result');
+    this.runner.checkEq(
+         video.canPlayType('audio/mp4; codecs="mp4a.40.2"', 'com.widevine.alpha'), 'probably',
+        'canPlayType result');
+    this.runner.checkEq(
+         video.canPlayType('audio/mp4', 'com.widevine.alpha'), 'maybe',
+        'canPlayType result');
     this.runner.succeed();
   }
 }
