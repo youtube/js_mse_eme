@@ -179,13 +179,12 @@ createInitialMSStateTest('duration', NaN);
 createInitialMSStateTest('readyState', 'open');
 
 
-var createAppendTest = function(streamName) {
+var createAppendTest = function(stream) {
   var test = createConformanceTest(
-      'Append' + util.MakeCapitalName(StreamDef[streamName].name), 'MSE');
-  test.prototype.title = 'Test if we can append a whole ' +
-      StreamDef[streamName].name + ' file whose size is 1MB.';
+      'Append' + util.MakeCapitalName(stream.name), 'MSE');
+  test.prototype.title = 'Test if we can append a whole ' + 
+      stream.name + ' file whose size is 1MB.';
   test.prototype.onsourceopen = function() {
-    var stream = StreamDef[streamName];
     var runner = this.runner;
     var sb = this.ms.addSourceBuffer(stream.type);
     var xhr = runner.XHRManager.createRequest(stream.src, function(e) {
@@ -228,8 +227,8 @@ var createAppendTest = function(streamName) {
   };
 };
 
-createAppendTest('Audio1MB');
-createAppendTest('Video1MB');
+createAppendTest(StreamDef.Audio1MB);
+createAppendTest(StreamDef.Video1MB);
 
 
 var createAbortTest = function(stream) {
@@ -267,13 +266,12 @@ createAbortTest(StreamDef.Audio1MB);
 createAbortTest(StreamDef.Video1MB);
 
 
-var createTimestampOffsetTest = function(streamName) {
+var createTimestampOffsetTest = function(stream) {
   var test = createConformanceTest(
-      'TimestampOffset' + util.MakeCapitalName(StreamDef[streamName].name),
+      'TimestampOffset' + util.MakeCapitalName(stream.name),
       'MSE');
   test.prototype.title = 'Test if we can set timestamp offset.';
   test.prototype.onsourceopen = function() {
-    var stream = StreamDef[streamName];
     var runner = this.runner;
     var sb = this.ms.addSourceBuffer(stream.type);
     var xhr = runner.XHRManager.createRequest(stream.src,
@@ -292,8 +290,8 @@ var createTimestampOffsetTest = function(streamName) {
   };
 };
 
-createTimestampOffsetTest('Audio1MB');
-createTimestampOffsetTest('Video1MB');
+createTimestampOffsetTest(StreamDef.Audio1MB);
+createTimestampOffsetTest(StreamDef.Video1MB);
 
 
 var testDASHLatency = createConformanceTest('DASHLatency', 'MSE');
@@ -392,12 +390,11 @@ testSourceRemove.prototype.onsourceopen = function() {
 };
 
 
-var createDurationAfterAppendTest = function(streamName) {
+var createDurationAfterAppendTest = function(stream) {
   var test = createConformanceTest('DurationAfterAppend' +
-      util.MakeCapitalName(StreamDef[streamName].name), 'MSE');
+      util.MakeCapitalName(stream.name), 'MSE');
   test.prototype.title = 'Test if the duration expands after appending data.';
   test.prototype.onsourceopen = function() {
-    var stream = StreamDef[streamName];
     var runner = this.runner;
     var media = this.video;
     var ms = this.ms;
@@ -443,17 +440,16 @@ var createDurationAfterAppendTest = function(streamName) {
   };
 };
 
-createDurationAfterAppendTest('Audio1MB');
-createDurationAfterAppendTest('Video1MB');
+createDurationAfterAppendTest(StreamDef.Audio1MB);
+createDurationAfterAppendTest(StreamDef.Video1MB);
 
 
-var createPausedTest = function(streamName) {
-  var test = createConformanceTest('PausedStateWith' +
-      util.MakeCapitalName(StreamDef[streamName].name), 'MSE');
+var createPausedTest = function(stream) {
+  var test = createConformanceTest('PausedStateWith' + 
+      util.MakeCapitalName(stream.name), 'MSE');
   test.prototype.title = 'Test if the paused state is correct before or ' +
       ' after appending data.';
   test.prototype.onsourceopen = function() {
-    var stream = StreamDef[streamName];
     var runner = this.runner;
     var media = this.video;
     var ms = this.ms;
@@ -475,8 +471,8 @@ var createPausedTest = function(streamName) {
   };
 };
 
-createPausedTest('Audio1MB');
-createPausedTest('Video1MB');
+createPausedTest(StreamDef.Audio1MB);
+createPausedTest(StreamDef.Video1MB);
 
 
 var createMediaElementEventsTest = function() {
@@ -875,9 +871,9 @@ testVideoChangeRate.prototype.onsourceopen = function() {
 };
 
 
-var createAppendMultipleInitTest = function(type, stream) {
+var createAppendMultipleInitTest = function(stream) {
   var test = createConformanceTest(
-      'AppendMultipleInit' + util.MakeCapitalName(type), 'MSE');
+      'AppendMultipleInit' + util.MakeCapitalName(stream.name), 'MSE');
   test.prototype.title = 'Test if we can append multiple init segments.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
@@ -928,8 +924,8 @@ var createAppendMultipleInitTest = function(type, stream) {
   };
 };
 
-createAppendMultipleInitTest('audio', StreamDef.Audio1MB);
-createAppendMultipleInitTest('video', StreamDef.Video1MB);
+createAppendMultipleInitTest(StreamDef.Audio1MB);
+createAppendMultipleInitTest(StreamDef.Video1MB);
 
 
 var testAppendOutOfOrder = createConformanceTest('AppendOutOfOrder', 'MSE');
@@ -1343,19 +1339,19 @@ testBufUnbufSeek.prototype.onsourceopen = function() {
 };
 
 
-var createDelayedTest = function(delayed, delayedType, nonDelayed) {
+var createDelayedTest = function(delayed, nonDelayed) {
   var test = createConformanceTest('Delayed' +
-      util.MakeCapitalName(delayedType), 'MSE');
+      util.MakeCapitalName(delayed.name), 'MSE');
   test.prototype.title = 'Test if we can play properly when there' +
-    ' is not enough ' + delayedType + ' data. The play should resume once ' +
-    delayedType + ' data is appended.';
+    ' is not enough ' + delayed.name + ' data. The play should resume once ' +
+    delayed.name + ' data is appended.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
     var media = this.video;
     // Chrome allows for 3 seconds of underflow for streams that have audio
     // but are video starved. See code.google.com/p/chromium/issues/detail?id=423801
     var underflowTime = 0.0;
-    if (delayedType == 'video') {
+    if (delayed.name == 'video') {
       underflowTime = 3.0;
     }
     var chain = new FixedAppendSize(
@@ -1368,7 +1364,7 @@ var createDelayedTest = function(delayed, delayedType, nonDelayed) {
         new FileSource(delayed.src, runner.XHRManager, runner.timeouts)
       ), 16384);
     var delayedSrc = this.ms.addSourceBuffer(delayed.type);
-    var self = this; 
+    var self = this;
     var ontimeupdate = function(e) {
       if (!media.paused) {
         var end = delayedSrc.buffered.end(0);
@@ -1395,8 +1391,8 @@ var createDelayedTest = function(delayed, delayedType, nonDelayed) {
   };
 };
 
-createDelayedTest(StreamDef.AudioNormal, 'audio', StreamDef.VideoNormal);
-createDelayedTest(StreamDef.VideoNormal, 'video', StreamDef.AudioNormal);
+createDelayedTest(StreamDef.AudioNormal, StreamDef.VideoNormal);
+createDelayedTest(StreamDef.VideoNormal, StreamDef.AudioNormal);
 
 
 var testFrameGaps = createConformanceTest('FrameGaps', 'MSE');
