@@ -232,32 +232,39 @@ createAppendTest('Audio1MB');
 createAppendTest('Video1MB');
 
 
-var createAbortTest = function(streamName) {
+var createAbortTest = function(stream) {
   var test = createConformanceTest(
-      'Abort' + util.MakeCapitalName(StreamDef[streamName].name), 'MSE');
+      'Abort' + util.MakeCapitalName(stream.name), 'MSE');
   test.prototype.title = 'Test if we can abort the current segment.';
   test.prototype.onsourceopen = function() {
-    var stream = StreamDef[streamName];
     var runner = this.runner;
     var sb = this.ms.addSourceBuffer(stream.type);
-    var xhr = runner.XHRManager.createRequest(stream.src,
-        function(e) {
-      sb.appendBuffer(xhr.getResponseData());
-      sb.abort();
-      sb.appendBuffer(xhr.getResponseData());
-      sb.addEventListener('update', function(e) {
-        runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
-        runner.checkEq(sb.buffered.start(0), 0, 'Range start');
-        runner.checkGr(sb.buffered.end(0), 0, 'Range end');
-        runner.succeed();
-      });
+    var xhr = runner.XHRManager.createRequest(stream.src, function(e) {
+      var responseData = xhr.getResponseData();
+      var abortEnded = function(e) {
+        sb.removeEventListener('updateend', abortEnded);
+        sb.addEventListener('update', function(e) {
+          runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
+          runner.checkEq(sb.buffered.start(0), 0, 'Range start');
+          runner.checkGr(sb.buffered.end(0), 0, 'Range end');
+          runner.succeed();
+        });
+        sb.appendBuffer(responseData);
+      }
+      var appendStarted = function(e) {
+        sb.removeEventListener('update', appendStarted);
+        sb.addEventListener('updateend', abortEnded);
+        sb.abort();
+      }
+      sb.addEventListener('update', appendStarted);
+      sb.appendBuffer(responseData);
     }, 0, 200000);
     xhr.send();
   };
 };
 
-createAbortTest('Audio1MB');
-createAbortTest('Video1MB');
+createAbortTest(StreamDef.Audio1MB);
+createAbortTest(StreamDef.Video1MB);
 
 
 var createTimestampOffsetTest = function(streamName) {
