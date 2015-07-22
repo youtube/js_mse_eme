@@ -477,34 +477,38 @@ createPausedTest(StreamDef.Video1MB);
 
 var createMediaElementEventsTest = function() {
   var test = createConformanceTest('MediaElementEvents', 'MSE');
-  test.prototype.title = 'Test if the events on MediaSource are correct.';
+  test.prototype.title = 'Test events on the MediaElement.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
     var media = this.video;
     var ms = this.ms;
     var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
     var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
-    var lastState = 'open';
     var self = this;
     var videoXhr = runner.XHRManager.createRequest(StreamDef.Video1MB.src,
         function(e) {
       self.log('onload called');
-      videoSb.appendBuffer(videoXhr.getResponseData());
-      videoSb.addEventListener('update', function() {
-        videoSb.abort();
-        ms.duration = 1;
+      var onDurationChange = function() {
         ms.endOfStream();
         media.play();
-      });
+      }
+      var onUpdate = function() {
+        videoSb.removeEventListener('update', onUpdate);
+        videoSb.addEventListener('update', onDurationChange);
+        ms.duration = 1;
+      }
+      videoSb.addEventListener('update', onUpdate);
+      videoSb.appendBuffer(videoXhr.getResponseData());
     });
     var audioXhr = runner.XHRManager.createRequest(StreamDef.Audio1MB.src,
         function(e) {
       self.log('onload called');
-      audioSb.appendBuffer(audioXhr.getResponseData());
-      audioSb.addEventListener('update', function() {
-        audioSb.abort();
+      var onAudioUpdate =  function() {
+        audioSb.removeEventListener('update', onAudioUpdate);
         videoXhr.send();
-      });
+      }
+      audioSb.addEventListener('update', onAudioUpdate);
+      audioSb.appendBuffer(audioXhr.getResponseData());
     });
 
     media.addEventListener('ended', function() {
