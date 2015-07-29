@@ -122,64 +122,6 @@ testCanPlayClearKey.prototype.start = function(runner, video) {
 };
 
 
-var testCanPlayPlayReady = createEmeTest('CanPlayPlayReady');
-testCanPlayPlayReady.prototype.title =
-    'Test if canPlay return is correct for PlayReady.';
-testCanPlayPlayReady.prototype.onsourceopen = function() {
-  var video = this.video;
-  this.runner.checkEq(
-      video.canPlayType(StreamDef.VideoType, 'com.youtube.playready'),
-      'probably', 'canPlayType result');
-  this.runner.checkEq(
-      video.canPlayType(StreamDef.AudioType, 'com.youtube.playready'),
-      'probably', 'canPlayType result');
-  this.runner.succeed();
-};
-
-
-var testWidevineSupport = createEmeTest('WidevineSupport');
-testWidevineSupport.prototype.title =
-    'Test if canPlay return is correct for Widevine.';
-testWidevineSupport.prototype.onsourceopen = function() {
-  var video = this.video;
-  if (!StreamDef.isWebM()) {
-    this.runner.checkEq(
-        video.canPlayType('video/mp4; codecs="avc1.640028"', 'com.widevine.alpha'), 'probably',
-        'canPlayType result');
-    this.runner.checkEq(
-        video.canPlayType('video/mp4', 'com.widevine.alpha'), 'maybe',
-        'canPlayType result');
-    this.runner.checkEq(
-        video.canPlayType('audio/mp4; codecs="mp4a.40.2"', 'com.widevine.alpha'), 'probably',
-        'canPlayType result');
-    this.runner.checkEq(
-         video.canPlayType('audio/mp4', 'com.widevine.alpha'), 'maybe',
-        'canPlayType result');
-    this.runner.succeed();
-  } else {
-    this.runner.checkEq(
-        video.canPlayType('video/webm; codecs="vp9"', 'com.widevine.alpha'), 'probably',
-        'canPlayType result');
-    this.runner.checkEq(
-        video.canPlayType('video/webm; codecs="vp9.0"', 'com.widevine.alpha'), 'probably',
-        'canPlayType result');
-    this.runner.checkEq(
-        video.canPlayType('video/webm; codecs="vp9,vp9.0"', 'com.widevine.alpha'), 'probably',
-        'canPlayType result');
-    this.runner.checkEq(
-        video.canPlayType('video/webm', 'com.widevine.alpha'), 'maybe',
-        'canPlayType result');
-    this.runner.checkEq(
-         video.canPlayType('audio/mp4; codecs="mp4a.40.2"', 'com.widevine.alpha'), 'probably',
-        'canPlayType result');
-    this.runner.checkEq(
-         video.canPlayType('audio/mp4', 'com.widevine.alpha'), 'maybe',
-        'canPlayType result');
-    this.runner.succeed();
-  }
-}
-
-
 var testClearKeyAudio = createEmeTest('ClearKeyAudio');
 testClearKeyAudio.prototype.title =
     'Test if we can play audio encrypted with ClearKey encryption.';
@@ -289,6 +231,65 @@ testDualKey.prototype.start = function(runner, video) {
   video.src = window.URL.createObjectURL(ms);
   video.load();
 };
+
+
+var testPlayReadySupport = createEmeTest('PlayReadySupport', 'Key System Support (1 must pass)');
+testPlayReadySupport.prototype.title =
+    'Test if canPlay return is correct for PlayReady.';
+testPlayReadySupport.prototype.onsourceopen = function() {
+  var video = this.video;
+  // PlayReady is currently only compatible with h264.
+  this.runner.checkEq(
+      video.canPlayType('video/mp4', 'com.youtube.playready'), 'probably',
+      'canPlayType result');
+  this.runner.checkEq(
+      video.canPlayType('audio/mp4', 'com.youtube.playready'), 'probably',
+      'canPlayType result');
+  this.runner.succeed();
+};
+
+
+var testWidevineSupport = createEmeTest('WidevineSupport', 'Key System Support (1 must pass)');
+testWidevineSupport.prototype.title =
+    'Test if canPlay return is correct for Widevine.';
+testWidevineSupport.prototype.onsourceopen = function() {
+  var video = this.video;
+  if (!StreamDef.isWebM()) {
+    this.runner.checkEq(
+        video.canPlayType('video/mp4; codecs="avc1.640028"', 'com.widevine.alpha'), 'probably',
+        'canPlayType result');
+    this.runner.checkEq(
+        video.canPlayType('video/mp4', 'com.widevine.alpha'), 'maybe',
+        'canPlayType result');
+    this.runner.checkEq(
+        video.canPlayType('audio/mp4; codecs="mp4a.40.2"', 'com.widevine.alpha'), 'probably',
+        'canPlayType result');
+    this.runner.checkEq(
+         video.canPlayType('audio/mp4', 'com.widevine.alpha'), 'maybe',
+        'canPlayType result');
+    this.runner.succeed();
+  } else {
+    this.runner.checkEq(
+        video.canPlayType('video/webm; codecs="vp9"', 'com.widevine.alpha'), 'probably',
+        'canPlayType result');
+    this.runner.checkEq(
+        video.canPlayType('video/webm; codecs="vp9.0"', 'com.widevine.alpha'), 'probably',
+        'canPlayType result');
+    this.runner.checkEq(
+        video.canPlayType('video/webm; codecs="vp9,vp9.0"', 'com.widevine.alpha'), 'probably',
+        'canPlayType result');
+    this.runner.checkEq(
+        video.canPlayType('video/webm', 'com.widevine.alpha'), 'maybe',
+        'canPlayType result');
+    this.runner.checkEq(
+         video.canPlayType('audio/mp4; codecs="mp4a.40.2"', 'com.widevine.alpha'), 'probably',
+        'canPlayType result');
+    this.runner.checkEq(
+         video.canPlayType('audio/mp4', 'com.widevine.alpha'), 'maybe',
+        'canPlayType result');
+    this.runner.succeed();
+  }
+}
 
 
 var testInvalidKey = createEmeTest('InvalidKey', 'Optional EME', false);
