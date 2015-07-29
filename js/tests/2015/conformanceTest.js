@@ -1434,18 +1434,12 @@ testFrameOverlaps.prototype.onsourceopen = testFrameGaps.prototype.onsourceopen;
 
 var testAAC51 = createConformanceTest('AAC51', 'MSE');
 testAAC51.prototype.title = 'Test 5.1-channel AAC';
-testAAC51.prototype.audioFilename = 'media/sintel-trunc.mp4';
 testAAC51.prototype.onsourceopen = function() {
   var runner = this.runner;
-  if (StreamDef.isWebM()) {
-    runner.succeed();
-    return;
-  }
-
   var media = this.video;
-  var audioSb = this.ms.addSourceBuffer('audio/mp4; codecs="mp4a.40.2"');
+  var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
   var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
-  var xhr = runner.XHRManager.createRequest(this.audioFilename,
+  var xhr = runner.XHRManager.createRequest(StreamDef.Audio51.src,
       function(e) {
     audioSb.appendBuffer(xhr.getResponseData());
     var xhr2 = runner.XHRManager.createRequest(StreamDef.VideoNormal.src,

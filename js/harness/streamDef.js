@@ -30,6 +30,7 @@ function getStreamDef(index) {
           200000: 12.42}],
       AudioHuge: ['media/car-20120827-8d.mp4', 5789853, 181.58, {
           'appendAudioOffset': 17.42}],
+      Audio51: ['media/sintel-trunc.mp4', 813119, 20.05],
       VideoTiny: ['media/car-20120827-85.mp4', 6015001, 181.44, {
           'videoChangeRate': 11.47}],
       VideoNormal: ['media/car-20120827-86.mp4', 15593225, 181.44, {
@@ -59,6 +60,7 @@ function getStreamDef(index) {
           200000: 12.42}],
       AudioHuge: ['media/car-20120827-8d.mp4', 5789853, 181.58, {
           'appendAudioOffset': 17.42}],
+      Audio51: ['media/sintel-trunc.mp4', 813119, 20.05],
       VideoTiny: ['media/feelings_vp9-20130806-242.webm', 4478156, 135.46, {
           'videoChangeRate': 15.35}],
       VideoNormal: ['media/feelings_vp9-20130806-243.webm', 7902885, 135.46, {
@@ -99,7 +101,8 @@ function getStreamDef(index) {
   d.AudioTiny = CreateAudioDef.apply(this, streamDefinitions[index]['AudioTiny']);
   d.AudioNormal = CreateAudioDef.apply(this, streamDefinitions[index]['AudioNormal']);
   d.AudioNormalAdv = CreateAudioDef.apply(this, streamDefinitions[index]['AudioNormalAdv']);
-  d.AudioHuge = CreateAudioDef.apply(this,streamDefinitions[index]['AudioHuge']);
+  d.AudioHuge = CreateAudioDef.apply(this, streamDefinitions[index]['AudioHuge']);
+  d.Audio51 = CreateAudioDef.apply(this, streamDefinitions[index]['Audio51']);
 
   d.VideoTiny = CreateVideoDef.apply(this, streamDefinitions[index]['VideoTiny']);
   d.VideoNormal = CreateVideoDef.apply(this, streamDefinitions[index]['VideoNormal']);
