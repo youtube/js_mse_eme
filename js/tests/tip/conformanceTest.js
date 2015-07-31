@@ -1399,64 +1399,6 @@ createDelayedTest(StreamDef.AudioNormal, StreamDef.VideoNormal);
 createDelayedTest(StreamDef.VideoNormal, StreamDef.AudioNormal);
 
 
-var testFrameGaps = createConformanceTest('FrameGaps', 'MSE');
-testFrameGaps.prototype.title = 'Test media with frame durations of 24FPS ' +
-    'but segment timing corresponding to 23.976FPS';
-testFrameGaps.prototype.filename = 'media/nq-frames24-tfdt23.mp4';
-testFrameGaps.prototype.onsourceopen = function() {
-  var runner = this.runner;
-  if (StreamDef.isWebM()) {
-    runner.succeed();
-    return;
-  }
-
-  var media = this.video;
-  var videoChain = new FixedAppendSize(new ResetInit(
-      new FileSource(this.filename, runner.XHRManager,
-                     runner.timeouts)));
-  var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
-  var audioChain = new FixedAppendSize(new ResetInit(
-      new FileSource(StreamDef.AudioNormal.src, runner.XHRManager,
-                     runner.timeouts)));
-  var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
-  media.play();
-  playThrough(runner.timeouts, media, 5, 18, videoSb, videoChain,
-              audioSb, audioChain, runner.succeed.bind(runner));
-};
-
-
-var testFrameOverlaps = createConformanceTest('FrameOverlaps', 'MSE');
-testFrameOverlaps.prototype.title = 'Test media with frame durations of ' +
-    '23.976FPS but segment timing corresponding to 24FPS';
-testFrameOverlaps.prototype.filename = 'media/nq-frames23-tfdt24.mp4';
-testFrameOverlaps.prototype.onsourceopen = testFrameGaps.prototype.onsourceopen;
-
-
-var testAAC51 = createConformanceTest('AAC51', 'MSE');
-testAAC51.prototype.title = 'Test 5.1-channel AAC';
-testAAC51.prototype.onsourceopen = function() {
-  var runner = this.runner;
-  var media = this.video;
-  var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
-  var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
-  var xhr = runner.XHRManager.createRequest(StreamDef.Audio51.src,
-      function(e) {
-    audioSb.appendBuffer(xhr.getResponseData());
-    var xhr2 = runner.XHRManager.createRequest(StreamDef.VideoNormal.src,
-      function(e) {
-        videoSb.appendBuffer(xhr2.getResponseData());
-        media.play();
-        media.addEventListener('timeupdate', function(e) {
-          if (!media.paused && media.currentTime > 2)
-            runner.succeed();
-        });
-      }, 0, 3000000);
-    xhr2.send();
-  });
-  xhr.send();
-};
-
-
 var testEventTimestamp = createConformanceTest('EventTimestamp', 'MSE');
 testEventTimestamp.prototype.title = 'Test Event Timestamp is relative to ' +
     'the epoch';
@@ -1499,6 +1441,62 @@ function checkDOMError(runner, e, code, name) {
     return e instanceof DOMException;
   }
 }
+
+
+var frameTestOnSourceOpen = function() {
+  var runner = this.runner;
+  var media = this.video;
+  var videoChain = new FixedAppendSize(new ResetInit(
+      new FileSource(this.filename, runner.XHRManager,
+                     runner.timeouts)));
+  var videoSb = this.ms.addSourceBuffer(StreamDef.H264.VideoType);
+  var audioChain = new FixedAppendSize(new ResetInit(
+      new FileSource(StreamDef.AudioNormal.src, runner.XHRManager,
+                     runner.timeouts)));
+  var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
+  media.play();
+  playThrough(runner.timeouts, media, 5, 18, videoSb, videoChain,
+              audioSb, audioChain, runner.succeed.bind(runner));
+};
+
+
+var testFrameGaps = createConformanceTest('FrameGaps', 'MSE Media');
+testFrameGaps.prototype.title = 'Test media with frame durations of 24FPS ' +
+    'but segment timing corresponding to 23.976FPS';
+testFrameGaps.prototype.filename = StreamDef.H264.FrameGap.src;
+testFrameGaps.prototype.onsourceopen = frameTestOnSourceOpen;
+
+
+var testFrameOverlaps = createConformanceTest('FrameOverlaps', 'MSE Media');
+testFrameOverlaps.prototype.title = 'Test media with frame durations of ' +
+    '23.976FPS but segment timing corresponding to 24FPS';
+testFrameOverlaps.prototype.filename = StreamDef.H264.FrameOverlap.src;
+testFrameOverlaps.prototype.onsourceopen = frameTestOnSourceOpen;
+
+
+var testAAC51 = createConformanceTest('AAC51', 'MSE Media');
+testAAC51.prototype.title = 'Test 5.1-channel AAC';
+testAAC51.prototype.onsourceopen = function() {
+  var runner = this.runner;
+  var media = this.video;
+  var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
+  var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
+  var xhr = runner.XHRManager.createRequest(StreamDef.Audio51.src,
+      function(e) {
+    audioSb.appendBuffer(xhr.getResponseData());
+    var xhr2 = runner.XHRManager.createRequest(StreamDef.VideoNormal.src,
+      function(e) {
+        videoSb.appendBuffer(xhr2.getResponseData());
+        media.play();
+        media.addEventListener('timeupdate', function(e) {
+          if (!media.paused && media.currentTime > 2)
+            runner.succeed();
+        });
+      }, 0, 3000000);
+    xhr2.send();
+  });
+  xhr.send();
+};
 
 
 var testXHRUint8Array = createConformanceTest('XHRUint8Array', 'General');
