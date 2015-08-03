@@ -221,10 +221,19 @@ TestRunner.prototype.checkNE = function(x, y, name) {
              name + ' is (' + x + ') which shouldn\'t.');
 };
 
-TestRunner.prototype.checkApproxEq = function(x, y, name) {
-  var diff = Math.abs(x - y);
-  var eps = 0.5;
-  this.check(diff < eps, 'checkApproxEq passed: ' + name + ' is (' + x + ').',
+TestRunner.prototype.checkApproxEq = function(x, y, name, eps) {
+  eps = eps || 0.5;
+  var equal = (x == y) ||
+      (typeof(x) === 'number' && typeof(y) === 'number' &&
+       isNaN(x) && isNaN(y));
+  var result;
+  if (equal) {
+    result = equal;
+  } else {
+    var diff = Math.abs(x - y);
+    result = diff < eps;
+  }
+  this.check(result, 'checkApproxEq passed: ' + name + ' is (' + x + ').',
              name + ' is (' + x + ') which should between [' +
                 (y - eps) + ', ' + (y + eps) + ']');
 };

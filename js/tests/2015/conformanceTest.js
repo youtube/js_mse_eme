@@ -1043,13 +1043,12 @@ testMediaSourceDuration.prototype.onsourceopen = function() {
     runner.succeed();
   };
 
-  // TODO: figure out duration
   runner.assert(isNaN(media.duration), 'Initial media duration not NaN');
   media.play();
   appendInit(media, videoSb, videoChain, 0, function() {
     appendUntil(runner.timeouts, media, videoSb, videoChain, 10, function() {
-      runner.checkEq(ms.duration,
-          StreamDef.VideoNormal.customMap.mediaSourceDuration, 'ms.duration');
+      runner.checkApproxEq(ms.duration,
+          StreamDef.VideoNormal.customMap.mediaSourceDuration, 'ms.duration', 0.01);
       ms.duration = 5;
       runner.checkEq(ms.duration, 5, 'ms.duration');
       runner.checkEq(media.duration, 5, 'media.duration');
@@ -1064,10 +1063,10 @@ testMediaSourceDuration.prototype.onsourceopen = function() {
             videoSb.removeEventListener('update', buffersRemoved);
             var duration = videoSb.buffered.end(0);
             ms.endOfStream();
-            runner.checkEq(ms.duration, duration, 'ms.duration');
+            runner.checkApproxEq(ms.duration, duration, 'ms.duration', 0.01);
             media.play();
             ms.addEventListener('sourceended', function() {
-              runner.checkEq(ms.duration, duration, 'ms.duration');
+              runner.checkApproxEq(ms.duration, duration, 'ms.duration', 0.01);
               runner.checkEq(media.duration, duration, 'media.duration');
               ms.addEventListener('sourceclose', onsourceclose);
               media.removeAttribute('src');
