@@ -29,7 +29,11 @@ function getStreamDef() {
     Audio51: ['media/sintel-trunc.mp4', 813119, 20.05],
     Audio1MB: ['media/car-audio-1MB-trunc.mp4', 1048576, 65.875],
     AudioTinyClearKey: ['media/car_cenc-20120827-8b.mp4', 783470, 181.62],
-    AudioNormalClearKey: ['media/car_cenc-20120827-8c.mp4', 3013084, 181.58],
+    AudioNormalClearKey: ['media/car_cenc-20120827-8c.mp4', 3013084, 181.58, {
+        'key': new Uint8Array([0x1a, 0x8a, 0x20, 0x95, 0xe4, 0xde, 0xb2, 0xd2,
+                               0x9e, 0xc8, 0x16, 0xac, 0x7b, 0xae, 0x20, 0x82]),
+        'kid': new Uint8Array([0x60, 0x06, 0x1e, 0x01, 0x7e, 0x47, 0x7e, 0x87,
+                               0x7e, 0x57, 0xd0, 0x0d, 0x1e, 0xd0, 0x0d, 0x1e])}],
     AudioHugeClearKey: ['media/car_cenc-20120827-8d.mp4', 5918365, 181.58],
   };
 
@@ -44,11 +48,19 @@ function getStreamDef() {
         VideoHuge: ['media/car-20120827-89.mp4', 95286345, 181.44],
         Video1MB: ['media/test-video-1MB.mp4', 1053406, 1.04],
         VideoTinyClearKey: ['media/car_cenc-20120827-85.mp4', 6217017, 181.44],
-        VideoNormalClearKey: ['media/car_cenc-20120827-86.mp4', 15795193, 181.44],
+        VideoNormalClearKey: ['media/car_cenc-20120827-86.mp4', 15795193, 181.44, {
+            'key': new Uint8Array([0x1a, 0x8a, 0x20, 0x95, 0xe4, 0xde, 0xb2, 0xd2,
+                                   0x9e, 0xc8, 0x16, 0xac, 0x7b, 0xae, 0x20, 0x82]),
+            'kid': new Uint8Array([0x60, 0x06, 0x1e, 0x01, 0x7e, 0x47, 0x7e, 0x87,
+                                   0x7e, 0x57, 0xd0, 0x0d, 0x1e, 0xd0, 0x0d, 0x1e])}],
         VideoHugeClearKey: ['media/car_cenc-20120827-89.mp4', 95488313, 181.44],
-        VideoStreamYTCenc: ['media/oops_cenc-20121114-145-no-clear-start.mp4', 39980507, 242.71],
+        VideoStreamYTCenc: ['media/oops_cenc-20121114-145-no-clear-start.mp4', 39980507, 242.71, {
+            'key': new Uint8Array([233, 122, 210, 133, 203, 93, 59, 228,
+                                   167, 150, 27, 122, 246, 145, 112, 218])}],
         VideoTinyStreamYTCenc: ['media/oops_cenc-20121114-145-143.mp4', 7229257, 30.03],
-        VideoSmallStreamYTCenc: ['media/oops_cenc-20121114-143-no-clear-start.mp4', 12045546, 242.71],
+        VideoSmallStreamYTCenc: ['media/oops_cenc-20121114-143-no-clear-start.mp4', 12045546, 242.71, {
+            'key': new Uint8Array([131, 162, 92, 175, 153, 178, 172, 41,
+                                   2, 167, 251, 126, 233, 215, 230, 185])}],
         ProgressiveLow: ['media/car_20130125_18.mp4', 15477531, 181.55],
         FrameGap: ['media/nq-frames24-tfdt23.mp4', 11883895, 242.46],
         FrameOverlap: ['media/nq-frames23-tfdt24.mp4', 11883895, 242.46],

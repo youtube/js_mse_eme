@@ -17,36 +17,14 @@ limitations under the License.
 
 function EMEHandler() {}
 
-EMEHandler.prototype.init = function(video, mime, keyType, flavor, keyErrorCb) {
+EMEHandler.prototype.init = function(video, mime, kids, keys, flavor, keyErrorCb) {
   this.video = video;
   this.mime = mime;
+  kids = kids || [];
   // Expecting mime to have a space separating the container format and codecs.
   this.format = mime.split(" ")[0];
-
-  this.keys = new Array();
-  this.keys['clearkey'] = new Uint8Array([
-      233, 122, 210, 133, 203, 93, 59, 228,
-      167, 150, 27, 122, 246, 145, 112, 218]);
-  this.keys['clearkey2'] = new Uint8Array([
-      131, 162, 92, 175, 153, 178, 172, 41,
-      2, 167, 251, 126, 233, 215, 230, 185]);
-  this.keys['invalid_widevine'] = new Uint8Array([
-      0x53, 0xa6, 0xcb, 0x3a, 0xd8, 0xfb, 0x58, 0x8f,
-      0xbe, 0x92, 0xe6, 0xdc, 0x72, 0x65, 0x0c, 0x86]);
-  this.keys['audio_clearkey'] = new Uint8Array([
-      0x1a, 0x8a, 0x20, 0x95, 0xe4, 0xde, 0xb2, 0xd2,
-      0x9e, 0xc8, 0x16, 0xac, 0x7b, 0xae, 0x20, 0x82]);
-  this.keys['video_clearkey'] = new Uint8Array([
-      0x1a, 0x8a, 0x20, 0x95, 0xe4, 0xde, 0xb2, 0xd2,
-      0x9e, 0xc8, 0x16, 0xac, 0x7b, 0xae, 0x20, 0x82]);
-
-  this.kids = new Array();
-  this.kids['audio_clearkey'] = new Uint8Array([
-      0x60, 0x06, 0x1e, 0x01, 0x7e, 0x47, 0x7e, 0x87,
-      0x7e, 0x57, 0xd0, 0x0d, 0x1e, 0xd0, 0x0d, 0x1e]);
-  this.kids['video_clearkey'] = new Uint8Array([
-      0x60, 0x06, 0x1e, 0x01, 0x7e, 0x47, 0x7e, 0x87,
-      0x7e, 0x57, 0xd0, 0x0d, 0x1e, 0xd0, 0x0d, 0x1e]);
+  this.keys = keys instanceof Array ? keys : [keys];
+  this.kids = kids instanceof Array ? kids : [kids];
 
   normalizeAttribute(video, 'generateKeyRequest');
   normalizeAttribute(video, 'addKey');
@@ -55,7 +33,6 @@ EMEHandler.prototype.init = function(video, mime, keyType, flavor, keyErrorCb) {
 
   this.flavor = null;
   this.keySystem = null;
-  this.keyType = keyType instanceof Array ? keyType : [keyType];
 
   this.keyErrorCb = (!!keyErrorCb ? keyErrorCb : function(e) {});
 
@@ -154,9 +131,9 @@ EMEHandler.prototype.onKeyMessage = function(e) {
   dlog(2, 'onKeyMessage()');
   var message = e.message;
   var initData = this.initDataQueue.shift();
-  var keyType = this.keyType.shift();
-  if (keyType in this.kids) {
-    var kid = this.kids[keyType];
+  var key = this.keys.shift();
+  if (this.kids.length > 0) {
+    var kid = this.kids.shift();
   } else if (this.keySystem == 'com.microsoft.playready') {
     message = parsePlayReadyKeyMessage(message);
     if (!message)
@@ -165,7 +142,6 @@ EMEHandler.prototype.onKeyMessage = function(e) {
     var kid = extractBMFFClearKeyID(initData);
   }
 
-  var key = this.keys[keyType];
   this.video.addKey(this.keySystem, key, kid, e.sessionId);
 };
 
