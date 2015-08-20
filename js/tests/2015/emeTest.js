@@ -247,12 +247,16 @@ testPlayReadySupport.prototype.title =
 testPlayReadySupport.prototype.onsourceopen = function() {
   var video = this.video;
   // PlayReady is currently only compatible with h264.
-  this.runner.checkEq(
-      video.canPlayType('video/mp4', 'com.youtube.playready'), 'probably',
-      'canPlayType result');
-  this.runner.checkEq(
-      video.canPlayType('audio/mp4', 'com.youtube.playready'), 'probably',
-      'canPlayType result');
+  this.runner.checkEq(video.canPlayType('video/mp4;  codecs="avc1.640028"',
+                                        'com.youtube.playready'),
+                      'probably', 'canPlayType result');
+  this.runner.checkEq(video.canPlayType('video/mp4', 'com.youtube.playready'),
+                      'maybe', 'canPlayType result');
+  this.runner.checkEq(video.canPlayType('audio/mp4; codecs="mp4a.40.2"',
+                                        'com.youtube.playready'),
+                      'probably', 'canPlayType result');
+  this.runner.checkEq(video.canPlayType('audio/mp4', 'com.youtube.playready'),
+                      'maybe', 'canPlayType result');
   this.runner.succeed();
 };
 
