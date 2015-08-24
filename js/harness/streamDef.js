@@ -90,9 +90,12 @@ function getStreamDef() {
 
   var createStreamDefFunc = function(streamType, mimeType) {
     return function(src, size, duration, customMap) {
+      var get = function(attribute) {
+        return attribute in customMap ? customMap[attribute] : null;
+      };
       return {name: streamType, type: mimeType, size: size, src: src,
           duration: duration, bps: Math.floor(size / duration),
-          customMap: customMap};
+          customMap: customMap, get: get};
     };
   };
 

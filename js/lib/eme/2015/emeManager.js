@@ -20,7 +20,6 @@ function EMEHandler() {}
 EMEHandler.prototype.init = function(video, mime, kids, keys, flavor, keyErrorCb) {
   this.video = video;
   this.mime = mime;
-  kids = kids || [];
   // Expecting mime to have a space separating the container format and codecs.
   this.format = mime.split(" ")[0];
   this.keys = keys instanceof Array ? keys : [keys];
@@ -132,13 +131,14 @@ EMEHandler.prototype.onKeyMessage = function(e) {
   var message = e.message;
   var initData = this.initDataQueue.shift();
   var key = this.keys.shift();
-  if (this.kids.length > 0) {
-    var kid = this.kids.shift();
-  } else if (this.keySystem == 'com.microsoft.playready') {
+
+  // Extract kid.
+  var kid = this.kids.shift();
+  if (this.keySystem == 'com.microsoft.playready') {
     message = parsePlayReadyKeyMessage(message);
     if (!message)
       throw 1;
-  } else {
+  } else if (kid == null) {
     var kid = extractBMFFClearKeyID(initData);
   }
 

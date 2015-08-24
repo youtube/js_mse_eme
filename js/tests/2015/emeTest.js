@@ -110,8 +110,8 @@ testCanPlayClearKey.prototype.start = function(runner, video) {
     var videoStream = StreamDef.VideoStreamYTCenc;
     var testEmeHandler = setupBaseEmeTest(video, runner, videoStream.src,
                                           1000000, null);
-    testEmeHandler.init(video, StreamDef.VideoType, null,
-                        videoStream.customMap.key, 'clearkey');
+    testEmeHandler.init(video, StreamDef.VideoType, videoStream.get('kid'),
+                        videoStream.get('key'), 'clearkey');
   } catch(err) {
     runner.fail(err);
   }
@@ -142,8 +142,8 @@ testClearKeyAudio.prototype.onsourceopen = function() {
   var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
 
   var testEmeHandler = new EMEHandler();
-  testEmeHandler.init(media, StreamDef.AudioType, audioStream.customMap.kid,
-                      audioStream.customMap.key, 'clearkey');
+  testEmeHandler.init(media, StreamDef.AudioType, audioStream.get('kid'),
+                      audioStream.get('key'), 'clearkey');
 
   appendUntil(runner.timeouts, media, videoSb, videoChain, 5, function() {
     appendUntil(runner.timeouts, media, audioSb, audioChain, 5, function() {
@@ -176,8 +176,8 @@ testClearKeyVideo.prototype.onsourceopen = function() {
   var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
 
   var testEmeHandler = new EMEHandler();
-  testEmeHandler.init(media, StreamDef.AudioType, videoStream.customMap.kid,
-                      videoStream.customMap.key, 'clearkey');
+  testEmeHandler.init(media, StreamDef.AudioType, videoStream.get('kid'),
+                      videoStream.get('key'), 'clearkey');
 
   appendUntil(runner.timeouts, media, videoSb, videoChain, 5, function() {
     appendUntil(runner.timeouts, media, audioSb, audioChain, 5, function() {
@@ -200,8 +200,9 @@ testDualKey.prototype.start = function(runner, video) {
   var testEmeHandler = new EMEHandler();
   var videoStream1 = StreamDef.VideoStreamYTCenc;
   var videoStream2 = StreamDef.VideoSmallStreamYTCenc;
-  testEmeHandler.init(video, StreamDef.VideoType, null,
-                      [videoStream1.customMap.key, videoStream2.customMap.key],
+  testEmeHandler.init(video, StreamDef.VideoType,
+                      [videoStream1.get('kid'), videoStream2.get('kid')],
+                      [videoStream1.get('key'), videoStream2.get('key')],
                       'clearkey');
 
   // Open two sources with two distinct licenses.
@@ -306,15 +307,15 @@ testInvalidKey.prototype.title =
     'Test if an invalid key will produce the expected error.';
 testInvalidKey.prototype.start = function(runner, video) {
   try {
+    var videoStream = StreamDef.VideoStreamYTCenc;
     var invalid_key = new Uint8Array([
       0x53, 0xa6, 0xcb, 0x3a, 0xd8, 0xfb, 0x58, 0x8f,
       0xbe, 0x92, 0xe6, 0xdc, 0x72, 0x65, 0x0c, 0x86]);
-    var testEmeHandler = setupBaseEmeTest(video, runner,
-                                          StreamDef.VideoStreamYTCenc.src,
+    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream.src,
                                           1000000);
     var self = this;
-    testEmeHandler.init(video, StreamDef.VideoType, null, invalid_key,
-                        'widevine', function(e) {
+    testEmeHandler.init(video, StreamDef.VideoType, videoStream.get('kid'),
+                        invalid_key, 'widevine', function(e) {
       self.runner.checkEq(e.errorCode.code, 1);
       self.runner.succeed();
     });
@@ -336,8 +337,8 @@ testClearKeyNeedKey.prototype.start = function(runner, video) {
         runner.succeed();
       }
     });
-    testEmeHandler.init(video, StreamDef.VideoType, null,
-                        videoStream.customMap.key, 'clearkey');
+    testEmeHandler.init(video, StreamDef.VideoType, videoStream.get('kid'),
+                        videoStream.get('key'), 'clearkey');
   } catch(err) {
     runner.fail(err);
   }
@@ -371,8 +372,8 @@ testClearKeyGenerateKeyRequest.prototype.start = function(runner, video) {
         }
       }
     });
-    testEmeHandler.init(video, StreamDef.VideoType, null,
-                        videoStream.customMap.key, 'clearkey');
+    testEmeHandler.init(video, StreamDef.VideoType, videoStream.get('kid'),
+                        videoStream.get('key'), 'clearkey');
   } catch(err) {
     runner.fail(err);
   }
@@ -391,8 +392,8 @@ testClearKeyKeyMessage.prototype.start = function(runner, video) {
         runner.succeed();
       }
     });
-    testEmeHandler.init(video, StreamDef.VideoType, null,
-                        videoStream.customMap.key, 'clearkey');
+    testEmeHandler.init(video, StreamDef.VideoType, videoStream.get('kid'),
+                        videoStream.get('key'), 'clearkey');
   } catch(err) {
     runner.fail(err);
   }
@@ -458,8 +459,8 @@ testClearKeyAddKey.prototype.start = function(runner, video) {
         runner.succeed();
       }
     });
-    testEmeHandler.init(video, StreamDef.VideoType, null,
-                        videoStream.customMap.key, 'clearkey');
+    testEmeHandler.init(video, StreamDef.VideoType, videoStream.get('kid'),
+                        videoStream.get('key'), 'clearkey');
   } catch(err) {
     runner.fail(err);
   }
@@ -499,8 +500,8 @@ testClearKeyAddKeyAsyncEvents.prototype.start = function(runner, video) {
         this._onKeyMessage(e);
       }
     });
-    testEmeHandler.init(video, StreamDef.VideoType, null,
-                        videoStream.customMap.key, 'clearkey');
+    testEmeHandler.init(video, StreamDef.VideoType, videoStream.get('kid'),
+                        videoStream.get('key'), 'clearkey');
   } catch(err) {
     runner.fail(err);
   }
