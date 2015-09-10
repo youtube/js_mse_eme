@@ -133,11 +133,12 @@ function findBufferedRangeEndForTime(sb, t) {
 // upstream element until they reach the file source.
 
 // Produces a FileSource table.
-window.FileSource = function(path, xhrManager, timeoutManager,
-                             startIndex, endIndex) {
+window.FileSource = function(path, xhrManager, timeoutManager, startIndex,
+                             endIndex, forceSize) {
   this.path = path;
   this.startIndex = startIndex;
   this.endIndex = endIndex;
+  this.forceSize = forceSize;
   this.segs = null;
   this.segIndex = 0;
   this.initBuf = null;
@@ -167,6 +168,22 @@ window.FileSource = function(path, xhrManager, timeoutManager,
           self.segs = parseMp4(response);
         } else {
           self.segs = parseWebM(response.buffer);
+        }
+
+        // parseWebM has trouble with encrypted files.
+        // forceSize should accomodate the parsing issues.
+        if (!!self.forceSize) {
+          var offset = self.segs[0].offset;
+          var totalSize = offset;
+          for (var i = 0; i < self.segs.length; i++) {
+            totalSize += self.segs[i].size;
+          }
+          if (totalSize != self.forceSize) {
+            var segSize = (self.forceSize - offset) / self.segs.length;
+            for (var i = 0; i < self.segs.length; i++) {
+              self.segs[i].size = segSize;
+            }
+          }
         }
 
         self.startIndex = self.startIndex || 0;

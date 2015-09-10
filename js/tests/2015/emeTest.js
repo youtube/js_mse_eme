@@ -43,11 +43,11 @@ var createEmeTest = function(name, category, mandatory) {
   return t;
 };
 
-function setupBaseEmeTest(video, runner, media, bufferSize, cbSpies) {
+function setupBaseEmeTest(video, runner, videoSrc, audioSrc, bufferSize, cbSpies) {
   var ms = new MediaSource();
-  var media = media;
   var testEmeHandler = new EMEHandler();
-  var src = null;
+  var videoSb = null;
+  var audioSb = null;
   if (cbSpies) {
     for (var spy in cbSpies) {
       testEmeHandler['_' + spy] = testEmeHandler[spy];
@@ -56,17 +56,25 @@ function setupBaseEmeTest(video, runner, media, bufferSize, cbSpies) {
   }
 
   function onError(e) {
-    runner.fail('Error reported in TestClearKeyNeedKey');
+    runner.fail('EME test failure.');
   }
 
   function onSourceOpen(e) {
-    src = ms.addSourceBuffer(StreamDef.VideoType);
-    var xhr = runner.XHRManager.createRequest(
-      media,
-      function(e) {
-        src.appendBuffer(this.getResponseData());
+    if (videoSrc != null) {
+      videoSb = ms.addSourceBuffer(StreamDef.VideoType);
+      var xhr = runner.XHRManager.createRequest(videoSrc, function(e) {
+        videoSb.appendBuffer(this.getResponseData());
       }, 0, bufferSize);
-    xhr.send();
+      xhr.send();
+    }
+
+    if (audioSrc != null) {
+      audioSb = ms.addSourceBuffer(StreamDef.AudioType);
+      var xhr = runner.XHRManager.createRequest(audioSrc, function(e) {
+        audioSb.appendBuffer(this.getResponseData());
+      }, 0, bufferSize);
+      xhr.send();
+    }
   }
 
   ms.addEventListener('sourceopen', onSourceOpen);
@@ -108,15 +116,16 @@ testCanPlayClearKey.prototype.start = function(runner, video) {
       "canPlay doesn't support audio and clearkey properly");
   try {
     var videoStream = StreamDef.VideoStreamYTCenc;
-    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream.src,
-                                          1000000, null);
+    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream.src, null,
+                                          Math.min(videoStream.size, 3000000),
+                                          null);
     testEmeHandler.init(video, StreamDef.VideoType, videoStream.get('kid'),
                         videoStream.get('key'), 'clearkey');
   } catch(err) {
     runner.fail(err);
   }
   video.addEventListener('timeupdate', function onTimeUpdate(e) {
-    if (!video.paused && video.currentTime >= 1) {
+    if (!video.paused && video.currentTime >= 5) {
       video.removeEventListener('timeupdate', onTimeUpdate);
       runner.succeed();
     }
@@ -128,68 +137,50 @@ testCanPlayClearKey.prototype.start = function(runner, video) {
 var testClearKeyAudio = createEmeTest('ClearKeyAudio');
 testClearKeyAudio.prototype.title =
     'Test if we can play audio encrypted with ClearKey encryption.';
-testClearKeyAudio.prototype.onsourceopen = function() {
-  var runner = this.runner;
-
-  var media = this.video;
+testClearKeyAudio.prototype.start = function(runner, video) {
+  var videoStream = StreamDef.VideoNormal;
   var audioStream = StreamDef.AudioNormalClearKey;
-  var videoChain = new ResetInit(
-      new FileSource(StreamDef.VideoNormal.src, runner.XHRManager,
-                     runner.timeouts));
-  var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
-  var audioChain = new ResetInit(
-      new FileSource(audioStream.src, runner.XHRManager, runner.timeouts));
-  var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
-
-  var testEmeHandler = new EMEHandler();
-  testEmeHandler.init(media, StreamDef.AudioType, audioStream.get('kid'),
-                      audioStream.get('key'), 'clearkey');
-
-  appendUntil(runner.timeouts, media, videoSb, videoChain, 5, function() {
-    appendUntil(runner.timeouts, media, audioSb, audioChain, 5, function() {
-      media.play();
-      playThrough(
-          runner.timeouts, media, 10, 5,
-          videoSb, videoChain, audioSb, audioChain, function() {
-        runner.checkGE(media.currentTime, 5, 'currentTime');
-        runner.succeed();
-      });
-    });
+  try {
+    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream.src,
+                                        audioStream.src, 1000000, null);
+    testEmeHandler.init(video, StreamDef.AudioType, audioStream.get('kid'),
+                        audioStream.get('key'), 'clearkey');
+  } catch(err) {
+    runner.fail(err);
+  }
+  video.addEventListener('timeupdate', function onTimeUpdate(e) {
+    if (!video.paused && video.currentTime >= 5) {
+      video.removeEventListener('timeupdate', onTimeUpdate);
+      runner.checkGE(video.currentTime, 5, 'currentTime');
+      runner.succeed();
+    }
   });
+  video.play();
 };
 
 
 var testClearKeyVideo = createEmeTest('ClearKeyVideo');
 testClearKeyVideo.prototype.title =
     'Test if we can play video encrypted with ClearKey encryption.';
-testClearKeyVideo.prototype.onsourceopen = function() {
-  var runner = this.runner;
-
-  var media = this.video;
+testClearKeyVideo.prototype.start = function(runner, video) {
   var videoStream = StreamDef.VideoNormalClearKey;
-  var videoChain = new ResetInit(
-      new FileSource(videoStream.src, runner.XHRManager, runner.timeouts));
-  var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
-  var audioChain = new ResetInit(
-      new FileSource(StreamDef.AudioNormal.src, runner.XHRManager,
-          runner.timeouts));
-  var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
-
-  var testEmeHandler = new EMEHandler();
-  testEmeHandler.init(media, StreamDef.AudioType, videoStream.get('kid'),
-                      videoStream.get('key'), 'clearkey');
-
-  appendUntil(runner.timeouts, media, videoSb, videoChain, 5, function() {
-    appendUntil(runner.timeouts, media, audioSb, audioChain, 5, function() {
-      media.play();
-      playThrough(
-          runner.timeouts, media, 10, 5,
-          videoSb, videoChain, audioSb, audioChain, function() {
-        runner.checkGE(media.currentTime, 5, 'currentTime');
-        runner.succeed();
-      });
-    });
+  var audioStream = StreamDef.AudioNormal;
+  try {
+    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream.src,
+                                          audioStream.src, 1000000, null);
+    testEmeHandler.init(video, StreamDef.AudioType, videoStream.get('kid'),
+                        videoStream.get('key'), 'clearkey');
+  } catch(err) {
+    runner.fail(err);
+  }
+  video.addEventListener('timeupdate', function onTimeUpdate(e) {
+    if (!video.paused && video.currentTime >= 5) {
+      video.removeEventListener('timeupdate', onTimeUpdate);
+      runner.checkGE(video.currentTime, 5, 'currentTime');
+      runner.succeed();
+    }
   });
+  video.play();
 };
 
 
@@ -210,13 +201,15 @@ testDualKey.prototype.start = function(runner, video) {
     var sb = ms.addSourceBuffer(StreamDef.VideoType);
 
     var firstFile = new ResetInit(
-      new FileSource(videoStream1.src, runner.XHRManager, runner.timeouts));
+      new FileSource(videoStream1.src, runner.XHRManager, runner.timeouts, 0,
+                     videoStream1.size, videoStream1.size));
 
     appendUntil(runner.timeouts, video, sb, firstFile, 5, function() {
       sb.abort();
 
       var secondFile = new ResetInit(
-        new FileSource(videoStream2.src, runner.XHRManager, runner.timeouts));
+        new FileSource(videoStream2.src, runner.XHRManager, runner.timeouts, 0,
+                       videoStream2.size, videoStream2.size));
 
       appendInit(video, sb, secondFile, 0, function() {
         sb.timestampOffset = video.buffered.end(0);
@@ -311,7 +304,7 @@ testInvalidKey.prototype.start = function(runner, video) {
     var invalid_key = new Uint8Array([
       0x53, 0xa6, 0xcb, 0x3a, 0xd8, 0xfb, 0x58, 0x8f,
       0xbe, 0x92, 0xe6, 0xdc, 0x72, 0x65, 0x0c, 0x86]);
-    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream.src,
+    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream.src, null,
                                           1000000);
     var self = this;
     testEmeHandler.init(video, StreamDef.VideoType, videoStream.get('kid'),
@@ -331,7 +324,7 @@ testClearKeyNeedKey.prototype.title = 'Test ClearKey needkey callback';
 testClearKeyNeedKey.prototype.start = function(runner, video) {
   try {
     var videoStream = StreamDef.VideoStreamYTCenc;
-    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream.src,
+    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream.src, null,
                                           100000, {
       onNeedKey: function(e) {
         runner.succeed();
@@ -352,7 +345,7 @@ testClearKeyGenerateKeyRequest.prototype.title =
 testClearKeyGenerateKeyRequest.prototype.start = function(runner, video) {
   try {
     var videoStream = StreamDef.VideoStreamYTCenc;
-    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream.src,
+    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream.src, null,
                                           100000, {
       onNeedKey: function(evt) {
         try {
@@ -386,7 +379,7 @@ testClearKeyKeyMessage.prototype.title = 'Test ClearKey keymessage event';
 testClearKeyKeyMessage.prototype.start = function(runner, video) {
   try { 
     var videoStream = StreamDef.VideoStreamYTCenc;
-    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream.src,
+    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream.src, null,
                                           100000, {
       onKeyMessage: function(evt) {
         runner.succeed();
@@ -405,13 +398,16 @@ testClearKeyAddKey.prototype.title = 'Test ClearKey addKey function';
 testClearKeyAddKey.prototype.start = function(runner, video) {
   try {
     var videoStream = StreamDef.VideoStreamYTCenc;
-    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream.src,
+    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream.src, null,
                                           100000, {
       onKeyMessage: function(evt) {
         var sessionId = evt.sessionId;
         var initData = this.initDataQueue.shift();
-        var kid = extractBMFFClearKeyID(initData);
-        var key = videoStream.customMap.key;
+        var kid = videoStream.get('kid');
+        var key = videoStream.get('key');
+        if (kid == null) {
+          kid = extractBMFFClearKeyID(initData);
+        }
         var failed = false;
         try {
           video.addKey(null, key, kid, sessionId);
@@ -478,7 +474,7 @@ testClearKeyAddKeyAsyncEvents.prototype.start = function(runner, video) {
 
   try { 
     var videoStream = StreamDef.VideoStreamYTCenc;
-    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream.src,
+    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream.src, null,
                                           100000, {
       onKeyMessage: function(e) {
         video.addEventListener(keyAddedEvent, function(e) {

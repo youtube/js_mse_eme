@@ -113,11 +113,6 @@ EMEHandler.prototype.onNeedKey = function(e) {
     throw 'Not initialized! Bad manifest parse?';
   }
 
-  if (e.initData.length == 16) {
-    dlog(2, 'Dropping non-BMFF needKey event');
-    return;
-  }
-
   this.video.generateKeyRequest(this.keySystem, e.initData);
   this.initDataQueue.push(e.initData);
 };
