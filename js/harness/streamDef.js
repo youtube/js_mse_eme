@@ -93,7 +93,7 @@ function getStreamDef() {
                                   235, 26, 73, 5, 54, 222, 222, 193]),
            'kid': new Uint8Array([135, 240, 59, 224, 234, 214, 147, 131,
                                   234, 176, 123, 253, 240, 131, 240, 220])}],
-       ProgressiveLow: [],
+       ProgressiveLow: ['media/feelings_vp9-20130806-243.webm', 7902885, 135.46],
        FrameGap: [],
        FrameOverlap: [],
      }
