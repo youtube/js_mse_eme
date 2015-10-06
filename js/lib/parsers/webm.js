@@ -93,9 +93,15 @@ WebMElemParser_.prototype.readId = function() {
  */
 WebMElemParser_.prototype.readSubElement = function() {
   var size = this.readCodedInt_(true);
-  var subData = new DataView(this.elemData_.buffer.slice(
-      this.elemData_.byteOffset + this.pos_,
-      this.elemData_.byteOffset + this.pos_ + size));
+  // 'size' could be the size of the entire WebM file, which is legal (as long
+  // as the code that uses this doesn't try to read past the end of the data
+  // that's present, which it won't. The 'length' parameter is defined as a
+  // 'long', and the Web IDL spec does integer wraparound by definition when
+  // converting to a 'long', which makes the 'size' param go negative. So we
+  // clamp this before the call.
+  var end = this.elemData_.byteOffset + this.pos_;
+  var length = Math.min(size, this.elemData_.buffer.byteLength - end);
+  var subData = new DataView(this.elemData_.buffer, end, length);
   var subStart = this.start_ + this.pos_;
   var parser = new WebMElemParser_(subData, subStart);
   this.pos_ += size;
@@ -282,17 +288,22 @@ WebMElemParser_.prototype.readWebMCuePoint_ = function(timebase, offset) {
 // Given a buffer contains the first 32k of a file, return a list of tables
 // containing 'time', 'duration', 'offset', and 'size' properties for each cue.
 function parseWebM(data) {
+  var dlog = function() {
+    var forward = window.dlog || console.log.bind(console);
+    forward.apply(this, arguments);
+  };
+
   var parser = new WebMElemParser_(new DataView(data));
 
   if (parser.readId() != 0x1a45dfa3) {  // 'EBML' element
-    yt.debug.severe('SegmentIndex', 'Invalid EBML ID');
+    dlog(1, 'SegmentIndex: Invalid EBML ID');
     return;
   }
   // Skip the EBML header, which must come first.
   parser.skipElement();
 
   if (parser.readId() != 0x18538067) {  // 'Segment' element
-    yt.debug.severe('SegmentIndex', 'Invalid Segment ID');
+    dlog(1, 'SegmentIndex: Invalid Segment ID');
     return;
   }
 
@@ -323,12 +334,12 @@ function parseWebM(data) {
           if (seekParser.readId() == 0x4dbb) {
             var seekElementParser = seekParser.readSubElement();
             if (seekElementParser.readId() != 0x53ab) {
-              yt.debug.severe('Seek', 'Invalid SeekID');
+              dlog(1, 'Seek: Invalid SeekID');
             }
             var seekId = seekElementParser.readSubElement().readId();
             if (seekId == 0x1c53bb6b) {
               if (seekElementParser.readId() != 0x53ac) {
-                yt.debug.severe('Seek', 'Invalid SeekPosition');
+                dlog(1, 'Seek: Invalid SeekPosition');
               }
               cuesPosition = seekElementParser.readInt();
               cuesDone = true;
@@ -336,7 +347,7 @@ function parseWebM(data) {
             }
           }
           else {
-            yt.debug.severe('Seek', 'Invalid SeekID');
+            dlog(1, 'Seek: Invalid SeekID');
           }
         }
         break;
@@ -387,7 +398,7 @@ function parseWebM(data) {
         var clusterSize = parser.peekSize();
         var clusterParser = parser.readSubElement();
         if (clusterParser.readId() != 0xe7) {
-          yt.debug.severe('Cluster', 'Invalid Timecode');
+          dlog(1, 'Cluster: Invalid Timecode');
         }
         var timecode = clusterParser.readInt();
 
@@ -410,7 +421,7 @@ function parseWebM(data) {
   } else {
     parser = new WebMElemParser_(new DataView(data, segmentOffset + cuesPosition));
     if (parser.readId() != 0x1c53bb6b) {  // 'Cues' element
-      yt.debug.severe('SegmentIndex', 'Invalid Cues ID');
+      dlog(1, 'SegmentIndex: Invalid Cues ID');
       return;
     }
 
