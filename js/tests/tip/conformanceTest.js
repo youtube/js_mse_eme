@@ -578,25 +578,37 @@ testBufferSize.prototype.onsourceopen = function() {
   var runner = this.runner;
   var sb = this.ms.addSourceBuffer(StreamDef.VideoType);
   var self = this;
+  var appendUntilBufferFull = function(data, expectedTime, onBufferFull) {
+    sb.addEventListener('updateend', function onUpdate() {
+      // If we detect data eviction after appendBuffer that means the
+      // SourceBuffer is full.
+      if (sb.buffered.start(0) > 0 || expectedTime > sb.buffered.end(0) + 0.1) {
+        sb.removeEventListener('updateend', onUpdate);
+        onBufferFull();
+      } else {
+        sb.timestampOffset = expectedTime;
+        appendUntilBufferFull(data, expectedTime+1, onBufferFull);
+      }
+    });
+    try {
+      sb.appendBuffer(data);
+    } catch (ex) {
+     var QUOTA_EXCEEDED_ERROR_CODE = 22;
+     if (ex.code == QUOTA_EXCEEDED_ERROR_CODE) {
+       sb.removeEventListener('updateend', onUpdate);
+       onBufferFull();
+     }
+    }
+  };
   var xhr = runner.XHRManager.createRequest(StreamDef.Video1MB.src,
       function(e) {
     // The test clip has a bitrate which is nearly exactly 1MB/sec, and
-    // lasts 1s. We start appending it repeatedly until we get eviction.
-    var expectedTime = 0;
-    sb.appendBuffer(xhr.getResponseData());
-    sb.addEventListener('updateend', function onUpdate() {
-      if (sb.buffered.start(0) > 0 || expectedTime > sb.buffered.end(0) + 0.1) {
-        sb.removeEventListener('updateend', onUpdate);
-
-        var MIN_SIZE = 12;
-        runner.checkGE(expectedTime - sb.buffered.start(0), MIN_SIZE,
-                       'Estimated source buffer size');
-        runner.succeed();
-      } else {
-        expectedTime++;
-        sb.timestampOffset = expectedTime;
-        sb.appendBuffer(xhr.getResponseData());
-      }
+    // lasts 1s. We start appending it repeatedly until buffer is full.
+    appendUntilBufferFull(xhr.getResponseData(), 0, function onBufferFull() {
+      var MIN_SIZE = 12;
+      runner.checkGE(expectedTime - sb.buffered.start(0), MIN_SIZE,
+                     'Estimated source buffer size');
+      runner.succeed();
     });
   });
   xhr.send();
