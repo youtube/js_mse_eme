@@ -578,8 +578,14 @@ testBufferSize.prototype.onsourceopen = function() {
   var runner = this.runner;
   var sb = this.ms.addSourceBuffer(StreamDef.VideoType);
   var self = this;
-  var xhr = runner.XHRManager.createRequest(StreamDef.Video1MB.src,
+  var xhr = runner.XHRManager.createRequest(StreamDef.Video1MB.src, 
       function(e) {
+    var onBufferFull = function() {
+      var MIN_SIZE = 12;
+      runner.checkGE(expectedTime - sb.buffered.start(0), MIN_SIZE,
+                     'Estimated source buffer size');
+      runner.succeed();
+    };
     // The test clip has a bitrate which is nearly exactly 1MB/sec, and
     // lasts 1s. We start appending it repeatedly until we get eviction.
     var expectedTime = 0;
@@ -587,15 +593,21 @@ testBufferSize.prototype.onsourceopen = function() {
     sb.addEventListener('updateend', function onUpdate() {
       if (sb.buffered.start(0) > 0 || expectedTime > sb.buffered.end(0) + 0.1) {
         sb.removeEventListener('updateend', onUpdate);
-
-        var MIN_SIZE = 12;
-        runner.checkGE(expectedTime - sb.buffered.start(0), MIN_SIZE,
-                       'Estimated source buffer size');
-        runner.succeed();
+        onBufferFull();
       } else {
         expectedTime++;
         sb.timestampOffset = expectedTime;
-        sb.appendBuffer(xhr.getResponseData());
+        try {
+          sb.appendBuffer(xhr.getResponseData());
+        } catch (ex) {
+          var QUOTA_EXCEEDED_ERROR_CODE = 22;
+          if (ex.code == QUOTA_EXCEEDED_ERROR_CODE) {
+            sb.removeEventListener('updateend', onUpdate);
+            onBufferFull();
+          } else {
+            runner.fail(e);
+          }
+        }
       }
     });
   });
