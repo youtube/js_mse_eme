@@ -310,6 +310,24 @@ testDASHLatency.prototype.onsourceopen = function() {
     var MAX_ITER = 300;
     var OVERFLOW_OFFSET = 1.0;
 
+    var onBufferFull = function() {
+      var bufferSize = loopCount * StreamDef.VideoTiny.size / 1048576;
+      self.log('Buffer size: ' + Math.round(bufferSize) + 'MB');
+
+      var oldWidth = video.videoWidth;
+      var DASH_MAX_LATENCY = 1;
+      var newContentStartTime = sb.buffered.start(0) + 2;
+      self.log('Source buffer updated as exceeding buffer limit');
+
+      video.addEventListener('timeupdate', function onTimeUpdate(e) {
+        if (video.currentTime > newContentStartTime + DASH_MAX_LATENCY) {
+          video.removeEventListener('timeupdate', onTimeUpdate);
+          runner.succeed();
+        }
+      });
+      video.play();
+    }
+
     sb.addEventListener('update', function onUpdate() {
       expectedTime += StreamDef.VideoTiny.duration;
       sb.timestampOffset = expectedTime;
@@ -318,35 +336,22 @@ testDASHLatency.prototype.onsourceopen = function() {
       if (loopCount > MAX_ITER) {
         runner.fail('Failed to fill up source buffer.');
       }
- 
-      // Fill up the buffer such that it triggers implementations that move
-      // data to the track buffers.
+
+      // Fill up the buffer such that it overflow implementations.
       if (expectedTime > sb.buffered.end(0) + OVERFLOW_OFFSET) {
         sb.removeEventListener('update', onUpdate);
-        var bufferSize = loopCount * StreamDef.VideoTiny.size / 1048576;
-        self.log('Buffer size: ' + Math.round(bufferSize) + 'MB');
-
-        var oldWidth = video.videoWidth;
-        var DASH_MAX_LATENCY = 1;
-        var newContentStartTime = sb.buffered.start(0) + 2;
-        sb.timestampOffset = newContentStartTime;
-
-        sb.addEventListener('update', function onUpdate() {
-          sb.removeEventListener('update', onUpdate);
-          self.log('Source buffer updated as exceeding buffer limit');
-
-          video.addEventListener('timeupdate', function onTimeUpdate(e) {
-            if (video.currentTime > newContentStartTime + DASH_MAX_LATENCY) {
-              video.removeEventListener('timeupdate', onTimeUpdate);
-              // If TimestampOffset* tests failed, then this will fail too.
-              runner.succeed();
-            }
-          });
-          video.play();
-        });
+        onBufferFull();
+      }
+      try {
         sb.appendBuffer(videoContent);
-      } else {
-        sb.appendBuffer(videoContent);
+      } catch (e) {
+        sb.removeEventListener('update', onUpdate);
+        var QUOTA_EXCEEDED_ERROR_CODE = 22;
+        if (e.code == QUOTA_EXCEEDED_ERROR_CODE) {
+          onBufferFull();
+        } else {
+          runner.fail(e);
+        }
       }
     });
     sb.appendBuffer(videoContent);;
@@ -599,9 +604,9 @@ testBufferSize.prototype.onsourceopen = function() {
         sb.timestampOffset = expectedTime;
         try {
           sb.appendBuffer(xhr.getResponseData());
-        } catch (ex) {
+        } catch (e) {
           var QUOTA_EXCEEDED_ERROR_CODE = 22;
-          if (ex.code == QUOTA_EXCEEDED_ERROR_CODE) {
+          if (e.code == QUOTA_EXCEEDED_ERROR_CODE) {
             sb.removeEventListener('updateend', onUpdate);
             onBufferFull();
           } else {
