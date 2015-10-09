@@ -1065,34 +1065,39 @@ testMediaSourceDuration.prototype.onsourceopen = function() {
   appendInit(media, videoSb, videoChain, 0, function() {
     appendUntil(runner.timeouts, media, videoSb, videoChain, 10, function() {
       runner.checkApproxEq(ms.duration,
-          StreamDef.VideoNormal.customMap.mediaSourceDuration, 'ms.duration', 0.01);
-      ms.duration = 5;
-      runner.checkEq(ms.duration, 5, 'ms.duration');
-      runner.checkEq(media.duration, 5, 'media.duration');
-      runner.checkLE(videoSb.buffered.end(0), 5.1, 'Range end');
-      videoSb.abort();
-      videoChain.seek(0);
-      appendInit(media, videoSb, videoChain, 0, function() {
-        appendUntil(runner.timeouts, media,
-            videoSb, videoChain, 10, function() {
-          runner.checkApproxEq(ms.duration, 10, 'ms.duration');
-          videoSb.addEventListener('update', function buffersRemoved() {
-            videoSb.removeEventListener('update', buffersRemoved);
-            var duration = videoSb.buffered.end(0);
-            ms.endOfStream();
-            runner.checkApproxEq(ms.duration, duration, 'ms.duration', 0.01);
-            media.play();
-            ms.addEventListener('sourceended', function() {
+                           StreamDef.VideoNormal.customMap.mediaSourceDuration,
+                           'ms.duration', 0.01);
+      videoSb.addEventListener('updateend', function onDurationChange() {
+        videoSb.removeEventListener('updateend', onDurationChange);
+        runner.checkEq(ms.duration, 5, 'ms.duration');
+        runner.checkEq(media.duration, 5, 'media.duration');
+        runner.checkLE(videoSb.buffered.end(0), 5.1, 'Range end');
+        videoSb.abort();
+        videoChain.seek(0);
+        appendInit(media, videoSb, videoChain, 0, function() {
+          appendUntil(runner.timeouts, media, videoSb, videoChain, 10,
+                      function() {
+            runner.checkApproxEq(ms.duration, 10, 'ms.duration');
+            videoSb.addEventListener('update', function buffersRemoved() {
+              videoSb.removeEventListener('update', buffersRemoved);
+              var duration = videoSb.buffered.end(0);
+              ms.endOfStream();
               runner.checkApproxEq(ms.duration, duration, 'ms.duration', 0.01);
-              runner.checkEq(media.duration, duration, 'media.duration');
-              ms.addEventListener('sourceclose', onsourceclose);
-              media.removeAttribute('src');
-              media.load();
+              media.play();
+              ms.addEventListener('sourceended', function() {
+                runner.checkApproxEq(ms.duration, duration, 'ms.duration',
+                                     0.01);
+                runner.checkEq(media.duration, duration, 'media.duration');
+                ms.addEventListener('sourceclose', onsourceclose);
+                media.removeAttribute('src');
+                media.load();
+              });
             });
+            ms.duration = 5;
           });
-          ms.duration = 5;
         });
       });
+      ms.duration = 5;
     });
   });
 };
