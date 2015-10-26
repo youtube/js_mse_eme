@@ -83,6 +83,19 @@ window.testSuiteVersions = {
       'enablewebm': 'false'
     }
   },
+  '2016' : {
+    'testSuites' : [
+      'conformance-test',
+      'encryptedmedia-test',
+      'performance-test',
+      'endurance-test',
+      'progressive-test'
+    ],
+    'config' : {
+      'defaultTestSuite': 'conformance-test',
+      'enablewebm': 'true'
+    }
+  },
   'tip' : {
     'testSuites' : [
       'conformance-test',

@@ -41,16 +41,10 @@ limitations under the License.
           http://goo.gl/emhwE</a>
       </li>
       <li>
-        <a class='title_link' href="0.5.html">
-          2013 Conformance Tests:</a>
-        <a href="http://goo.gl/eqEINA">
-          http://goo.gl/eqEINA</a>
-      </li>
-      <li>
-        <a class='title_link' href="0.6.html">
-          2014 Conformance Tests:</a>
-        <a href="http://goo.gl/YUYc18">
-          http://goo.gl/YUYc18</a>
+        <a class='title_link' href="2016.html">
+          2016 Conformance Tests:</a>
+        <a href="http://goo.gl/nkbqgL">
+          http://goo.gl/nkbqgL</a>
       </li>
       <li>
         <a class='title_link' href="2015.html">
@@ -59,25 +53,22 @@ limitations under the License.
           http://goo.gl/nacGVT</a>
       </li>
       <li>
+        <a class='title_link' href="0.6.html">
+          2014 Conformance Tests:</a>
+        <a href="http://goo.gl/YUYc18">
+          http://goo.gl/YUYc18</a>
+      </li>
+      <li>
+        <a class='title_link' href="0.5.html">
+          2013 Conformance Tests:</a>
+        <a href="http://goo.gl/eqEINA">
+          http://goo.gl/eqEINA</a>
+      </li>
+      <li>
         <a class='title_link' href="tip.html">
           Tip of Tree Conformance Tests:</a>
         <a href="http://goo.gl/zvxplb">
           http://goo.gl/zvxplb</a>
-      </li>
-    </ul>
-    <h2>Additional 2015 Test Quick Links:</h2>
-    <ul>
-      <li>
-        <a class='title_link' href="0.6.html?test_type=performance-test">
-          Performance Tests</a>:
-        <a href="http://goo.gl/7UlRtT">
-          http://goo.gl/7UlRtT</a>
-      </li>
-      <li>
-        <a class='title_link' href="0.6.html?test_type=endurance-test">
-          Endurance Tests</a>:
-        <a href="http://goo.gl/Kq4xls">
-          http://goo.gl/Kq4xls</a>
       </li>
     </ul>
     <h2>EME Demo Quick Links:</h2>
@@ -96,20 +87,27 @@ limitations under the License.
       </li>
     </ul>
     <h2>Test Shortcuts:</h2>
+    <dl><dd><strong>MSE = MSE Conformance, EME = EME Conformance, P = Performance, E = Endurance</strong></dl>
     <script type="application/javascript">
       var url;
       var w = document.write.bind(document);
-      var timeouts = [30, 40, 50, 60, 80, 100];
+      var timeouts = ['default', 30, 40, 50, 60, 80, 100];
 
       var generateTable = function(title, innerGenerator) {
         w('<table class="test-table">');
         w('  <tr><th><strong>' + title + '</strong></th>');
-        for (var i = 0; i < timeouts.length; ++i)
-          w('    <th> ' + timeouts[i] + ' s </th>');
+        for (var i = 0; i < timeouts.length; ++i) {
+          w('    <th> ' + timeouts[i]);
+          if (timeouts[i] !== 'default')
+            w(' s </th>');
+          else
+            w('</th>');
+        }
         w('  </tr>');
         if (innerGenerator)
           innerGenerator();
         w('</table>');
+        w('<br/>');
       };
 
       var generateRow = function(baseUrl, autoRun, logOn) {
@@ -119,20 +117,31 @@ limitations under the License.
 
         for (var i = 0; i < timeouts.length; ++i) {
           w('<td> ');
-          url = baseUrl + 'timeout=' + timeouts[i] * 1000;
+          var url = baseUrl;
+          if (timeouts[i] !== 'default') 
+            url = 'timeout=' + timeouts[i] * 1000;
           if (!logOn) url += '&disable_log=true';
           if (autoRun) url += '&command=run';
-          w('<A HREF="' + url + '&test_type=conformance-test">' +
-              'C' + '</A> ');
-          w('<A HREF="' + url + '&test_type=performance-test">' +
-              'P' + '</A> ');
-          w('<A HREF="' + url + '&test_type=endurance-test">' +
-              'E' + '</A> ');
+          w('<a href="' + url + '&test_type=conformance-test">' +
+              'MSE' + '</a> ');
+          w('<a href="' + url + '&test_type=encryptedmedia-test">' +
+              'EME' + '</a> ');
+          w('<a href="' + url + '&test_type=performance-test">' +
+              'P' + '</a> ');
+          w('<a href="' + url + '&test_type=endurance-test">' +
+              'E' + '</a> ');
           w('</td>');
         }
 
         w('</tr>');
       };
+
+      generateTable('2016 Tests', function() {
+        for (var i = 0; i < 4; ++i)
+          generateRow(
+            'http://yt-dash-mse-test.commondatastorage.googleapis.com/unit-tests/2016.html?',
+            Math.floor(i / 2), i % 2);
+      });
 
       generateTable('2015 Tests', function() {
         for (var i = 0; i < 4; ++i)
@@ -155,8 +164,5 @@ limitations under the License.
             Math.floor(i / 2), i % 2);
       });
     </script>
-    <dl><dd><strong>C = Conformance, P = Performance, E = Endurance</strong></dl>
   </body>
 </html>
-
-
