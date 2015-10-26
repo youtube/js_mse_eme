@@ -30,8 +30,8 @@ var createOption = function(text, value) {
   return option;
 };
 
-function TestView(mseSpec) {
-  this.mseSpec = mseSpec;
+function TestView(testSuiteVer) {
+  this.testSuiteVer = testSuiteVer;
   this.testList = null;
 
   var selectors = [];
@@ -67,24 +67,12 @@ function TestView(mseSpec) {
     testSuites.push({text: text, href: href});
   };
 
-  this.addTestSuites = function(testTypes) {
-    var isTestTypeSupported = function(testType) {
-      var supported = testTypes[testType].supported;
-      if (typeof supported === 'string' && supported == 'all') {
-        return true;
-      } else if (typeof supported === 'object') {
-        for (var index in supported) {
-          if (supported[index] == mseSpec) {
-            return true;
-          }
-        }
-      }
-      return false;
-    };
-
-    for (var testType in testTypes) {
-      if (testType !== currentTestType && isTestTypeSupported(testType)) {
-        this.addTestSuite(testTypes[testType].name, '?test_type=' + testType);
+  this.addTestSuites = function(testSuites) {
+    for (var index in testSuites) {
+      var testSuite = testSuites[index];
+      if (testSuite !== currentTestType) {
+        var testSuiteName = testSuiteDescriptions[testSuite].name;
+        this.addTestSuite(testSuiteName, '?test_type=' + testSuite);
       }
     }
   }
@@ -94,9 +82,9 @@ function TestView(mseSpec) {
   };
 
   this.generate = function() {
-    var heading = '[' + this.mseSpec + '] ' +
-        testTypes[currentTestType].heading + ' (v REVISION)';
-    document.title = testTypes[currentTestType].title;
+    var heading = '[' + this.testSuiteVer + '] ' +
+        testSuiteDescriptions[currentTestType].heading + ' (v REVISION)';
+    document.title = testSuiteDescriptions[currentTestType].title;
     document.body.appendChild(createElement('h3', 'title', null, heading));
     document.body.appendChild(createElement('h4', 'info'));
     document.body.appendChild(createElement('h4', 'usage'));
@@ -180,8 +168,8 @@ function TestView(mseSpec) {
 };
 
 return {
-  create: function(mseSpec) {
-    return new TestView(mseSpec);
+  create: function(testSuiteVer) {
+    return new TestView(testSuiteVer);
   }};
 
 })();

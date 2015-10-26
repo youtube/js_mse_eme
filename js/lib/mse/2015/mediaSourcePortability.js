@@ -16,7 +16,7 @@ limitations under the License.
 'use strict';
 
 // The code tries to wrap MediaSource with or without Webkit prefix.
-function setupMsePortability(mseSpec) {
+function setupMsePortability(testSuiteVer) {
   var dlog = function() {
     var forward = window.dlog || console.log.bind(console);
     forward.apply(this, arguments);
@@ -24,7 +24,7 @@ function setupMsePortability(mseSpec) {
 
   // If we have both MediaSource and WebKitMediaSource, then it's likely we have
   // Chrome with the dual implementation. Then pick the one that is specified by
-  // mseSpec.
+  // testSuiteVer.
   // If we only have the unprefixed version, then we can only choose that.
   if (window.MediaSource && window.WebKitMediaSource ||
       window.MediaSource && !window.WebKitMediaSource) {

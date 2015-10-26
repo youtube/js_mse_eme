@@ -19,15 +19,7 @@ limitations under the License.
 
 (function() {
 
-var timestamp;
-var command;
-var viewType;
-var timeout;
-var testsMask;
-
 var loadTests = function(testType) {
-  currentTestType = testType;
-
   // We have to make it compatible to the legacy url format.
   var testName = testType.substr(0, testType.indexOf('-'));
   testName = util.MakeCapitalName(testName) + 'Test';
@@ -40,78 +32,94 @@ var parseParam = function(param, defaultValue) {
   return value ? value[2] : defaultValue;
 };
 
-var parseParams = function() {
-  var testType = parseParam('test_type', kDefaultTestType);
+var parseParams = function(testSuiteConfig) {
+  var config = {};
+  config.testType = parseParam('test_type', testSuiteConfig.defaultTestSuite);
+  config.timestamp = parseParam('timestamp');
+  config.command = parseParam('command');
+  config.viewType = parseParam('view_type');
+  config.timeout = parseParam('timeout', TestBase.timeout);
+  config.disableLog = parseParam('disable_log', 'false');
+  config.loop = parseParam('loop', 'false');
+  config.stoponfailure = parseParam('stoponfailure', 'false');
+  config.enablewebm = parseParam('enablewebm', testSuiteConfig.enablewebm);
+  config.tests = parseParam('tests');
+  config.exclude = parseParam('exclude');
+  config.testsMask = parseParam('tests_mask', '');
+  return config;
+};
 
-  if (!testTypes[testType]) {
-    alert('Cannot find test type ' + testType);
-    throw 'Cannot find test type ' + testType;
+var configureHarness = function(config) {
+  window.recycleVideoTag = true;
+  window.currentTestType = config.testType;
+  TestBase.timeout = config.timeout;
+  window.logging = config.disableLog !== 'true';
+  window.loop = config.loop === 'true';
+  window.stoponfailure = config.stoponfailure === 'true';
+  window.enablewebm = config.enablewebm === 'true';
+
+  if (config.tests) {
+    config.tests = config.tests.split(',').map(function(x) {return parseInt(x);}).
+        sort(function(a, b) {return a - b;});
+    for (var i = 0; i < config.tests.length; ++i) {
+      var index = config.tests[i] * 1 - 1;
+      if (index < 0)
+        continue;
+      config.testsMask = util.resize(config.testsMask, index, '0');
+      config.testsMask += '1';
+    }
+    config.testsMask += '0';
+  } else if (config.exclude) {
+    config.exclude = config.exclude.split(',').map(function(x) {return parseInt(x);}).
+        sort(function(a, b) {return a - b;});
+    for (var i = 0; i < config.exclude.length; ++i) {
+      var index = config.exclude[i] * 1 - 1;
+      if (index < 0)
+        continue;
+      config.testsMask = util.resize(config.testsMask, index, '1');
+      config.testsMask += '0';
+    }
+    config.testsMask += '1';
   }
 
-  timestamp = parseParam('timestamp');
-  if (!timestamp) return;
+  if (!config.testsMask) {
+    config.testsMask = '1';
+  }
+};
 
-  command = parseParam('command');
-  viewType = parseParam('view_type');
-  TestBase.timeout = parseParam('timeout', TestBase.timeout);
-
-  var disableLog = parseParam('disable_log', 'false');
-  window.logging = disableLog !== 'true';
-  var loop = parseParam('loop', 'false');
-  window.loop = loop === 'true';
-  var stoponfailure = parseParam('stoponfailure', 'false');
-  window.stoponfailure = stoponfailure === 'true';
-  var enablewebm = parseParam('enablewebm', 'false');
-  window.enablewebm = enablewebm === 'true';
-
-  var tests = parseParam('tests');
-  var exclude = parseParam('exclude');
-
-  if (tests) {
-    testsMask = '';
-    tests = tests.split(',').map(function(x) {return parseInt(x);}).
-        sort(function(a, b) {return a - b;});
-    for (var i = 0; i < tests.length; ++i) {
-      var index = tests[i] * 1 - 1;
-      if (index < 0)
-        continue;
-      testsMask = util.resize(testsMask, index, '0');
-      testsMask += '1';
-    }
-    testsMask += '0';
-  } else if (exclude) {
-    exclude = exclude.split(',').map(function(x) {return parseInt(x);}).
-        sort(function(a, b) {return a - b;});
-    testsMask = '';
-    for (var i = 0; i < exclude.length; ++i) {
-      var index = exclude[i] * 1 - 1;
-      if (index < 0)
-        continue;
-      testsMask = util.resize(testsMask, index, '1');
-      testsMask += '0';
-    }
-    testsMask += '1';
+var reloadPageWithTimestamp = function() {
+  var newTimeStamp = (new Date()).getTime();
+  if (!/\?/.test(document.URL)) {
+    window.location = document.URL + '?timestamp=' + newTimeStamp;
   } else {
-    testsMask = parseParam('tests_mask');
-    if (!testsMask)
-      testsMask = '1';
+    window.location = document.URL + '&timestamp=' + newTimeStamp;
   }
+};
 
-  var testSuite = loadTests(testType);
-  if (viewType)
-    testSuite.viewType = viewType;
-  return testSuite;
+var createLogger = function() {
+  window.LOG = function() {
+    if (!window.logging)
+      return;
+    var output = document.getElementById('output');
+    var text = '';
+
+    for (var i = 0; i < arguments.length; ++i)
+      text += arguments[i].toString() + ' ';
+
+    console.log(text);
+    output.value = text + '\n' + output.value;
+  };
 };
 
 window.globalRunner = null;
 
-var startRunner = function(testSuite, mseSpec) {
-  var id = 0;
-  var runner = new TestRunner(testSuite, testsMask, mseSpec);
+var createRunner = function(testSuite, testSuiteVer, testsMask) {
+  var runner = new TestRunner(testSuite, testsMask, testSuiteVer);
 
   // Expose the runner so outside/injected scripts can read it.
   window.globalRunner = runner;
 
+  var id = 0;
   runner.getNewVideoTag = function() {
     var testarea = document.getElementById('testarea');
     var vid = 'v' + id;
@@ -129,37 +137,33 @@ var startRunner = function(testSuite, mseSpec) {
     return document.getElementById('control');
   };
 
-  window.LOG = function() {
-    if (!window.logging)
-      return;
-    var output = document.getElementById('output');
-    var text = '';
-
-    for (var i = 0; i < arguments.length; ++i)
-      text += arguments[i].toString() + ' ';
-
-    console.log(text);
-    output.value = text + '\n' + output.value;
-  };
-
   runner.initialize();
-  if (command === 'run')
+  return runner;
+};
+
+window.startMseTest = function(testSuiteVer) {
+  setupMsePortability(testSuiteVer);
+  var testSuiteVersion = testSuiteVersions[testSuiteVer];
+  var config = parseParams(testSuiteVersion.config);
+  if (!config.timestamp) {
+    reloadPageWithTimestamp();
+    return;
+  }
+  if (!testSuiteVersion.testSuites.indexOf(config.testType) === -1) {
+    alert('Cannot find test type ' + config.testType);
+    throw 'Cannot find test type ' + config.testType;
+  }
+
+  configureHarness(config);
+  createLogger();
+
+  var testSuite = loadTests(config.testType);
+  if (config.viewType)
+    testSuite.viewType = config.viewType;
+
+  var runner = createRunner(testSuite, testSuiteVer, config.testsMask);
+  if (config.command === 'run')
     runner.startTest(0, runner.testList.length);
 };
 
-window.startMseTest = function(mseSpec) {
-  setupMsePortability(mseSpec);
-
-  var testSuite = parseParams();
-  if (!timestamp) {
-    if (!/\?/.test(document.URL))
-      window.location = document.URL + '?timestamp=' + (new Date()).getTime();
-    else
-      window.location = document.URL + '&timestamp=' + (new Date()).getTime();
-    return;
-  }
-  startRunner(testSuite, mseSpec);
-};
-
 })();
-

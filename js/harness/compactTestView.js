@@ -28,7 +28,7 @@ function CompactTestView(fields, style) {
     this.addSwitch('Loop: ', 'loop');
     this.addSwitch('Stop on failure: ', 'stoponfailure');
     this.addSwitch('Log: ', 'logging');
-    this.addSwitch('WebM/VP9 (2015/tip only): ', 'enablewebm');
+    this.addSwitch('WebM/VP9: ', 'enablewebm');
 
     this.addCommand('Run All', 'run-selected', 'Run all tests in order.',
         function(e) {
@@ -41,7 +41,7 @@ function CompactTestView(fields, style) {
     this.addLink('Changelog', 'main.html');
     this.addLink('Download', 'download.tar.gz');
 
-    this.addTestSuites(testTypes);
+    this.addTestSuites(testSuiteVersions[this.testSuiteVer].testSuites);
   };
 
   this.addTest = function(desc) {
@@ -80,8 +80,8 @@ CompactTestView.prototype = TestView.create();
 CompactTestView.prototype.constructor = CompactTestView;
 
 return {
-  create: function(mseSpec, fields, style) {
-    CompactTestView.prototype = TestView.create(mseSpec);
+  create: function(testSuiteVer, fields, style) {
+    CompactTestView.prototype = TestView.create(testSuiteVer);
     CompactTestView.prototype.constructor = CompactTestView;
     return new CompactTestView(fields, style);
   }

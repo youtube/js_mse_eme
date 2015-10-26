@@ -15,49 +15,11 @@ limitations under the License.
 */
 'use strict';
 
-var BYPASS_CACHE = false;
 var XHR_TIMEOUT_LIMIT = 5000;
 
 (function() {
 
-window.testTypes = {
-  'conformance-test': {
-    name: 'MSE Conformance Tests',
-    supported: 'all',
-    title: 'Media Source and Encrypted Media Conformance Tests',
-    heading: 'MSE Conformance Tests'
-  },
-  'encryptedmedia-test': {
-    name: 'EME Conformance Tests',
-    supported: ['2015', 'tip'],
-    title: 'Encrypted Media Extensions Conformance Tests',
-    heading: 'EME Conformance Tests'
-   },
-  'performance-test': {
-    name: 'MSE Performance Tests',
-    supported: 'all',
-    title: 'Media Source and Encrypted Media Conformance Tests',
-    heading: 'MSE Performance Tests'
-  },
-  'endurance-test': {
-    name: 'MSE Endurance Tests',
-    supported: 'all',
-    title: 'Media Source and Encrypted Media Conformance Tests',
-    heading: 'MSE Endurance Tests'
-  },
-  'progressive-test': {
-    name: 'Progressive Tests',
-    supported: 'all',
-    title: 'HTML Media Element Conformance Tests',
-    heading: 'HTML Media Element Conformance Tests'
-  }
-};
-
-window.kDefaultTestType = 'conformance-test';
-
-window.currentTestType = null;
-window.recycleVideoTag = true;
-
+// Backup logged in case logger is not setup in main.js.
 if (!window.LOG) {
   window.LOG = console.log.bind(console);
 }
@@ -72,11 +34,11 @@ TestBase.start = function(runner, video) {
   this.log('Test started');
 };
 
-TestBase.teardown = function(mseSpec) {
+TestBase.teardown = function(testSuiteVer) {
   if (this.video != null) {
     this.video.removeAllEventListeners();
     this.video.pause();
-    if (mseSpec && mseSpec !== '0.5') // For backwards compatibility.
+    if (testSuiteVer && testSuiteVer !== '0.5') // For backwards compatibility.
       window.URL.revokeObjectURL(this.video.src);
     this.video.src = '';
     if (recycleVideoTag)
@@ -143,7 +105,7 @@ window.createMSTest = function(name) {
   return t;
 };
 
-var TestRunner = function(testSuite, testsMask, mseSpec) {
+var TestRunner = function(testSuite, testsMask, testSuiteVer) {
   this.testView = null;
   this.currentTest = null;
   this.currentTestIdx = 0;
@@ -151,7 +113,7 @@ var TestRunner = function(testSuite, testsMask, mseSpec) {
   this.XHRManager = createXHRManager(createLogger(this.log.bind(this)));
   this.timeouts = createTimeoutManager(createLogger(this.log.bind(this)));
   this.lastResult = 'pass';
-  this.mseSpec = mseSpec || '0.5';
+  this.testSuiteVer = testSuiteVer;
 
   if (testsMask) {
     this.testList = [];
@@ -278,12 +240,12 @@ TestRunner.prototype.updateStatus = function() {
 TestRunner.prototype.initialize = function() {
   var self = this;
   if (this.viewType === 'extra compact')
-    this.testView = compactTestView.create(this.mseSpec, this.fields,
+    this.testView = compactTestView.create(this.testSuiteVer, this.fields,
                                            this.viewType);
   else if (this.viewType === 'compact')
-    this.testView = compactTestView.create(this.mseSpec, this.fields);
+    this.testView = compactTestView.create(this.testSuiteVer, this.fields);
   else
-    this.testView = fullTestView.create(this.mseSpec, this.fields);
+    this.testView = fullTestView.create(this.testSuiteVer, this.fields);
 
   this.testView.onrunselected = function() {
     self.startTest(0, self.testList.length);
@@ -294,7 +256,7 @@ TestRunner.prototype.initialize = function() {
     this.testView.addTest(this.testList[i].prototype);
   }
 
-  this.testView.generate(this.mseSpec);
+  this.testView.generate(this.testSuiteVer);
 
   document.getElementById('info').innerText = this.info;
   this.log('Media Source and Encrypted Media Conformance Tests ' +
@@ -494,13 +456,13 @@ TestRunner.prototype.teardownCurrentTest = function(isTimeout) {
   this.timeouts.clearAll();
   this.XHRManager.abortAll();
   this.testView.finishedOneTest();
-  this.currentTest.teardown(this.mseSpec);
+  this.currentTest.teardown(this.testSuiteVer);
   if (this.currentTest.ms &&
       !this.currentTest.ms.isWrapper &&
       this.currentTest &&
       this.currentTest.video &&
       this.currentTest.video.src) {
-    if (this.mseSpec !== '0.5')
+    if (this.testSuiteVer !== '0.5')
       window.URL.revokeObjectURL(this.currentTest.video.src);
     this.currentTest.video.src = '';
   }

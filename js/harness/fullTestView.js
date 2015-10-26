@@ -28,7 +28,7 @@ function FullTestView(fields) {
     this.addSwitch('Loop: ', 'loop');
     this.addSwitch('Stop on failure: ', 'stoponfailure');
     this.addSwitch('Log: ', 'logging');
-    this.addSwitch('WebM/VP9 (2015/tip only): ', 'enablewebm');
+    this.addSwitch('WebM/VP9: ', 'enablewebm');
 
     this.addCommand('Select All', 'select-all', 'Select all tests.',
                     this.testList.selectAll.bind(this.testList));
@@ -46,7 +46,7 @@ function FullTestView(fields) {
     this.addLink('Changelog', 'main.html');
     this.addLink('Download', 'download.tar.gz');
 
-    this.addTestSuites(testTypes);
+    this.addTestSuites(testSuiteVersions[this.testSuiteVer].testSuites);
   };
 
   this.addTest = function(desc) {
@@ -80,8 +80,8 @@ function FullTestView(fields) {
 //FullTestView.prototype.constructor = FullTestView;
 
 return {
-  create: function(mseSpec, fields) {
-    FullTestView.prototype = TestView.create(mseSpec);
+  create: function(testSuiteVer, fields) {
+    FullTestView.prototype = TestView.create(testSuiteVer);
     FullTestView.prototype.constructor = FullTestView;
     return new FullTestView(fields);
   }

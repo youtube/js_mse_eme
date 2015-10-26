@@ -18,10 +18,10 @@ limitations under the License.
 /* The code tries to wrap the following four cases: MediaSource ver 0.6 with or
  * without Webkit prefix and MediaSource ver 0.5 with or without Webkit prefix.
  */
-function setupMsePortability(mseSpec) {
+function setupMsePortability(testSuiteVer) {
   var SPEC_0_6 = '0.6';
   var SPEC_TIP = 'tip';
-  mseSpec = mseSpec || SPEC_TIP;
+  testSuiteVer = testSuiteVer || SPEC_TIP;
 
   var dlog = function() {
     var forward = window.dlog || console.log.bind(console);
@@ -30,10 +30,11 @@ function setupMsePortability(mseSpec) {
 
   // If we have both MediaSource and WebKitMediaSource, then it's likely we have
   // Chrome with the dual implementation. Then pick the one that is specified by
-  // mseSpec.
+  // testSuiteVer.
   // If we only have the unprefixed version, then we can only choose that.
-  if (window.MediaSource && window.WebKitMediaSource && mseSpec === SPEC_TIP ||
-      window.MediaSource && !window.WebKitMediaSource) {
+  if (window.MediaSource && window.WebKitMediaSource &&
+      testSuiteVer === SPEC_TIP || window.MediaSource &&
+      !window.WebKitMediaSource) {
     window.MediaSource.prototype.version = 'MSE-live';
     return;
   }
