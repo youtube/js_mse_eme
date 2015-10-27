@@ -1067,8 +1067,8 @@ testMediaSourceDuration.prototype.onsourceopen = function() {
       runner.checkApproxEq(ms.duration,
                            StreamDef.VideoNormal.customMap.mediaSourceDuration,
                            'ms.duration', 0.01);
-      videoSb.addEventListener('updateend', function onDurationChange() {
-        videoSb.removeEventListener('updateend', onDurationChange);
+      videoSb.addEventListener('update', function onDurationChange() {
+        videoSb.removeEventListener('update', onDurationChange);
         runner.checkEq(ms.duration, 5, 'ms.duration');
         runner.checkEq(media.duration, 5, 'media.duration');
         runner.checkLE(videoSb.buffered.end(0), 5.1, 'Range end');
@@ -1083,7 +1083,6 @@ testMediaSourceDuration.prototype.onsourceopen = function() {
               var duration = videoSb.buffered.end(0);
               ms.endOfStream();
               runner.checkApproxEq(ms.duration, duration, 'ms.duration', 0.01);
-              media.play();
               ms.addEventListener('sourceended', function() {
                 runner.checkApproxEq(ms.duration, duration, 'ms.duration',
                                      0.01);
@@ -1092,6 +1091,7 @@ testMediaSourceDuration.prototype.onsourceopen = function() {
                 media.removeAttribute('src');
                 media.load();
               });
+              media.play();
             });
             ms.duration = 5;
           });
