@@ -406,39 +406,54 @@ var createDurationAfterAppendTest = function(stream) {
     var sb = ms.addSourceBuffer(stream.type);
     var self = this;
 
-    // TODO: figure out duration
     var xhr = runner.XHRManager.createRequest(stream.src,
       function(e) {
         var data = xhr.getResponseData();
 
         var updateCb = function() {
-          sb.removeEventListener('update', updateCb);
+          var halfDuration;
+          var durationChanged = false;
+          var sbUpdated = false;
+          sb.removeEventListener('updateend', updateCb);
           sb.abort();
 
           if (sb.updating) {
             runner.fail();
-          } else {
-            media.addEventListener(
-                'durationchange', function onFirstDurationChange() {
-              self.log('onFirstDurationChange called');
-              media.removeEventListener('durationchange',
-                                        onFirstDurationChange);
-              // This will fail if the buffer hasn't been trimmed.
+            return;
+          }
+
+          media.addEventListener('durationchange', function onDurationChange() {
+            media.removeEventListener('durationchange', onDurationChange);
+            self.log('Duration change complete.');
+            runner.checkApproxEq(ms.duration, halfDuration, 'ms.duration');
+            durationChanged = true;
+            if (durationChanged && sbUpdated) {
+              runner.succeed();
+            }
+          });
+
+          sb.addEventListener('updateend', function onDurationChangeUpdate() {
+            sb.removeEventListener('updateend', onDurationChangeUpdate);
+            self.log('Remove() complete.');
+            runner.checkApproxEq(ms.duration, halfDuration, 'ms.duration');
+            runner.checkApproxEq(sb.buffered.end(0), halfDuration,
+                                 'sb.buffered.end(0)');
+            sb.addEventListener('updateend', function onUpdate() {
+              sb.removeEventListener('updateend', onUpdate);
               runner.checkApproxEq(ms.duration, sb.buffered.end(0),
                                    'ms.duration');
-              sb.addEventListener('update', function() {
-                self.log('onSecondDurationChange called');
-                runner.checkApproxEq(ms.duration, sb.buffered.end(0),
-                                     'ms.duration');
+              sbUpdated = true;
+              if (durationChanged && sbUpdated) {
                 runner.succeed();
-              });
-              sb.appendBuffer(data);
+              }
             });
-            ms.duration = sb.buffered.end(0) / 2;
-          }
+            sb.appendBuffer(data);
+          });
+          halfDuration = sb.buffered.end(0) / 2;
+          ms.duration = halfDuration;
         };
 
-        sb.addEventListener('update', updateCb);
+        sb.addEventListener('updateend', updateCb);
         sb.appendBuffer(data);
       });
     xhr.send();
