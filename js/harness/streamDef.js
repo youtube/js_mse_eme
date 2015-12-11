@@ -15,7 +15,7 @@ limitations under the License.
 */
 'use strict';
 
-function getStreamDef() {
+var StreamDef = (function() {
   var d = {};
   d.VideoIndex = {};
   d.VideoIndex.H24 = 0;
@@ -125,34 +125,48 @@ function getStreamDef() {
     if (videoStreamDef.hasOwnProperty(videoStreamType)) {
       d[videoStreamType] = {};
       d[videoStreamType].VideoType = videoStreamDef[videoStreamType].VideoType;
-      var createVideoDef = createStreamDefFunc('video', d[videoStreamType].VideoType);
+      var createVideoDef = createStreamDefFunc('video',
+                                               d[videoStreamType].VideoType);
 
       var videoStreams = videoStreamDef[videoStreamType].Streams
       for (var videoDef in videoStreams) {
         if (videoStreams.hasOwnProperty(videoDef)) {
-          d[videoStreamType][videoDef] = createVideoDef.apply(null, videoStreams[videoDef]);
+          d[videoStreamType][videoDef] =
+              createVideoDef.apply(null, videoStreams[videoDef]);
         }
       }
     }
   }
 
   return d;
-}
+})();
 
 
-function UpdateStreamDef(index) {
-  index = index || StreamDef.VideoIndex.H264;
-  var streamType = (index === StreamDef.VideoIndex.H264) ? 'H264' : 'VP9';
+function UpdateStreamDef(videoIndex) {
+  videoIndex = videoIndex || StreamDef.VideoIndex.H264;
+  var streamType = (videoIndex === StreamDef.VideoIndex.H264) ? 'H264' : 'VP9';
   for (var videoDef in StreamDef[streamType]) {
-    if (StreamDef[streamType].hasOwnProperty(videoDef)) {
-      StreamDef[videoDef] = StreamDef[streamType][videoDef];
+    if (!StreamDef[streamType].hasOwnProperty(videoDef)) {
+      continue;
+    }
+    if (typeof(StreamDef[streamType][videoDef]) != 'object') {
+      StreamDef[videoDef] = StreamDef[streamType][videoDef]
+      continue;
+    }
+    if (!StreamDef.hasOwnProperty(videoDef)) {
+      StreamDef[videoDef] = {};
+    }
+    // Copy properties directly to update object references.
+    var properties = ['name', 'type', 'size', 'src', 'duration', 'bps',
+                      'customMap', 'get'];
+    for (var idx in properties) {
+      StreamDef[videoDef][properties[idx]] =
+          StreamDef[streamType][videoDef][properties[idx]];
     }
   }
 
   StreamDef.isWebM = function() {
-    return index === StreamDef.VideoIndex.VP9;
+    return videoIndex === StreamDef.VideoIndex.VP9;
   }
 }
-
-var StreamDef = getStreamDef();
 UpdateStreamDef();
