@@ -133,16 +133,18 @@ function findBufferedRangeEndForTime(sb, t) {
 // upstream element until they reach the file source.
 
 // Produces a FileSource table.
-window.FileSource = function(path, xhrManager, timeoutManager,
-                             startIndex, endIndex) {
+window.FileSource = function(path, xhrManager, timeoutManager, startIndex,
+                             endIndex, forceSize) {
   this.path = path;
   this.startIndex = startIndex;
   this.endIndex = endIndex;
+  this.forceSize = forceSize;
   this.segs = null;
   this.segIndex = 0;
   this.initBuf = null;
 
   this.init = function(t, cb) {
+    this.initLength = forceSize || 32 * 1024;
     if (!cb) {
       if (!this.initBuf)
         throw 'Calling init synchronusly when the init seg is not ready';
@@ -166,7 +168,11 @@ window.FileSource = function(path, xhrManager, timeoutManager,
         if (extResult === 'mp4') {
           self.segs = parseMp4(response);
         } else {
-          self.segs = parseWebM(response.buffer);
+          if (!!self.forceSize) {
+            self.segs = parseWebM(response.buffer, self.forceSize);
+          } else {
+            self.segs = parseWebM(response.buffer);
+          }
         }
 
         self.startIndex = self.startIndex || 0;
@@ -180,7 +186,7 @@ window.FileSource = function(path, xhrManager, timeoutManager,
           cb.call(self, self.initBuf);
         }, 0, self.segs[0].offset);
         xhr.send();
-      }, 0, 32 * 1024);
+      }, 0, self.initLength);
       xhr.send();
     }
   };

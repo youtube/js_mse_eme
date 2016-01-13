@@ -287,7 +287,7 @@ WebMElemParser_.prototype.readWebMCuePoint_ = function(timebase, offset) {
 
 // Given a buffer contains the first 32k of a file, return a list of tables
 // containing 'time', 'duration', 'offset', and 'size' properties for each cue.
-function parseWebM(data) {
+function parseWebM(data, opt_totalSize) {
   var dlog = function() {
     var forward = window.dlog || console.log.bind(console);
     forward.apply(this, arguments);
@@ -451,8 +451,10 @@ function parseWebM(data) {
   }
 
   if (res.length > 0) {
-    // TODO: need to do something with the last cluster for files with cues (as in, size is missing)
     res[res.length - 1].duration = totalDuration - res[res.length - 1].time;
+    if (!!opt_totalSize) {
+      res[res.length - 1].size = opt_totalSize - res[res.length - 1].offset;
+    }
   }
   return res;
 }

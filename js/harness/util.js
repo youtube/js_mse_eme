@@ -174,6 +174,25 @@ util.resize = function(str, newLength, fillValue) {
   return str;
 };
 
+var DLOG_LEVEL = 3;
+
+// Log a debug message. Only logs if the given level is less than the current
+// value of the global variable DLOG_LEVEL.
+util.dlog = function(level) {
+  if (typeof(level) !== 'number')
+    throw 'level has to be an non-negative integer!';
+  // Comment this to prevent debug output
+  if (arguments.length > 1 && level <= DLOG_LEVEL) {
+    var args = [];
+    for (var i = 1; i < arguments.length; ++i)
+      args.push(arguments[i]);
+    if (window.LOG)
+      window.LOG.apply(null, args);
+    else
+      console.log(args);
+  }
+};
+
 window.util = util;
 
 })();

@@ -144,6 +144,7 @@ window.FileSource = function(path, xhrManager, timeoutManager, startIndex,
   this.initBuf = null;
 
   this.init = function(t, cb) {
+    this.initLength = forceSize || 32 * 1024;
     if (!cb) {
       if (!this.initBuf)
         throw 'Calling init synchronusly when the init seg is not ready';
@@ -167,22 +168,10 @@ window.FileSource = function(path, xhrManager, timeoutManager, startIndex,
         if (extResult === 'mp4') {
           self.segs = parseMp4(response);
         } else {
-          self.segs = parseWebM(response.buffer);
-        }
-
-        // parseWebM has trouble with encrypted files.
-        // forceSize should accomodate the parsing issues.
-        if (!!self.forceSize) {
-          var offset = self.segs[0].offset;
-          var totalSize = offset;
-          for (var i = 0; i < self.segs.length; i++) {
-            totalSize += self.segs[i].size;
-          }
-          if (totalSize != self.forceSize) {
-            var segSize = (self.forceSize - offset) / self.segs.length;
-            for (var i = 0; i < self.segs.length; i++) {
-              self.segs[i].size = segSize;
-            }
+          if (!!self.forceSize) {
+            self.segs = parseWebM(response.buffer, self.forceSize);
+          } else {
+            self.segs = parseWebM(response.buffer);
           }
         }
 
@@ -197,7 +186,7 @@ window.FileSource = function(path, xhrManager, timeoutManager, startIndex,
           cb.call(self, self.initBuf);
         }, 0, self.segs[0].offset);
         xhr.send();
-      }, 0, 32 * 1024);
+      }, 0, self.initLength);
       xhr.send();
     }
   };

@@ -257,7 +257,7 @@ var createAbortTest = function(stream) {
       }
       sb.addEventListener('update', appendStarted);
       sb.appendBuffer(responseData);
-    }, 0, 200000);
+    }, 0, stream.size);
     xhr.send();
   };
 };
@@ -914,7 +914,8 @@ var createAppendMultipleInitTest = function(stream) {
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
     var media = this.video;
-    var chain = new FileSource(stream.src, runner.XHRManager, runner.timeouts);
+    var chain = new FileSource(stream.src, runner.XHRManager, runner.timeouts,
+                               0, stream.size, stream.size);
     var src = this.ms.addSourceBuffer(stream.type);
     var init;
 
@@ -935,24 +936,24 @@ var createAppendMultipleInitTest = function(stream) {
       chain.pull(function(buf) {
         var firstAppend = getEventAppend(function() {
             src.appendBuffer(init);
-          }, function() {
-            src.removeEventListener('update', firstAppend);
-            src.addEventListener('update', function abortAppend() {
-              src.removeEventListener('update', abortAppend);
-              src.abort();
-              var end = src.buffered.end(0);
+        }, function() {
+          src.removeEventListener('update', firstAppend);
+          src.addEventListener('update', function abortAppend() {
+            src.removeEventListener('update', abortAppend);
+            src.abort();
+            var end = src.buffered.end(0);
 
-              var secondAppend = getEventAppend(function() {
-                src.appendBuffer(init);
-              }, function() {
-                runner.checkEq(src.buffered.end(0), end, 'Range end');
-                runner.succeed();
-              });
-              src.addEventListener('update', secondAppend);
-              secondAppend();
+            var secondAppend = getEventAppend(function() {
+              src.appendBuffer(init);
+            }, function() {
+              runner.checkEq(src.buffered.end(0), end, 'Range end');
+              runner.succeed();
             });
-            src.appendBuffer(buf);
+            src.addEventListener('update', secondAppend);
+            secondAppend();
           });
+          src.appendBuffer(buf);
+        });
         src.addEventListener('update', firstAppend);
         firstAppend();
       });

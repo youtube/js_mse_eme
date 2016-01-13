@@ -195,7 +195,7 @@ createAppendTest(StreamDef.VideoNormal, 16384, 1024, 0.002, 0.1);
 createAppendTest(StreamDef.VideoNormal, 4 * 1024 * 1024, 64, 0.015, 0.15);
 
 
-var createSeekAccuracyTest = function(stream, size, times, step) {
+var createSeekAccuracyTest = function(stream, times, step) {
   var test = createPerformanceTest('Video Seek Accuracy Test');
   test.prototype.baseline_PC = 0;
   test.prototype.baseline_device = 0;
@@ -239,12 +239,12 @@ var createSeekAccuracyTest = function(stream, size, times, step) {
           media.play();
           media.currentTime = seekTime;
         });
-      }, 0, size);
+      }, 0, stream.size);
     xhr.send();
   };
 };
 
-createSeekAccuracyTest(StreamDef.VideoNormal, 12 * 1024 * 1024, 100, 1);
+createSeekAccuracyTest(StreamDef.VideoNormal, 100, 1);
 
 
 var createSeekBackwardsTest = function(audio, video) {
@@ -258,7 +258,8 @@ var createSeekBackwardsTest = function(audio, video) {
     var audio_chain = new ResetInit(
         new FileSource(audio.src, runner.XHRManager, runner.timeouts));
     var video_chain = new ResetInit(
-        new FileSource(video.src, runner.XHRManager, runner.timeouts));
+        new FileSource(video.src, runner.XHRManager, runner.timeouts, 0,
+                       video.size, video.size));
     var audio_src = this.ms.addSourceBuffer(audio.type);
     var video_src = this.ms.addSourceBuffer(video.type);
     var seekTime = video.duration - 5;

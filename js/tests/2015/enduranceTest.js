@@ -97,7 +97,7 @@ var createInfiniteLoopTest = function(stream) {
 };
 
 createInfiniteLoopTest(StreamDef.AudioNormal);
-createInfiniteLoopTest(StreamDef.VideoNormal);
+createInfiniteLoopTest(StreamDef.H264.VideoNormal);
 
 
 var createInfiniteAVLoopTest = function(audio, video, desc) {
@@ -112,7 +112,7 @@ var createInfiniteAVLoopTest = function(audio, video, desc) {
     var media = this.video;
     var video_chain = new InfiniteStream(new ResetInit(
         new FileSource(video.src, runner.XHRManager, runner.timeouts)));
-    var video_src = this.ms.addSourceBuffer(StreamDef.VideoType);
+    var video_src = this.ms.addSourceBuffer(video.type);
     var audio_chain = new InfiniteStream(new ResetInit(
         new FileSource(audio.src, runner.XHRManager, runner.timeouts)));
     var audio_src = this.ms.addSourceBuffer(StreamDef.AudioType);
@@ -131,10 +131,10 @@ var createInfiniteAVLoopTest = function(audio, video, desc) {
   };
 };
 
-createInfiniteAVLoopTest(StreamDef.AudioTiny, StreamDef.VideoTiny, 'Tiny');
-createInfiniteAVLoopTest(StreamDef.AudioNormal, StreamDef.VideoNormal,
+createInfiniteAVLoopTest(StreamDef.AudioTiny, StreamDef.H264.VideoTiny, 'Tiny');
+createInfiniteAVLoopTest(StreamDef.AudioNormal, StreamDef.H264.VideoNormal,
                          'Normal');
-createInfiniteAVLoopTest(StreamDef.AudioHuge, StreamDef.VideoHuge, 'Huge');
+createInfiniteAVLoopTest(StreamDef.AudioHuge, StreamDef.H264.VideoHuge, 'Huge');
 
 var createSourceAbortTest = function(stream) {
   var test = createEnduranceTest('Source Abort Test');
