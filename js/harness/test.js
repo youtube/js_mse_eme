@@ -282,7 +282,7 @@ TestRunner.prototype.onfinished = function() {
   } else {
     this.lastResult = 'pass';
     this.getNewVideoTag();
-    this.log('All tests are completed');
+    this.log('All tests are completed in ' + ((Date.now() - this.runStartTime) / 1000) + ' seconds');
   }
 
   this.sendTestReport(GetTestResults());
