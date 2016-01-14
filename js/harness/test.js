@@ -289,6 +289,21 @@ TestRunner.prototype.onfinished = function() {
 };
 
 TestRunner.prototype.sendTestReport = function(results) {
+  var errors = [];
+  for (var i = 0; i < results.length; i++) {
+    if (!results[i]['name'])
+      continue;
+    if (!results[i]['passed'])
+      errors.push(results[i]);
+  }
+  if (errors.length > 0) {
+    this.log('Failing tests: ');
+    for (var i = 0; i < errors.length; i++)
+      this.log(errors[i]['id'] + '-' + errors[i]['name'] + ': ' +
+               errors[i]['error']['message']);
+  }
+
+  return;
   if (this.clientName) {
     var xhr = new XMLHttpRequest();
     var resultsURL = 'http://qual-e.appspot.com/api?command=save_result';
