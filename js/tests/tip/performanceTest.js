@@ -258,7 +258,7 @@ var createSeekBackwardsTest = function(audio, video) {
     var audio_chain = new ResetInit(
         new FileSource(audio.src, runner.XHRManager, runner.timeouts));
     var video_chain = new ResetInit(
-        new FileSource(video.src, runner.XHRManager, runner.timeouts, 0
+        new FileSource(video.src, runner.XHRManager, runner.timeouts, 0,
                        video.size, video.size));
     var audio_src = this.ms.addSourceBuffer(audio.type);
     var video_src = this.ms.addSourceBuffer(video.type);
