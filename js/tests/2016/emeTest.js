@@ -168,7 +168,7 @@ testClearKeyVideo.prototype.start = function(runner, video) {
   try {
     var testEmeHandler = setupBaseEmeTest(video, runner, videoStream.src,
                                           audioStream.src, 1000000, null);
-    testEmeHandler.init(video, StreamDef.AudioType, videoStream.get('kid'),
+    testEmeHandler.init(video, StreamDef.VideoType, videoStream.get('kid'),
                         videoStream.get('key'), 'clearkey');
   } catch(err) {
     runner.fail(err);
