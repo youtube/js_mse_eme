@@ -108,13 +108,19 @@ EMEHandler.prototype.setFlavor = function(flavor) {
  * @param {Event} e Event passed in by the EME system.
  */
 EMEHandler.prototype.onNeedKey = function(e) {
+  var initData = e.initData;
   dlog(2, 'onNeedKey()');
   if (!this.keySystem) {
     throw 'Not initialized! Bad manifest parse?';
   }
 
-  this.video.generateKeyRequest(this.keySystem, e.initData);
-  this.initDataQueue.push(e.initData);
+  // Add clear key id to initData for gecko based browsers.
+  if (this.mime.indexOf('mp4') > -1 && !extractBMFFClearKeyID(e.initData)) {
+    initData = addBMFFClearKeyID(e.initData, this.kids[0]);
+  }
+
+  this.video.generateKeyRequest(this.keySystem, initData);
+  this.initDataQueue.push(initData);
 };
 
 /**
@@ -129,11 +135,7 @@ EMEHandler.prototype.onKeyMessage = function(e) {
 
   // Extract kid.
   var kid = this.kids.shift();
-  if (this.keySystem == 'com.microsoft.playready') {
-    message = parsePlayReadyKeyMessage(message);
-    if (!message)
-      throw 1;
-  } else if (kid == null) {
+  if (kid == null) {
     var kid = extractBMFFClearKeyID(initData);
   }
 

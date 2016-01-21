@@ -71,12 +71,13 @@ function parsePlayReadyKeyMessage(message) {
 }
 
 /**
- * Extracts the BMFF Clear Key ID from the init data of the segment.
+ * Extracts the BMFF Key ID from the init data of the segment.
  * @param {ArrayBuffer} initData Init data for the media segment.
- * @return {ArrayBuffer} Returns the BMFF ClearKey ID if found, otherwise the
- *     initData itself.
+ * @param {boolean} clearkey Method will return clear key ID if true.
+ * @param {boolean} widevine Method will return widevien key ID if true.
+ * @return {ArrayBuffer} Returns the BMFF Key ID if found, otherwise false.
  */
-function extractBMFFClearKeyID(initData) {
+function extractBMFFKeyID(initData, clearkey, widevine) {
   // Accessing the Uint8Array's underlying ArrayBuffer is impossible, so we
   // copy it to a new one for parsing.
   var abuf = new ArrayBuffer(initData.length);
@@ -92,27 +93,89 @@ function extractBMFFClearKeyID(initData) {
     if (type != 0x70737368)
       throw 'Box type ' + type.toString(16) + ' not equal to "pssh"';
 
-    // Scan for Clear Key header
-    if ((dv.getUint32(pos + 12, false) == 0x58147ec8) &&
-        (dv.getUint32(pos + 16, false) == 0x04234659) &&
-        (dv.getUint32(pos + 20, false) == 0x92e6f52c) &&
-        (dv.getUint32(pos + 24, false) == 0x5ce8c3cc)) {
-      var size = dv.getUint32(pos + 28, false);
-      if (size != 16) throw 'Unexpected KID size ' + size;
-      return new Uint8Array(abuf.slice(pos + 32, pos + 32 + size));
+    // Scan for Clear Key header.
+    if (clearkey) {
+      if ((dv.getUint32(pos + 12, false) == 0x58147ec8) &&
+          (dv.getUint32(pos + 16, false) == 0x04234659) &&
+          (dv.getUint32(pos + 20, false) == 0x92e6f52c) &&
+          (dv.getUint32(pos + 24, false) == 0x5ce8c3cc)) {
+        var size = dv.getUint32(pos + 28, false);
+        if (size != 16) throw 'Unexpected KID size ' + size;
+        return new Uint8Array(abuf.slice(pos + 32, pos + 32 + size));
+      }
     }
 
-    // Failing that, scan for Widevine protobuf header
-    if ((dv.getUint32(pos + 12, false) == 0xedef8ba9) &&
-        (dv.getUint32(pos + 16, false) == 0x79d64ace) &&
-        (dv.getUint32(pos + 20, false) == 0xa3c827dc) &&
-        (dv.getUint32(pos + 24, false) == 0xd51d21ed)) {
-      return new Uint8Array(abuf.slice(pos + 36, pos + 52));
+    // Scan for Widevine header.
+    if (widevine) {
+      if ((dv.getUint32(pos + 12, false) == 0xedef8ba9) &&
+          (dv.getUint32(pos + 16, false) == 0x79d64ace) &&
+          (dv.getUint32(pos + 20, false) == 0xa3c827dc) &&
+          (dv.getUint32(pos + 24, false) == 0xd51d21ed)) {
+        return new Uint8Array(abuf.slice(pos + 36, pos + 52));
+      }
     }
     pos += box_size;
   }
-  // Couldn't find it, give up hope.
-  return initData;
+  return false;
+}
+
+/**
+ * Extracts the BMFF Clear Key ID from the init data of the segment.
+ * @param {ArrayBuffer} initData Init data for the media segment.
+ * @return {ArrayBuffer} Returns the BMFF ClearKey ID if found, otherwise the
+ *     initData itself.
+ */
+function extractBMFFClearKeyID(initData) {
+  return extractBMFFKeyID(initData, true, false);
+}
+
+/**
+ * Extracts the BMFF Clear Key ID from the init data of the segment.
+ * @param {ArrayBuffer} initData Init data for the media segment.
+ * @return {ArrayBuffer} Returns the BMFF ClearKey ID if found, otherwise the
+ *     initData itself.
+ */
+function extractBMFFWidevineKeyID(initData) {
+  return extractBMFFKeyID(initData, false, true);
+}
+
+/**
+ * Add BMFF Clear Key ID to initialization data.
+ * @param {ArrayBuffer} initData Init data for the media segment.
+ * @param {ArrayBuffer} clearKeyId Clear Key ID to add to initData.
+ * @return {ArrayBuffer} Returns initData with a Clear Key ID added.
+ */
+function addBMFFClearKeyID(initData, clearkeyId) {
+  // Accessing the Uint8Array's underlying ArrayBuffer is impossible, so we
+  // copy it to a new one for parsing.
+  var abuf = new ArrayBuffer(initData.length);
+  var view = new Uint8Array(abuf);
+  view.set(initData);
+
+  // Find end of last pssh atom.
+  var dv = new DataView(abuf);
+  var pssh_end;
+  var pos = 0;
+  while (pos < abuf.byteLength) {
+    var box_size = dv.getUint32(pos, false);
+    var type = dv.getUint32(pos + 4, false);
+
+    pos += box_size;
+    if (type == 0x70737368)
+      pssh_end = pos;
+  }
+
+  var clearkeyPssh = new Uint8Array(48);
+  clearkeyPssh.set([0x00, 0x00, 0x00, 0x30, 0x70, 0x73, 0x73, 0x68,
+                    0x00, 0x00, 0x00, 0x00, 0x58, 0x14, 0x7e, 0xc8,
+                    0x04, 0x23, 0x46, 0x59, 0x92, 0xe6, 0xf5, 0x2c,
+                    0x5c, 0xe8, 0xc3, 0xcc, 0x00, 0x00, 0x00, 0x10]);
+  clearkeyPssh.set(clearkeyId, 32);
+  var newInitData = new Uint8Array(abuf.byteLength + clearkeyPssh.byteLength);
+  newInitData.set(new Uint8Array(abuf.slice(0, pssh_end)), 0);
+  newInitData.set(clearkeyPssh, pssh_end);
+  newInitData.set(abuf.slice(pssh_end), pssh_end + clearkeyPssh.byteLength);
+  return newInitData;
 }
 
 function base64_encode(arr) {
