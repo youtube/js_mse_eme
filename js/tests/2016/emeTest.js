@@ -305,7 +305,7 @@ testInvalidKey.prototype.start = function(runner, video) {
       0x53, 0xa6, 0xcb, 0x3a, 0xd8, 0xfb, 0x58, 0x8f,
       0xbe, 0x92, 0xe6, 0xdc, 0x72, 0x65, 0x0c, 0x86]);
     var testEmeHandler = setupBaseEmeTest(video, runner, videoStream.src, null,
-                                          1000000);
+                                          Math.min(videoStream.size, 1000000));
     var self = this;
     testEmeHandler.init(video, StreamDef.VideoType, videoStream.get('kid'),
                         invalid_key, 'widevine', function(e) {
