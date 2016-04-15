@@ -1438,24 +1438,26 @@ createDelayedTest(StreamDef.VideoNormal, StreamDef.AudioNormal);
 
 var testEventTimestamp = createConformanceTest('EventTimestamp', 'MSE');
 testEventTimestamp.prototype.title = 'Test Event Timestamp is relative to ' +
-    'the epoch';
+    'the initial page load';
 testEventTimestamp.prototype.onsourceopen = function() {
   var runner = this.runner;
   var video = this.video;
   var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
   var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
-  var last = Date.now();
-  runner.checkGr(last, 1360000000000, 'Date.now()');
+  runner.checkGr(Date.now(), 1360000000000, 'Date.now()');
+  var lastTime = 0.0;
+  var requestCounter = 0;
 
   var audioXhr = runner.XHRManager.createRequest(StreamDef.AudioTiny.src,
       function(e) {
     audioSb.appendBuffer(this.getResponseData());
     video.addEventListener('timeupdate', function(e) {
-      runner.checkGE(e.timeStamp, last, 'event.timeStamp');
-      last = e.timeStamp;
-      if (!video.paused && video.currentTime >= 2) {
+      runner.checkGE(e.timeStamp, lastTime, 'event.timeStamp');
+      lastTime = e.timeStamp;
+      if (!video.paused && video.currentTime >= 2 && requestCounter >= 3) {
         runner.succeed();
       }
+      requestCounter++;
     });
     video.play();
   }, 0, 500000);
