@@ -335,13 +335,13 @@ testWidevineSupport.prototype.onsourceopen = function() {
         video.canPlayType('video/mp4; codecs="avc1.640028"', 'com.widevine.alpha'), 'probably',
         'canPlayType result');
     this.runner.checkEq(
-        video.canPlayType('video/mp4', 'com.widevine.alpha'), 'maybe',
+        mightEMETypeBeSupported(video.canPlayType('video/mp4', 'com.widevine.alpha')), 'maybe',
         'canPlayType result');
     this.runner.checkEq(
         video.canPlayType('audio/mp4; codecs="mp4a.40.2"', 'com.widevine.alpha'), 'probably',
         'canPlayType result');
     this.runner.checkEq(
-         video.canPlayType('audio/mp4', 'com.widevine.alpha'), 'maybe',
+        mightEMETypeBeSupported(video.canPlayType('audio/mp4', 'com.widevine.alpha')), 'maybe',
         'canPlayType result');
     this.runner.succeed();
   } else {
@@ -355,13 +355,13 @@ testWidevineSupport.prototype.onsourceopen = function() {
         video.canPlayType('video/webm; codecs="vp9,vp9.0"', 'com.widevine.alpha'), 'probably',
         'canPlayType result');
     this.runner.checkEq(
-        video.canPlayType('video/webm', 'com.widevine.alpha'), 'maybe',
+        mightEMETypeBeSupported(video.canPlayType('video/webm', 'com.widevine.alpha')), 'maybe',
         'canPlayType result');
     this.runner.checkEq(
          video.canPlayType('audio/mp4; codecs="mp4a.40.2"', 'com.widevine.alpha'), 'probably',
         'canPlayType result');
     this.runner.checkEq(
-         video.canPlayType('audio/mp4', 'com.widevine.alpha'), 'maybe',
+        mightEMETypeBeSupported(video.canPlayType('audio/mp4', 'com.widevine.alpha')), 'maybe',
         'canPlayType result');
     this.runner.succeed();
   }
