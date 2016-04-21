@@ -18,6 +18,13 @@ limitations under the License.
 /* The code tries to wrapper the EME versions with or without webkit prefix */
 
 
+function mightEMETypeBeSupported(result)
+{
+  if (result === 'probably')
+    result = 'maybe';
+  return result;
+}
+
 function prefixedAttributeName(obj, suffix, opt_preprefix) {
   suffix = suffix.toLowerCase();
   if (opt_preprefix === undefined) {

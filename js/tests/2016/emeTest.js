@@ -97,7 +97,6 @@ function checkDOMError(runner, e, code, name) {
   }
 }
 
-
 var testCanPlayClearKey = createEmeTest('CanPlayClearKey');
 testCanPlayClearKey.prototype.title =
     'Test if canPlay return is correct for clear key.';
