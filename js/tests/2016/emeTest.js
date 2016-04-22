@@ -240,17 +240,22 @@ testPlayReadySupport.prototype.title =
     'Test if canPlay return is correct for PlayReady.';
 testPlayReadySupport.prototype.onsourceopen = function() {
   var video = this.video;
+  var canPlayTypeResult;
   // PlayReady is currently only compatible with h264.
   this.runner.checkEq(video.canPlayType('video/mp4;  codecs="avc1.640028"',
                                         'com.youtube.playready'),
                       'probably', 'canPlayType result');
-  this.runner.checkEq(video.canPlayType('video/mp4', 'com.youtube.playready'),
-                      'maybe', 'canPlayType result');
+  canPlayTypeResult = video.canPlayType('video/mp4', 'com.youtube.playready');
+  this.runner.check(canPlayTypeResult === 'probably' || canPlayTypeResult === 'maybe',
+                    'check passed: canPlayType result was (' + canPlayTypeResult + ').',
+                    'check failed: canPlayType result was neither (probably) nor (maybe).');
   this.runner.checkEq(video.canPlayType('audio/mp4; codecs="mp4a.40.2"',
                                         'com.youtube.playready'),
                       'probably', 'canPlayType result');
-  this.runner.checkEq(video.canPlayType('audio/mp4', 'com.youtube.playready'),
-                      'maybe', 'canPlayType result');
+  canPlayTypeResult = video.canPlayType('audio/mp4', 'com.youtube.playready');
+  this.runner.check(canPlayTypeResult === 'probably' || canPlayTypeResult === 'maybe',
+                    'check passed: canPlayType result was (' + canPlayTypeResult + ').',
+                    'check failed: canPlayType result was neither (probably) nor (maybe).');
   this.runner.succeed();
 };
 
