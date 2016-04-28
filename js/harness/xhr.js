@@ -94,10 +94,10 @@ var Request = function(manager, logger, file, onload, postLength,
         logger.assert(length <= lengthHeader,
                       'Length of response is smaller than request');
         result = result.subarray(start, start + length);
-        logger.checkEq(result.length, length, 'XHR length');
+        logger.checkEq(result.length, length, 'XHR length', true);
         return result;
       }
-      logger.checkEq(result.length, length, 'XHR length');
+      logger.checkEq(result.length, length, 'XHR length', true);
     }
     return result;
   };
@@ -105,10 +105,10 @@ var Request = function(manager, logger, file, onload, postLength,
   this.send = function(postData) {
     manager.addRequest(this);
     if (postData) {
-      logger.checkEq(this.type, 'POST', 'XHR requestType');
+      logger.checkEq(this.type, 'POST', 'XHR requestType', true);
       this.xhr.send(postData);
     } else {
-      logger.checkEq(this.type, 'GET', 'XHR requestType');
+      logger.checkEq(this.type, 'GET', 'XHR requestType', true);
       this.xhr.send();
     }
   };
@@ -125,14 +125,14 @@ var XHRManager = function(logger) {
   this.totalRequestDuration = 0;
 
   this.addRequest = function(request) {
-    logger.checkEq(requests.indexOf(request), -1, 'request index');
+    logger.checkEq(requests.indexOf(request), -1, 'request index', true);
     requests.push(request);
   };
 
   this.requestFinished = function(request) {
     var currentTime = new Date().getTime();
     this.totalRequestDuration += currentTime - request.startTime;
-    logger.checkNE(requests.indexOf(request), -1, 'request index');
+    logger.checkNE(requests.indexOf(request), -1, 'request index', true);
     requests.splice(requests.indexOf(request), 1);
   };
 

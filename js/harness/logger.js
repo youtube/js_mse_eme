@@ -32,27 +32,30 @@ var Logger = function(log) {
     }
   };
 
-  this.check = function(condition, passMsg, failMsg) {
-    if (condition)
-      this.log(passMsg);
-    else
+  this.check = function(condition, passMsg, failMsg, noLogging) {
+    if (condition) {
+      if (!noLogging) {
+        this.log(passMsg);
+      }
+    } else {
       this.assert(false, failMsg);
+    }
   };
 
-  this.checkEq = function(x, y, name) {
+  this.checkEq = function(x, y, name, noLogging) {
     var result = (x == y) ||
         (typeof(x) === 'number' && typeof(y) === 'number' &&
          isNaN(x) && isNaN(y));
     this.check(result, 'checkEq passed: ' + name + ' is (' + x + ').',
-               name + ' is (' + x + ') which should be (' + y + ')');
+               name + ' is (' + x + ') which should be (' + y + ')', noLogging);
   };
 
-  this.checkNE = function(x, y, name) {
+  this.checkNE = function(x, y, name, noLogging) {
     var result = (x != y) &&
         !((typeof(x) === 'number' && typeof(y) === 'number' &&
            isNaN(x) && isNaN(y)));
     this.check(result, 'checkNE passed: ' + name + ' is (' + x + ').',
-               name + ' is (' + x + ') which shouldn\'t.');
+               name + ' is (' + x + ') which shouldn\'t.', noLogging);
   };
 };
 

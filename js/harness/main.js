@@ -46,6 +46,7 @@ var parseParams = function(testSuiteConfig) {
   config.tests = parseParam('tests');
   config.exclude = parseParam('exclude');
   config.testsMask = parseParam('tests_mask', '');
+  config.testid = parseParam('testid', '');
   return config;
 };
 
@@ -53,6 +54,7 @@ var configureHarness = function(config) {
   window.recycleVideoTag = true;
   window.currentTestType = config.testType;
   TestBase.timeout = config.timeout;
+  window.testid = config.testid;
   window.logging = config.disableLog !== 'true';
   window.loop = config.loop === 'true';
   window.stoponfailure = config.stoponfailure === 'true';

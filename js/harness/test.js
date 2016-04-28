@@ -100,7 +100,6 @@ window.createMSTest = function(name) {
       this.ms.attachTo(video);
     else
       this.video.src = window.URL.createObjectURL(this.ms);
-    this.log('MS test started');
   };
   return t;
 };
@@ -267,7 +266,6 @@ TestRunner.prototype.initialize = function() {
 };
 
 TestRunner.prototype.onfinished = function() {
-  this.log('Finished!');
   if (this.longestTest && this.longestTimeRatio > 0) {
     this.log('Longest test is ' + this.longestTest + ', it takes ' +
              this.longestTimeRatio + ' of its timeout.');
@@ -283,21 +281,29 @@ TestRunner.prototype.onfinished = function() {
     this.lastResult = 'pass';
     this.getNewVideoTag();
     this.log('All tests are completed');
+    for (var i = 0; i < window.globalRunner.testList.length; i++) {
+      var test =  window.globalRunner.testList[i];
+      if (test.prototype.failures > 0) {
+        this.log((i + 1) + ":" + test.prototype.desc + ': Failed with "'
+            + test.prototype.lastError.message + '"');
+      }
+    }
   }
 
-  this.sendTestReport(GetTestResults());
+  if (document.URL.indexOf('yt-dash-mse-test') >= 0) {
+    this.sendTestReport(getTestResults());
+  }
 };
 
 TestRunner.prototype.sendTestReport = function(results) {
-  if (this.clientName) {
-    var xhr = new XMLHttpRequest();
-    var resultsURL = 'http://qual-e.appspot.com/api?command=save_result';
-    resultsURL += '&source=mse_eme_conformance';
-    resultsURL += '&testid=' + this.clientName + '_' + this.runStartTime;
-    xhr.open('POST', resultsURL);
-    xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-    xhr.send(JSON.stringify(results));
-  }
+  var resultsURL = 'https://qual-e.appspot.com/api?command=save_result';
+  resultsURL += '&source=mse_eme_conformance';
+  resultsURL += '&testid=' + (window.testid ? window.testid :
+      (navigator.userAgent + '::' + this.runStartTime));
+
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', resultsURL, true);
+  xhr.send(JSON.stringify(results));
 };
 
 TestRunner.prototype.startTest = function(startIndex, numOfTestToRun) {
@@ -333,7 +339,6 @@ TestRunner.prototype.startNextTest = function() {
            this.currentTest.timeout);
   this.timeouts.setTimeout(this.timeout.bind(this), this.currentTest.timeout);
 
-  this.testList[this.currentTestIdx].prototype.testName = this.currentTest.desc;
   this.testList[this.currentTestIdx].prototype.running = true;
 
   this.updateStatus();
@@ -370,20 +375,22 @@ TestRunner.prototype.succeed = function() {
 TestRunner.prototype.error = function(msg, isTimeout) {
   this.lastResult = isTimeout ? 'timeout' : 'failure';
   var test = this.currentTest;
-  this.log(msg);
-  var stack = '';
 
   try {
     test.dump();
   } catch (e) {
   }
 
+  this.log(msg);
+  this.log((this.currentTestIdx + 1) + ':'
+      + this.testList[this.currentTestIdx].prototype.desc + ' has failed.');
+  var stack = '';
+
   try {
     var x = y.z.u.v.w;
   } catch (e) {
     if (e && e.stack)
     {
-      this.log(e.stack);
       stack = e.stack;
     }
   }
@@ -475,33 +482,25 @@ TestRunner.prototype.teardownCurrentTest = function(isTimeout) {
 window.TestBase = TestBase;
 window.TestRunner = TestRunner;
 
-window.GetTestResults = function(testStartId, testEndId) {
+window.getTestResults = function(testStartId, testEndId) {
   testStartId = testStartId || 0;
   testEndId = testEndId || window.globalRunner.testList.length;
-  var results = [];
+  var results = {
+    pass: [],
+    fail: []
+  };
 
   for (var i = testStartId; i < testEndId; ++i) {
     if (window.globalRunner.testList[i]) {
-      var newResult = {
-        id: i,
-        name: window.globalRunner.testList[i].prototype.testName,
-        passed: false,
-        passes: 0,
-        error: ''
-      };
-
-      if (window.globalRunner.testList[i].prototype.passes > 0) {
-        newResult.passed = true;
-        newResult.passes = window.globalRunner.testList[i].prototype.passes;
+      var test = window.globalRunner.testList[i];
+      var name = test.prototype.category + test.prototype.desc;
+      if (test.prototype.failures > 0) {
+        results.fail.push(name);
+      } else if (test.prototype.passes > 0) {
+        results.pass.push(name);
       }
-      else {
-        newResult.passed = false;
-        newResult.error = window.globalRunner.testList[i].prototype.lastError;
-      }
-      results.push(newResult);
     }
   }
-
   return results;
 };
 
