@@ -392,9 +392,10 @@ function parseWebM(data, opt_totalSize) {
   // Done with initialization segment. On to the cues...if there's any.
   var res = [];
   if (needsCluster) {
-    var clusterOffset = parser.getCurrentOffset();
     while (!parser.atEos()) {
       if (parser.readId() == 0x1f43b675) {
+        // Subtract 4 bytes for the size of the id.
+        var clusterOffset = parser.getCurrentOffset() - 4;
         var clusterSize = parser.peekSize();
         var clusterParser = parser.readSubElement();
         if (clusterParser.readId() != 0xe7) {

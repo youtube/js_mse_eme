@@ -582,10 +582,10 @@ window.appendAt = function(timeoutManager, mp, sb, chain, t, gap, cb) {
       } else {
         if (!safeAppend(sb, buffer))
           return;
-        buffered_end = findBufferedRangeEndForTime(sb, t);
         timeoutManager.setTimeout(loop, 0);
       }
     } else {
+      buffered_end = findBufferedRangeEndForTime(sb, t);
       if (t + gap >= (buffered_end || 0) && !mp.error) {
         chain.pull(loop);
       } else {

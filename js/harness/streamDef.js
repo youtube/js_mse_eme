@@ -76,11 +76,11 @@ var StreamDef = (function() {
        VideoHuge: ['media/feelings_vp9-20130806-247.webm', 27757852, 135.46],
        Video1MB: ['media/vp9-video-1mb.webm', 1103716, 1.00],
        VideoTinyClearKey: [],
-       VideoNormalClearKey: ['media/vid_vp9_encrypted02.webm', 22442453, 181.00, {
-           'key': new Uint8Array([170, 122, 233, 193, 242, 140, 195, 33,
-                                  175, 117, 89, 151, 134, 174, 206, 146]),
-           'kid': new Uint8Array([48, 218, 171, 240, 154, 128, 67, 95,
-                                  153, 186, 122, 253, 240, 102, 112, 151])}],
+       VideoNormalClearKey: ['media/vid_vp9_encrypted03.webm', 657432, 6.00, {
+           'key': new Uint8Array([186, 232, 192, 193, 246, 129, 195, 1,
+                                  235, 26, 73, 6, 214, 222, 222, 17]),
+           'kid': new Uint8Array([65, 192, 59, 240, 250, 198, 147, 131,
+                                  234, 178, 123, 253, 240, 131, 240, 129])}],
        VideoHugeClearKey: [],
        VideoStreamYTCenc: ['media/vid_vp9_encrypted04.webm', 657432, 6.00, {
            'key': new Uint8Array([186, 232, 192, 193, 246, 129, 195, 1,
