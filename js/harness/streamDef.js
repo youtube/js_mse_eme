@@ -61,6 +61,7 @@ var StreamDef = (function() {
         VideoSmallStreamYTCenc: ['media/oops_cenc-20121114-143-no-clear-start.mp4', 12045546, 242.71, {
             'key': new Uint8Array([131, 162, 92, 175, 153, 178, 172, 41,
                                    2, 167, 251, 126, 233, 215, 230, 185])}],
+        VideoSmallCencWidevine: ['media/oops_cenc-20121114-142.mp4', 8017271, 242.71],
         ProgressiveLow: ['media/car_20130125_18.mp4', 15477531, 181.55],
         FrameGap: ['media/nq-frames24-tfdt23.mp4', 11883895, 242.46],
         FrameOverlap: ['media/nq-frames23-tfdt24.mp4', 11883895, 242.46],
@@ -93,6 +94,7 @@ var StreamDef = (function() {
                                   235, 26, 73, 5, 54, 222, 222, 193]),
            'kid': new Uint8Array([135, 240, 59, 224, 234, 214, 147, 131,
                                   234, 176, 123, 253, 240, 131, 240, 220])}],
+       VideoSmallCencWidevine: [],
        ProgressiveLow: ['media/feelings_vp9-20130806-243.webm', 7902885, 135.46],
        FrameGap: [],
        FrameOverlap: [],

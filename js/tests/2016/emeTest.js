@@ -87,14 +87,14 @@ function setupBaseEmeTest(video, runner, videoStream, audioStream, cbSpies) {
 
   function onSourceOpen(e) {
     if (audioStream != null) {
-      audioSb = ms.addSourceBuffer(StreamDef.AudioType);
+      audioSb = ms.addSourceBuffer(audioStream.type);
       fetchStream(audioStream, function() {
         audioSb.appendBuffer(this.getResponseData());
       });
     }
 
     if (videoStream != null) {
-      videoSb = ms.addSourceBuffer(StreamDef.VideoType);
+      videoSb = ms.addSourceBuffer(videoStream.type);
       fetchStream(videoStream, function() {
         videoSb.appendBuffer(this.getResponseData());
       });
@@ -122,7 +122,7 @@ function checkDOMError(runner, e, code, name) {
 }
 
 
-var testCanPlayClearKey = createEmeTest('CanPlayClearKey');
+var testCanPlayClearKey = createEmeTest('CanPlayClearKey', 'ClearKey');
 testCanPlayClearKey.prototype.title =
     'Test if canPlay return is correct for clear key.';
 testCanPlayClearKey.prototype.start = function(runner, video) {
@@ -148,7 +148,8 @@ testCanPlayClearKey.prototype.start = function(runner, video) {
     runner.fail(err);
   }
   video.addEventListener('timeupdate', function onTimeUpdate(e) {
-    if (!video.paused && video.currentTime >= 3) {
+    if (!video.paused && video.currentTime >= 3 &&
+        testEmeHandler.keyAddedCount == 1) {
       video.removeEventListener('timeupdate', onTimeUpdate);
       runner.succeed();
     }
@@ -157,7 +158,7 @@ testCanPlayClearKey.prototype.start = function(runner, video) {
 };
 
 
-var testClearKeyAudio = createEmeTest('ClearKeyAudio');
+var testClearKeyAudio = createEmeTest('ClearKeyAudio', 'ClearKey');
 testClearKeyAudio.prototype.title =
     'Test if we can play audio encrypted with ClearKey encryption.';
 testClearKeyAudio.prototype.start = function(runner, video) {
@@ -172,7 +173,8 @@ testClearKeyAudio.prototype.start = function(runner, video) {
     runner.fail(err);
   }
   video.addEventListener('timeupdate', function onTimeUpdate(e) {
-    if (!video.paused && video.currentTime >= 3) {
+    if (!video.paused && video.currentTime >= 3 &&
+        testEmeHandler.keyAddedCount == 1) {
       video.removeEventListener('timeupdate', onTimeUpdate);
       runner.checkGE(video.currentTime, 3, 'currentTime');
       runner.succeed();
@@ -182,7 +184,7 @@ testClearKeyAudio.prototype.start = function(runner, video) {
 };
 
 
-var testClearKeyVideo = createEmeTest('ClearKeyVideo');
+var testClearKeyVideo = createEmeTest('ClearKeyVideo', 'ClearKey');
 testClearKeyVideo.prototype.title =
     'Test if we can play video encrypted with ClearKey encryption.';
 testClearKeyVideo.prototype.start = function(runner, video) {
@@ -197,7 +199,8 @@ testClearKeyVideo.prototype.start = function(runner, video) {
     runner.fail(err);
   }
   video.addEventListener('timeupdate', function onTimeUpdate(e) {
-    if (!video.paused && video.currentTime >= 3) {
+    if (!video.paused && video.currentTime >= 3 &&
+        testEmeHandler.keyAddedCount == 1) {
       video.removeEventListener('timeupdate', onTimeUpdate);
       runner.checkGE(video.currentTime, 3, 'currentTime');
       runner.succeed();
@@ -207,9 +210,9 @@ testClearKeyVideo.prototype.start = function(runner, video) {
 };
 
 
-var testDualKey = createEmeTest('DualKey');
-testDualKey.prototype.title = 'Tests multiple video keys';
-testDualKey.prototype.start = function(runner, video) {
+var testClearKeyDualKey = createEmeTest('ClearKeyDualKey', 'ClearKey');
+testClearKeyDualKey.prototype.title = 'Tests multiple video keys';
+testClearKeyDualKey.prototype.start = function(runner, video) {
   var ms = new MediaSource();
   var testEmeHandler = new EMEHandler();
   var videoStream1 = StreamDef.VideoStreamYTCenc;
@@ -241,7 +244,7 @@ testDualKey.prototype.start = function(runner, video) {
     });
 
     video.addEventListener('timeupdate', function onTimeUpdate() {
-      if (video.currentTime >= 10 - 1) {
+      if (video.currentTime >= 10 - 1 && testEmeHandler.keyAddedCount == 2) {
         video.removeEventListener('timeupdate', onTimeUpdate);
         runner.succeed();
       }
@@ -515,6 +518,31 @@ testClearKeyAddKeyAsyncEvents.prototype.start = function(runner, video) {
   } catch(err) {
     runner.fail(err);
   }
+};
+
+
+var testWidevineH264Video = createEmeTest('WidevineH264Video',
+                                          'Optional Widevine', false);
+testWidevineH264Video.prototype.title =
+    'Test if we can play video encrypted with Widevine encryption.';
+testWidevineH264Video.prototype.start = function(runner, video) {
+  var videoStream = StreamDef.H264.VideoSmallCencWidevine;
+  try {
+    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream, null,
+                                          null);
+    testEmeHandler.init(video, videoStream.type, null, null, 'widevine');
+  } catch(err) {
+    runner.fail(err);
+  }
+  video.addEventListener('timeupdate', function onTimeUpdate(e) {
+    if (!video.paused && video.currentTime >= 15 &&
+        testEmeHandler.keyAddedCount == 1) {
+      video.removeEventListener('timeupdate', onTimeUpdate);
+      runner.checkGE(video.currentTime, 15, 'currentTime');
+      runner.succeed();
+    }
+  });
+  video.play();
 };
 
 
