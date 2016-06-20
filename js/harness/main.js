@@ -56,17 +56,7 @@ var configureHarness = function(config) {
   TestBase.timeout = config.timeout;
   window.testid = config.testid;
   window.logging = config.disableLog !== 'true';
-  var loop;
-  if (config.loop === 'true')
-    loop = Number.POSITIVE_INFINITY;
-  else {
-    loop = Number.parseInt(config.loop);
-    if (!Number.isFinite(loop))
-      loop = 1;
-    else
-      loop = Math.max(1, loop);
-  }
-  window.loop = loop;
+  window.loop = config.loop === 'true';
   window.stoponfailure = config.stoponfailure === 'true';
   window.enablewebm = config.enablewebm === 'true';
 
