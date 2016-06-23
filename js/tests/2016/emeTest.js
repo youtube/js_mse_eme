@@ -122,10 +122,10 @@ function checkDOMError(runner, e, code, name) {
 }
 
 
-var testCanPlayClearKey = createEmeTest('CanPlayClearKey', 'ClearKey');
-testCanPlayClearKey.prototype.title =
+var testClearKeySupport = createEmeTest('ClearKeySupport', 'ClearKey');
+testClearKeySupport.prototype.title =
     'Test if canPlay return is correct for clear key.';
-testCanPlayClearKey.prototype.start = function(runner, video) {
+testClearKeySupport.prototype.start = function(runner, video) {
   runner.assert(
       video.canPlayType(
           StreamDef.VideoType, 'org.w3.clearkey') === 'probably' ||
@@ -140,10 +140,10 @@ testCanPlayClearKey.prototype.start = function(runner, video) {
       "canPlay doesn't support audio and clearkey properly");
   try {
     var videoStream = StreamDef.VideoStreamYTCenc;
-    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream, null,
-                                          null);
-    testEmeHandler.init(video, StreamDef.VideoType, videoStream.get('kid'),
-                        videoStream.get('key'), 'clearkey');
+    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream, null);
+    var licenseManager = new LicenseManager(video, videoStream,
+                                            LicenseManager.CLEARKEY);
+    testEmeHandler.init(video, licenseManager);
   } catch(err) {
     runner.fail(err);
   }
@@ -166,9 +166,10 @@ testClearKeyAudio.prototype.start = function(runner, video) {
   var audioStream = StreamDef.AudioNormalClearKey;
   try {
     var testEmeHandler = setupBaseEmeTest(video, runner, videoStream,
-                                          audioStream, null);
-    testEmeHandler.init(video, StreamDef.AudioType, audioStream.get('kid'),
-                        audioStream.get('key'), 'clearkey');
+                                          audioStream);
+    var licenseManager = new LicenseManager(video, audioStream,
+                                            LicenseManager.CLEARKEY);
+    testEmeHandler.init(video, licenseManager);
   } catch(err) {
     runner.fail(err);
   }
@@ -192,9 +193,10 @@ testClearKeyVideo.prototype.start = function(runner, video) {
   var audioStream = StreamDef.AudioTiny;
   try {
     var testEmeHandler = setupBaseEmeTest(video, runner, videoStream,
-                                          audioStream, null);
-    testEmeHandler.init(video, StreamDef.VideoType, videoStream.get('kid'),
-                        videoStream.get('key'), 'clearkey');
+                                          audioStream);
+    var licenseManager = new LicenseManager(video, videoStream,
+                                            LicenseManager.CLEARKEY);
+    testEmeHandler.init(video, licenseManager);
   } catch(err) {
     runner.fail(err);
   }
@@ -217,10 +219,9 @@ testClearKeyDualKey.prototype.start = function(runner, video) {
   var testEmeHandler = new EMEHandler();
   var videoStream1 = StreamDef.VideoStreamYTCenc;
   var videoStream2 = StreamDef.VideoSmallStreamYTCenc;
-  testEmeHandler.init(video, StreamDef.VideoType,
-                      [videoStream1.get('kid'), videoStream2.get('kid')],
-                      [videoStream1.get('key'), videoStream2.get('key')],
-                      'clearkey');
+  var licenseManager = new LicenseManager(video, [videoStream1, videoStream2],
+                                          LicenseManager.CLEARKEY);
+  testEmeHandler.init(video, licenseManager);
 
   // Open two sources with two distinct licenses.
   function onSourceOpen(e) {
@@ -319,30 +320,8 @@ testWidevineSupport.prototype.start = function(runner, video) {
 }
 
 
-var testInvalidKey = createEmeTest('InvalidKey', 'Optional EME', false);
-testInvalidKey.prototype.title =
-    'Test if an invalid key will produce the expected error.';
-testInvalidKey.prototype.start = function(runner, video) {
-  var videoStream = StreamDef.VideoStreamYTCenc;
-  var invalidKey = new Uint8Array([
-    0x53, 0xa6, 0xcb, 0x3a, 0xd8, 0xfb, 0x58, 0x8f,
-    0xbe, 0x92, 0xe6, 0xdc, 0x72, 0x65, 0x0c, 0x86]);
-  var self = this;
-  try {
-    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream, null, null);
-    testEmeHandler.init(video, StreamDef.VideoType, videoStream.get('kid'),
-                        invalidKey, 'widevine', function(e) {
-      self.runner.checkEq(e.errorCode.code, 1);
-      self.runner.succeed();
-    });
-  } catch(err) {
-    runner.fail(err);
-  }
-  video.play();
-};
-
-
-var testClearKeyNeedKey = createEmeTest('CKNeedKey', 'Optional EME', false);
+var testClearKeyNeedKey = createEmeTest('ClearKeyNeedKey', 'Optional ClearKey',
+                                        false);
 testClearKeyNeedKey.prototype.title = 'Test ClearKey needkey callback';
 testClearKeyNeedKey.prototype.start = function(runner, video) {
   var videoStream = StreamDef.VideoStreamYTCenc;
@@ -352,16 +331,17 @@ testClearKeyNeedKey.prototype.start = function(runner, video) {
         runner.succeed();
       }
     });
-    testEmeHandler.init(video, StreamDef.VideoType, videoStream.get('kid'),
-                        videoStream.get('key'), 'clearkey');
+    var licenseManager = new LicenseManager(video, videoStream,
+                                            LicenseManager.CLEARKEY);
+    testEmeHandler.init(video, licenseManager);
   } catch(err) {
     runner.fail(err);
   }
 };
 
 
-var testClearKeyGenerateKeyRequest = createEmeTest('CKGenKeyRequest',
-                                                   'Optional EME', false);
+var testClearKeyGenerateKeyRequest = createEmeTest('ClearKeyGenKeyRequest',
+                                                   'Optional ClearKey', false);
 testClearKeyGenerateKeyRequest.prototype.title =
     'Test ClearKey generateKeyRequest input validation';
 testClearKeyGenerateKeyRequest.prototype.start = function(runner, video) {
@@ -386,16 +366,17 @@ testClearKeyGenerateKeyRequest.prototype.start = function(runner, video) {
         }
       }
     });
-    testEmeHandler.init(video, StreamDef.VideoType, videoStream.get('kid'),
-                        videoStream.get('key'), 'clearkey');
+    var licenseManager = new LicenseManager(video, videoStream,
+                                            LicenseManager.CLEARKEY);
+    testEmeHandler.init(video, licenseManager);
   } catch(err) {
     runner.fail(err);
   }
 };
 
 
-var testClearKeyKeyMessage = createEmeTest('CKKeyMessage', 'Optional EME',
-                                           false);
+var testClearKeyKeyMessage = createEmeTest('ClearKeyKeyMessage',
+                                           'Optional ClearKey', false);
 testClearKeyKeyMessage.prototype.title = 'Test ClearKey keymessage event';
 testClearKeyKeyMessage.prototype.start = function(runner, video) {
   var videoStream = StreamDef.VideoStreamYTCenc;
@@ -405,15 +386,17 @@ testClearKeyKeyMessage.prototype.start = function(runner, video) {
         runner.succeed();
       }
     });
-    testEmeHandler.init(video, StreamDef.VideoType, videoStream.get('kid'),
-                        videoStream.get('key'), 'clearkey');
+    var licenseManager = new LicenseManager(video, videoStream,
+                                            LicenseManager.CLEARKEY);
+    testEmeHandler.init(video, licenseManager);
   } catch(err) {
     runner.fail(err);
   }
 };
 
 
-var testClearKeyAddKey = createEmeTest('CKAddKey', 'Optional EME', false);
+var testClearKeyAddKey = createEmeTest('ClearKeyAddKey', 'Optional ClearKey',
+                                       false);
 testClearKeyAddKey.prototype.title = 'Test ClearKey addKey function';
 testClearKeyAddKey.prototype.start = function(runner, video) {
   var videoStream = StreamDef.VideoStreamYTCenc;
@@ -474,16 +457,17 @@ testClearKeyAddKey.prototype.start = function(runner, video) {
         runner.succeed();
       }
     });
-    testEmeHandler.init(video, StreamDef.VideoType, videoStream.get('kid'),
-                        videoStream.get('key'), 'clearkey');
+    var licenseManager = new LicenseManager(video, videoStream,
+                                            LicenseManager.CLEARKEY);
+    testEmeHandler.init(video, licenseManager);
   } catch(err) {
     runner.fail(err);
   }
 };
 
 
-var testClearKeyAddKeyAsyncEvents = createEmeTest('CKAddKeyAsyncEvents',
-                                                  'Optional EME', false);
+var testClearKeyAddKeyAsyncEvents = createEmeTest('ClearKeyAddKeyAsyncEvents',
+                                                  'Optional ClearKey', false);
 testClearKeyAddKeyAsyncEvents.prototype.title =
     'Test ClearKey addKey response events';
 testClearKeyAddKeyAsyncEvents.prototype.start = function(runner, video) {
@@ -513,11 +497,43 @@ testClearKeyAddKeyAsyncEvents.prototype.start = function(runner, video) {
         this._onKeyMessage(e);
       }
     });
-    testEmeHandler.init(video, StreamDef.VideoType, videoStream.get('kid'),
-                        videoStream.get('key'), 'clearkey');
+    var licenseManager = new LicenseManager(video, videoStream,
+                                            LicenseManager.CLEARKEY);
+    testEmeHandler.init(video, licenseManager);
   } catch(err) {
     runner.fail(err);
   }
+};
+
+
+var testWidevineInvalidKey = createEmeTest('WidevineInvalidKey',
+                                           'Optional Widevine', false);
+testWidevineInvalidKey.prototype.title =
+    'Test if an invalid key will produce the expected error.';
+testWidevineInvalidKey.prototype.start = function(runner, video) {
+  var videoStream = StreamDef.VideoStreamYTCenc;
+  var invalidKey = new Uint8Array([
+    0x53, 0xa6, 0xcb, 0x3a, 0xd8, 0xfb, 0x58, 0x8f,
+    0xbe, 0x92, 0xe6, 0xdc, 0x72, 0x65, 0x0c, 0x86]);
+  var licenseManager = new LicenseManager(video, videoStream,
+                                          LicenseManager.WIDEVINE);
+  licenseManager.keys[0] = invalidKey;
+  var self = this;
+  try {
+    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream, null, {
+      onKeyMessage: function(evt) {
+        video.addKey(licenseManager.keySystem, licenseManager.keys[0],
+                     licenseManager.kids[0], evt.sessionId);
+      }
+    });
+    testEmeHandler.init(video, licenseManager, function(e) {
+      self.runner.checkEq(e.errorCode.code, 1);
+      self.runner.succeed();
+    });
+  } catch(err) {
+    runner.fail(err);
+  }
+  video.play();
 };
 
 
@@ -526,11 +542,116 @@ var testWidevineH264Video = createEmeTest('WidevineH264Video',
 testWidevineH264Video.prototype.title =
     'Test if we can play video encrypted with Widevine encryption.';
 testWidevineH264Video.prototype.start = function(runner, video) {
-  var videoStream = StreamDef.H264.VideoSmallCencWidevine;
+  var videoStream = StreamDef.H264.VideoSmallCenc;
   try {
-    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream, null,
-                                          null);
-    testEmeHandler.init(video, videoStream.type, null, null, 'widevine');
+    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream, null);
+    var licenseManager = new LicenseManager(video, videoStream,
+                                            LicenseManager.WIDEVINE);
+    testEmeHandler.init(video, licenseManager);
+  } catch(err) {
+    runner.fail(err);
+  }
+  video.addEventListener('timeupdate', function onTimeUpdate(e) {
+    if (!video.paused && video.currentTime >= 15 &&
+        testEmeHandler.keyAddedCount == 1) {
+      video.removeEventListener('timeupdate', onTimeUpdate);
+      runner.checkGE(video.currentTime, 15, 'currentTime');
+      runner.succeed();
+    }
+  });
+  video.play();
+};
+
+
+var testWidevineAacAudio = createEmeTest('WidevineAacAudio',
+                                          'Optional Widevine', false);
+testWidevineAacAudio.prototype.title =
+    'Test if we can play video encrypted with Widevine encryption.';
+testWidevineAacAudio.prototype.start = function(runner, video) {
+  var audioStream = StreamDef.AudioSmallCenc;
+  try {
+    var testEmeHandler = setupBaseEmeTest(video, runner, audioStream, null);
+    var licenseManager = new LicenseManager(video, audioStream,
+                                            LicenseManager.WIDEVINE);
+    testEmeHandler.init(video, licenseManager);
+  } catch(err) {
+    runner.fail(err);
+  }
+  video.addEventListener('timeupdate', function onTimeUpdate(e) {
+    if (!video.paused && video.currentTime >= 15 &&
+        testEmeHandler.keyAddedCount == 1) {
+      video.removeEventListener('timeupdate', onTimeUpdate);
+      runner.checkGE(video.currentTime, 15, 'currentTime');
+      runner.succeed();
+    }
+  });
+  video.play();
+};
+
+
+var testWidevineVP9Video = createEmeTest('WidevineVP9Video',
+                                          'Optional Widevine', false);
+testWidevineVP9Video.prototype.title =
+    'Test if we can play video encrypted with Widevine encryption.';
+testWidevineVP9Video.prototype.start = function(runner, video) {
+  var videoStream = StreamDef.VP9.VideoHighEnc;
+  try {
+    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream, null);
+    var licenseManager = new LicenseManager(video, videoStream,
+                                            LicenseManager.WIDEVINE);
+    testEmeHandler.init(video, licenseManager);
+  } catch(err) {
+    runner.fail(err);
+  }
+  video.addEventListener('timeupdate', function onTimeUpdate(e) {
+    if (!video.paused && video.currentTime >= 15 &&
+        testEmeHandler.keyAddedCount == 1) {
+      video.removeEventListener('timeupdate', onTimeUpdate);
+      runner.checkGE(video.currentTime, 15, 'currentTime');
+      runner.succeed();
+    }
+  });
+  video.play();
+};
+
+
+var testPlayReadyH264Video = createEmeTest('PlayReadyH264Video',
+                                          'Optional PlayReady', false);
+testPlayReadyH264Video.prototype.title =
+    'Test if we can play video encrypted with PlayReady encryption.';
+testPlayReadyH264Video.prototype.start = function(runner, video) {
+  var videoStream = StreamDef.H264.VideoSmallCenc;
+  try {
+    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream, null);
+    var licenseManager = new LicenseManager(video, videoStream,
+                                            LicenseManager.PLAYREADY);
+    testEmeHandler.init(video, licenseManager);
+  } catch(err) {
+    runner.fail(err);
+  }
+  video.addEventListener('timeupdate', function onTimeUpdate(e) {
+    if (!video.paused && video.currentTime >= 15 &&
+        testEmeHandler.keyAddedCount == 1) {
+      video.removeEventListener('timeupdate', onTimeUpdate);
+      runner.checkGE(video.currentTime, 15, 'currentTime');
+      runner.succeed();
+    }
+  });
+  video.play();
+};
+
+
+var testPlayReadyAacAudio = createEmeTest('PlayReadyAacAudio',
+                                          'Optional PlayReady', false);
+testPlayReadyAacAudio.prototype.title =
+    'Test if we can play video encrypted with PlayReady encryption.';
+testPlayReadyAacAudio.prototype.start = function(runner, video) {
+  var audioStream = StreamDef.AudioSmallCenc;
+  try {
+    var testEmeHandler = setupBaseEmeTest(video, runner, audioStream, null);
+    var licenseManager = new LicenseManager(video, audioStream,
+                                            LicenseManager.PLAYREADY);
+    testEmeHandler.init(video, licenseManager);
   } catch(err) {
     runner.fail(err);
   }

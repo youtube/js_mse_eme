@@ -17,44 +17,16 @@ limitations under the License.
 
 function EMEHandler() {}
 
-EMEHandler.prototype.init = function(video, mime, kids, keys, flavor, keyErrorCb) {
+EMEHandler.prototype.init = function(video, licenseManager, keyErrorCb) {
   this.video = video;
-  this.mime = mime;
-  // Expecting mime to have a space separating the container format and codecs.
-  this.format = mime.split(" ")[0];
-  if (keys != null) {
-    this.keys = keys instanceof Array ? keys : [keys];
-    this.kids = kids instanceof Array ? kids : [kids];
-  } else {
-    this.keys = null;
-    this.kids = null;
-  }
+  this.licenseManager = licenseManager;
+  this.keySystem = licenseManager.keySystem;
+  this.keyAddedCount = 0;
 
   normalizeAttribute(video, 'generateKeyRequest');
   normalizeAttribute(video, 'addKey');
 
   this.initDataQueue = [];
-
-  this.licenseServers = {
-    playready: 'http://dash-mse-test.appspot.com/api/drm/playready' +
-               '?drm_system=playready&source=YOUTUBE&' +
-               'video_id=03681262dc412c06&ip=0.0.0.0&ipbits=0&' +
-               'expire=19000000000&' +
-               'sparams=ip,ipbits,expire,drm_system,source,video_id&' +
-               'signature=3BB038322E72D0B027F7233A733CD67D518AF675.' +
-               '2B7C39053DA46498D23F3BCB87596EF8FD8B1669&key=test_key1',
-    widevine: 'http://dash-mse-test.appspot.com/api/drm/widevine' +
-              '?drm_system=widevine&source=YOUTUBE&' +
-              'video_id=03681262dc412c06&ip=0.0.0.0&ipbits=0&' +
-              'expire=19000000000&' +
-              'sparams=ip,ipbits,expire,source,video_id,drm_system&' +
-              'signature=289105AFC9747471DB0D2A998544CC1DAF75B8F9.' +
-              '18DE89BB7C1CE9B68533315D0F84DF86387C6BB3&key=test_key1'
-  };
-
-  this.flavor = null;
-  this.keySystem = null;
-  this.keyAddedCount = 0;
 
   this.keyErrorCb = (!!keyErrorCb ? keyErrorCb : function(e) {});
 
@@ -96,8 +68,6 @@ EMEHandler.prototype.init = function(video, mime, kids, keys, flavor, keyErrorCb
 
   normalizeAttribute(video, 'setMediaKeys');
 
-  this.setFlavor(flavor);
-
   return this;
 };
 
@@ -105,35 +75,6 @@ EMEHandler.prototype.init = function(video, mime, kids, keys, flavor, keyErrorCb
  * Register EMEHandler.
  */
 window.EMEHandler = EMEHandler;
-
-EMEHandler.CLEARKEY = 'clearkey';
-EMEHandler.WIDEVINE = 'widevine';
-EMEHandler.PLAYREADY = 'playready';
-
-/**
- * Mapping between DRM flavors to the accepted keysystem strings.
- */
-EMEHandler.kFlavorToSystem = {
-  'clearkey': ['org.w3.clearkey', 'webkit-org.w3.clearkey'],
-  'widevine': ['com.widevine.alpha'],
-  'playready': ['com.youtube.playready', 'com.microsoft.playready']
-};
-
-/**
- * Internal function to sets the DRM flavor to use.
- * @param {string} flavor Optional string to specify specific flavor keystring.
- */
-EMEHandler.prototype.setFlavor = function(flavor) {
-  var systems = EMEHandler.kFlavorToSystem[flavor];
-  for (var i in systems) {
-    if (!this.video.canPlayType(this.mime, systems[i])) continue;
-
-    this.flavor = flavor;
-    this.keySystem = systems[i];
-    return;
-  }
-  throw 'Could not find a compatible key system';
-};
 
 /**
  * Default callback for onNeedKey event from EME system.
@@ -147,8 +88,9 @@ EMEHandler.prototype.onNeedKey = function(e) {
   }
 
   // Add clear key id to initData for gecko based browsers.
-  if (this.mime.indexOf('mp4') > -1 && !extractBMFFClearKeyID(e.initData)) {
-    initData = addBMFFClearKeyID(e.initData, this.kids[0]);
+  if (this.licenseManager.mime.indexOf('mp4') > -1 &&
+      !extractBMFFClearKeyID(e.initData)) {
+    initData = addBMFFClearKeyID(e.initData, this.licenseManager.kids[0]);
   }
 
   this.video.generateKeyRequest(this.keySystem, initData);
@@ -161,34 +103,12 @@ EMEHandler.prototype.onNeedKey = function(e) {
  */
 EMEHandler.prototype.onKeyMessage = function(e) {
   dlog(2, 'onKeyMessage()');
-  var message = e.message;
   var initData = this.initDataQueue.shift();
 
-  if (EMEHandler.CLEARKEY == this.flavor) {
-    var key = this.keys.shift();
-
-    // Extract kid.
-    var kid = this.kids.shift();
-    if (kid == null) {
-      var kid = extractBMFFClearKeyID(initData);
-    }
-    this.video.addKey(this.keySystem, key, kid, e.sessionId);
-  } else if (EMEHandler.WIDEVINE == this.flavor) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', this.licenseServers[EMEHandler.WIDEVINE]);
-    var self = this;
-    xhr.addEventListener('load', function(evt) {
-      if (evt.target.status < 200 || evt.target.status > 299) {
-        dlog(2, 'onload() failure');
-      }
-      var responseString = arrayToString(
-          new Uint8Array(evt.target.response)).split('\r\n').pop();
-      var key = stringToArray(responseString);
-      self.video.addKey(self.keySystem, key, initData, e.sessionId);
-    });
-    xhr.responseType = 'arraybuffer';
-    xhr.send(message);
-  }
+  var self = this;
+  this.licenseManager.acquireLicense(e.message, initData, function(key, kid) {
+    self.video.addKey(self.keySystem, key, kid, e.sessionId);
+  });
 };
 
 /**

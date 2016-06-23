@@ -35,6 +35,10 @@ var StreamDef = (function() {
         'kid': new Uint8Array([0x60, 0x06, 0x1e, 0x01, 0x7e, 0x47, 0x7e, 0x87,
                                0x7e, 0x57, 0xd0, 0x0d, 0x1e, 0xd0, 0x0d, 0x1e])}],
     AudioHugeClearKey: ['media/car_cenc-20120827-8d.mp4', 5918365, 181.58],
+    AudioSmallCenc: ['media/oops_cenc-20121114-148.mp4', 999679, 242.71, {
+        'video_id': '03681262dc412c06',
+        'playready_signature': '448279561E2755699618BE0A2402189D4A30B03B.0CD6A27286BD2DAF00577FFA21928665DCD320C2',
+        'widevine_signature': '9C4BE99E6F517B51FED1F0B3B31966D3C5DAB9D6.6A1F30BB35F3A39A4CA814B731450D4CBD198FFD'}],
   };
 
   var videoStreamDef = {
@@ -61,7 +65,10 @@ var StreamDef = (function() {
         VideoSmallStreamYTCenc: ['media/oops_cenc-20121114-143-no-clear-start.mp4', 12045546, 242.71, {
             'key': new Uint8Array([131, 162, 92, 175, 153, 178, 172, 41,
                                    2, 167, 251, 126, 233, 215, 230, 185])}],
-        VideoSmallCencWidevine: ['media/oops_cenc-20121114-142.mp4', 8017271, 242.71],
+        VideoSmallCenc: ['media/oops_cenc-20121114-142.mp4', 8017271, 242.71, {
+            'video_id': '03681262dc412c06',
+            'playready_signature': '448279561E2755699618BE0A2402189D4A30B03B.0CD6A27286BD2DAF00577FFA21928665DCD320C2',
+            'widevine_signature': '9C4BE99E6F517B51FED1F0B3B31966D3C5DAB9D6.6A1F30BB35F3A39A4CA814B731450D4CBD198FFD'}],
         ProgressiveLow: ['media/car_20130125_18.mp4', 15477531, 181.55],
         FrameGap: ['media/nq-frames24-tfdt23.mp4', 11883895, 242.46],
         FrameOverlap: ['media/nq-frames23-tfdt24.mp4', 11883895, 242.46],
@@ -94,7 +101,10 @@ var StreamDef = (function() {
                                   235, 26, 73, 5, 54, 222, 222, 193]),
            'kid': new Uint8Array([135, 240, 59, 224, 234, 214, 147, 131,
                                   234, 176, 123, 253, 240, 131, 240, 220])}],
-       VideoSmallCencWidevine: [],
+       VideoSmallCenc: [],
+       VideoHighEnc: ['media/sintel_enc-20160621-273.webm', 68919485, 887.958, {
+           'video_id': '31e1685307acf271',
+           'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],
        ProgressiveLow: ['media/feelings_vp9-20130806-243.webm', 7902885, 135.46],
        FrameGap: [],
        FrameOverlap: [],
