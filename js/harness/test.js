@@ -244,7 +244,7 @@ TestRunner.prototype.initialize = function() {
   else if (this.viewType === 'compact')
     this.testView = compactTestView.create(this.testSuiteVer, this.fields);
   else
-    this.testView = fullTestView.create(this.testSuiteVer, this.fields);
+    this.testView = compactTestView.create(this.testSuiteVer, this.fields);
 
   this.testView.onrunselected = function() {
     self.startTest(0, self.testList.length);

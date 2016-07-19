@@ -28,16 +28,6 @@ window.testSuiteDescriptions = {
     title: 'Encrypted Media Extensions Conformance Tests',
     heading: 'EME Conformance Tests'
    },
-  'performance-test': {
-    name: 'MSE Performance Tests',
-    title: 'Media Source and Encrypted Media Conformance Tests',
-    heading: 'MSE Performance Tests'
-  },
-  'endurance-test': {
-    name: 'MSE Endurance Tests',
-    title: 'Media Source and Encrypted Media Conformance Tests',
-    heading: 'MSE Endurance Tests'
-  },
   'progressive-test': {
     name: 'Progressive Tests',
     title: 'HTML Media Element Conformance Tests',
@@ -49,8 +39,6 @@ window.testSuiteVersions = {
   '0.5' : {
     'testSuites' : [
       'conformance-test',
-      'performance-test',
-      'endurance-test',
       'progressive-test'
     ],
     'config' : {
@@ -61,8 +49,6 @@ window.testSuiteVersions = {
   '0.6' : {
     'testSuites' : [
       'conformance-test',
-      'performance-test',
-      'endurance-test',
       'progressive-test'
     ],
     'config' : {
@@ -74,8 +60,6 @@ window.testSuiteVersions = {
     'testSuites' : [
       'conformance-test',
       'encryptedmedia-test',
-      'performance-test',
-      'endurance-test',
       'progressive-test'
     ],
     'config' : {
@@ -87,8 +71,6 @@ window.testSuiteVersions = {
     'testSuites' : [
       'conformance-test',
       'encryptedmedia-test',
-      'performance-test',
-      'endurance-test',
       'progressive-test'
     ],
     'config' : {
@@ -100,8 +82,6 @@ window.testSuiteVersions = {
     'testSuites' : [
       'conformance-test',
       'encryptedmedia-test',
-      'performance-test',
-      'endurance-test',
       'progressive-test'
     ],
     'config' : {
