@@ -17,7 +17,7 @@ limitations under the License.
 
 var EncryptedmediaTest = function() {
 
-var emeVersion = 'Current Editor\'s Draft';
+var emeVersion = '04 February 2016';
 var webkitPrefix = MediaSource.prototype.version.indexOf('webkit') >= 0;
 var tests = [];
 var info = 'No MSE Support!';
@@ -30,7 +30,7 @@ info += ' | Default Timeout: ' + TestBase.timeout + 'ms';
 var fields = ['passes', 'failures', 'timeouts'];
 
 var createEmeTest = function(name, category, mandatory) {
-  var t = createMSTest(name);
+  var t = createTest(name);
   t.prototype.index = tests.length;
   t.prototype.passes = 0;
   t.prototype.failures = 0;
@@ -43,30 +43,56 @@ var createEmeTest = function(name, category, mandatory) {
   return t;
 };
 
-function setupBaseEmeTest(video, runner, media, bufferSize, cbSpies) {
+function setupBaseEmeTest(video, runner, videoStream, audioStream) {
   var ms = new MediaSource();
-  var media = media;
   var testEmeHandler = new EMEHandler();
-  var src = null;
-  if (cbSpies) {
-    for (var spy in cbSpies) {
-      testEmeHandler['_' + spy] = testEmeHandler[spy];
-      testEmeHandler[spy] = cbSpies[spy];
+  var videoSb = null;
+  var audioSb = null;
+
+  function onError(e) {
+    switch (e.target.error.code) {
+      case e.target.error.MEDIA_ERR_ABORTED:
+        runner.fail('EME test failure: You aborted the video playback.');
+        break;
+      case e.target.error.MEDIA_ERR_NETWORK:
+        runner.fail('EME test failure: A network error caused the video' +
+                    ' download to fail part-way.');
+        break;
+      case e.target.error.MEDIA_ERR_DECODE:
+        runner.fail('EME test failure: The video playback was aborted due to' +
+                    ' a corruption problem or because the video used features' +
+                    ' your browser did not support.');
+        break;
+      case e.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED:
+        runner.fail('EME test failure: The video could not be loaded, either' +
+                    ' because the server or network failed or because the' +
+                    ' format is not supported.');
+        break;
+      default:
+        runner.fail('EME test failure: An unknown error occurred.');
+        break;
     }
   }
 
-  function onError(e) {
-    runner.fail('Error reported in TestClearKeyNeedKey');
+  function fetchStream(stream, cb) {
+    var xhr = runner.XHRManager.createRequest(stream.src, cb);
+    xhr.send();
   }
 
   function onSourceOpen(e) {
-    src = ms.addSourceBuffer(StreamDef.VideoType);
-    var xhr = runner.XHRManager.createRequest(
-      media,
-      function(e) {
-        src.appendBuffer(this.getResponseData());
-      }, 0, bufferSize);
-    xhr.send();
+    if (audioStream != null) {
+      audioSb = ms.addSourceBuffer(audioStream.type);
+      fetchStream(audioStream, function() {
+        audioSb.appendBuffer(this.getResponseData());
+      });
+    }
+
+    if (videoStream != null) {
+      videoSb = ms.addSourceBuffer(videoStream.type);
+      fetchStream(videoStream, function() {
+        videoSb.appendBuffer(this.getResponseData());
+      });
+    }
   }
 
   ms.addEventListener('sourceopen', onSourceOpen);
@@ -79,31 +105,24 @@ function setupBaseEmeTest(video, runner, media, bufferSize, cbSpies) {
 }
 
 
-var testCanPlayClearKey = createEmeTest('CanPlayClearKey');
-testCanPlayClearKey.prototype.title =
-    'Test if canPlay return is correct for clear key.';
-testCanPlayClearKey.prototype.start = function(runner, video) {
-  runner.assert(
-      video.canPlayType(
-          StreamDef.VideoType, 'org.w3.clearkey') === 'probably' ||
-      video.canPlayType(
-          StreamDef.VideoType, 'webkit-org.w3.clearkey') === 'probably',
-      "canPlay doesn't support video and clearkey properly");
-  runner.assert(
-      video.canPlayType(
-          StreamDef.AudioType, 'org.w3.clearkey') === 'probably' ||
-      video.canPlayType(
-          StreamDef.AudioType, 'webkit-org.w3.clearkey') === 'probably',
-      "canPlay doesn't support audio and clearkey properly");
+var testWidevineH264Video = createEmeTest('WidevineH264Video', 'Widevine');
+testWidevineH264Video.prototype.title =
+    'Test if we can play video encrypted with Widevine encryption.';
+testWidevineH264Video.prototype.start = function(runner, video) {
+  var videoStream = StreamDef.H264.VideoSmallCenc;
   try {
-    var testEmeHandler = setupBaseEmeTest(video, runner, StreamDef.VideoStreamYTCenc.src, 1000000, null);
-    testEmeHandler.init(video, StreamDef.VideoType, 'clearkey', 'clearkey');
+    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream, null);
+    var licenseManager = new LicenseManager(video, videoStream,
+                                            LicenseManager.WIDEVINE);
+    testEmeHandler.init(video, licenseManager);
   } catch(err) {
     runner.fail(err);
   }
   video.addEventListener('timeupdate', function onTimeUpdate(e) {
-    if (!video.paused && video.currentTime >= 1) {
+    if (!video.paused && video.currentTime >= 15 &&
+        testEmeHandler.keyAddedCount == 1) {
       video.removeEventListener('timeupdate', onTimeUpdate);
+      runner.checkGE(video.currentTime, 15, 'currentTime');
       runner.succeed();
     }
   });
@@ -111,261 +130,105 @@ testCanPlayClearKey.prototype.start = function(runner, video) {
 };
 
 
-var testInvalidKey = createEmeTest('InvalidKey');
-testInvalidKey.prototype.title =
-    'Test if an invalid key will produce the expected error.';
-testInvalidKey.prototype.start = function(runner, video) {
+var testWidevineAacAudio = createEmeTest('WidevineAacAudio', 'Widevine');
+testWidevineAacAudio.prototype.title =
+    'Test if we can play video encrypted with Widevine encryption.';
+testWidevineAacAudio.prototype.start = function(runner, video) {
+  var audioStream = StreamDef.AudioSmallCenc;
   try {
-    var testEmeHandler = setupBaseEmeTest(video, runner, StreamDef.VideoStreamYTCenc.src, 1000000, null);
-    var self = this;
-    testEmeHandler.init(video, StreamDef.VideoType, 'invalid_widevine', 'widevine', function(e) {
-      self.runner.checkEq(e.code, 15);
-      self.runner.checkEq(e.name, 'InvalidAccessError');
-      self.runner.succeed();
-    });
+    var testEmeHandler = setupBaseEmeTest(video, runner, audioStream, null);
+    var licenseManager = new LicenseManager(video, audioStream,
+                                            LicenseManager.WIDEVINE);
+    testEmeHandler.init(video, licenseManager);
   } catch(err) {
     runner.fail(err);
   }
+  video.addEventListener('timeupdate', function onTimeUpdate(e) {
+    if (!video.paused && video.currentTime >= 15 &&
+        testEmeHandler.keyAddedCount == 1) {
+      video.removeEventListener('timeupdate', onTimeUpdate);
+      runner.checkGE(video.currentTime, 15, 'currentTime');
+      runner.succeed();
+    }
+  });
   video.play();
 };
 
 
-var testClearKeyAudio = createEmeTest('ClearKeyAudio');
-testClearKeyAudio.prototype.title =
-    'Test if we can play audio encrypted with ClearKey encryption.';
-testClearKeyAudio.prototype.onsourceopen = function() {
-  var runner = this.runner;
-
-  var media = this.video;
-  var videoChain = new ResetInit(
-      new FileSource(StreamDef.VideoNormal.src, runner.XHRManager,
-                     runner.timeouts));
-  var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
-  var audioChain = new ResetInit(
-      new FileSource(StreamDef.AudioNormalClearKey.src, runner.XHRManager,
-                     runner.timeouts));
-  var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
-
-  var testEmeHandler = new EMEHandler();
-  testEmeHandler.init(media, StreamDef.AudioType, 'audio_clearkey', 'clearkey');
-
-  appendUntil(runner.timeouts, media, videoSb, videoChain, 5, function() {
-    appendUntil(runner.timeouts, media, audioSb, audioChain, 5, function() {
-      media.play();
-      playThrough(
-          runner.timeouts, media, 10, 5,
-          videoSb, videoChain, audioSb, audioChain, function() {
-        runner.checkGE(media.currentTime, 5, 'currentTime');
-        runner.succeed();
-      });
-    });
+var testWidevineVP9Video = createEmeTest('WidevineVP9Video', 'Widevine');
+testWidevineVP9Video.prototype.title =
+    'Test if we can play video encrypted with Widevine encryption.';
+testWidevineVP9Video.prototype.start = function(runner, video) {
+  var videoStream = StreamDef.VP9.VideoHighEnc;
+  try {
+    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream, null);
+    var licenseManager = new LicenseManager(video, videoStream,
+                                            LicenseManager.WIDEVINE);
+    testEmeHandler.init(video, licenseManager);
+  } catch(err) {
+    runner.fail(err);
+  }
+  video.addEventListener('timeupdate', function onTimeUpdate(e) {
+    if (!video.paused && video.currentTime >= 15 &&
+        testEmeHandler.keyAddedCount == 1) {
+      video.removeEventListener('timeupdate', onTimeUpdate);
+      runner.checkGE(video.currentTime, 15, 'currentTime');
+      runner.succeed();
+    }
   });
+  video.play();
 };
 
 
-var testClearKeyVideo = createEmeTest('ClearKeyVideo');
-testClearKeyVideo.prototype.title =
-    'Test if we can play video encrypted with ClearKey encryption.';
-testClearKeyVideo.prototype.onsourceopen = function() {
-  var runner = this.runner;
-
-  var media = this.video;
-  var videoChain = new ResetInit(
-      new FileSource(StreamDef.VideoNormalClearKey.src, runner.XHRManager,
-          runner.timeouts));
-  var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
-  var audioChain = new ResetInit(
-      new FileSource(StreamDef.AudioNormal.src, runner.XHRManager,
-          runner.timeouts));
-  var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
-
-  var testEmeHandler = new EMEHandler();
-  testEmeHandler.init(media, StreamDef.VideoType, 'video_clearkey', 'clearkey');
-
-  appendUntil(runner.timeouts, media, videoSb, videoChain, 5, function() {
-    appendUntil(runner.timeouts, media, audioSb, audioChain, 5, function() {
-      media.play();
-      playThrough(
-          runner.timeouts, media, 10, 5,
-          videoSb, videoChain, audioSb, audioChain, function() {
-        runner.checkGE(media.currentTime, 5, 'currentTime');
-        runner.succeed();
-      });
-    });
+var testPlayReadyH264Video = createEmeTest('PlayReadyH264Video', 'PlayReady');
+testPlayReadyH264Video.prototype.title =
+    'Test if we can play video encrypted with PlayReady encryption.';
+testPlayReadyH264Video.prototype.start = function(runner, video) {
+  var videoStream = StreamDef.H264.VideoSmallCenc;
+  try {
+    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream, null);
+    var licenseManager = new LicenseManager(video, videoStream,
+                                            LicenseManager.PLAYREADY);
+    testEmeHandler.init(video, licenseManager);
+  } catch(err) {
+    runner.fail(err);
+  }
+  video.addEventListener('timeupdate', function onTimeUpdate(e) {
+    if (!video.paused && video.currentTime >= 15 &&
+        testEmeHandler.keyAddedCount == 1) {
+      video.removeEventListener('timeupdate', onTimeUpdate);
+      runner.checkGE(video.currentTime, 15, 'currentTime');
+      runner.succeed();
+    }
   });
+  video.play();
 };
 
 
-var testDualKey = createEmeTest('DualKey');
-testDualKey.prototype.title = 'Tests multiple video keys';
-testDualKey.prototype.start = function(runner, video) {
-  var ms = new MediaSource();
-  var testEmeHandler = new EMEHandler();
-  testEmeHandler.init(video, StreamDef.VideoType, ['clearkey', 'clearkey2'], 'clearkey');
-
-  // Open two sources with two distinct licenses.
-  function onSourceOpen(e) {
-    var sb = ms.addSourceBuffer(StreamDef.VideoType);
-
-    var firstFile = new ResetInit(new FileSource(
-      StreamDef.VideoStreamYTCenc.src,
-      runner.XHRManager, runner.timeouts));
-
-    appendUntil(runner.timeouts, video, sb, firstFile, 5, function() {
-      sb.abort();
-
-      var secondFile = new ResetInit(new FileSource(
-        StreamDef.VideoSmallStreamYTCenc.src,
-        runner.XHRManager, runner.timeouts));
-
-      appendInit(video, sb, secondFile, 0, function() {
-        sb.timestampOffset = video.buffered.end(0);
-        appendAt(runner.timeouts, video, sb, secondFile, 5, 5, function() {
-          video.play();
-        });
-      });
-    });
-
-    video.addEventListener('timeupdate', function onTimeUpdate() {
-      if (video.currentTime >= 10 - 1) {
-        video.removeEventListener('timeupdate', onTimeUpdate);
-        runner.succeed();
-      }
-    });
-  }
-
-  ms.addEventListener('sourceopen', onSourceOpen);
-  ms.addEventListener('webkitsourceopen', onSourceOpen);
-  video.src = window.URL.createObjectURL(ms);
-  video.load();
-};
-
-
-var testEncryptedEvent = createEmeTest('EncryptedEvent');
-testEncryptedEvent.prototype.title = 'Test encrypted event';
-testEncryptedEvent.prototype.start = function(runner, video) {
+var testPlayReadyAacAudio = createEmeTest('PlayReadyAacAudio', 'PlayReady',
+                                          true);
+testPlayReadyAacAudio.prototype.title =
+    'Test if we can play video encrypted with PlayReady encryption.';
+testPlayReadyAacAudio.prototype.start = function(runner, video) {
+  var audioStream = StreamDef.AudioSmallCenc;
   try {
-    var testEmeHandler = setupBaseEmeTest(video, runner, StreamDef.VideoStreamYTCenc.src, 100000, {
-      onEncrypted: function(e) {
-        runner.succeed();
-      }
-    });
-    testEmeHandler.init(video, StreamDef.VideoType, 'clearkey', 'clearkey');
+    var testEmeHandler = setupBaseEmeTest(video, runner, audioStream, null);
+    var licenseManager = new LicenseManager(video, audioStream,
+                                            LicenseManager.PLAYREADY);
+    testEmeHandler.init(video, licenseManager);
   } catch(err) {
     runner.fail(err);
   }
+  video.addEventListener('timeupdate', function onTimeUpdate(e) {
+    if (!video.paused && video.currentTime >= 15 &&
+        testEmeHandler.keyAddedCount == 1) {
+      video.removeEventListener('timeupdate', onTimeUpdate);
+      runner.checkGE(video.currentTime, 15, 'currentTime');
+      runner.succeed();
+    }
+  });
+  video.play();
 };
-
-
-var testInvalidKeySystem = createEmeTest('InvalidKeySystem');
-testInvalidKeySystem.prototype.title =
-    'Test that invalid key systems throw exception.';
-testInvalidKeySystem.prototype.start = function(runner, video) {
-  try {
-    var testEmeHandler = setupBaseEmeTest(video, runner, StreamDef.VideoStreamYTCenc.src, 100000, {
-      onEncrypted: function(evt) {
-        var exceptionCount = 0;
-        var promise = navigator.requestMediaKeySystemAccess(null);
-        promise.catch(
-          function(e) {
-            exceptionCount++;
-            if (exceptionCount == 2) {
-              runner.succeed();
-            }
-          }
-        );
-
-        promise = navigator.requestMediaKeySystemAccess('foobar.notarealkeysystem');
-        promise.catch(
-          function(e) {
-            exceptionCount++;
-            if (exceptionCount == 2) {
-              runner.succeed();
-            }
-          }
-        );
-      }
-    });
-    testEmeHandler.init(video, StreamDef.VideoType, 'clearkey', 'clearkey');
-  } catch(err) {
-    runner.fail(err);
-  }
-};
-
-
-var testMessageEvent = createEmeTest('MessageEvent');
-testMessageEvent.prototype.title = 'Test message event.';
-testMessageEvent.prototype.start = function(runner, video) {
-  try {
-    var testEmeHandler = setupBaseEmeTest(video, runner,StreamDef.VideoStreamYTCenc.src, 100000, {
-      onMessage: function(evt) {
-        runner.succeed();
-      }
-    });
-    testEmeHandler.init(video, StreamDef.VideoType, 'clearkey', 'clearkey');
-  } catch(err) {
-    runner.fail(err);
-  }
-};
-
-
-var testPlayReadySupport = createEmeTest('PlayReadySupport', 'Key System Support');
-testPlayReadySupport.prototype.title =
-    'Test if canPlay return is correct for PlayReady.';
-testPlayReadySupport.prototype.onsourceopen = function() {
-  var video = this.video;
-  // PlayReady is currently only compatible with h264.
-  this.runner.checkEq(
-      video.canPlayType('video/mp4', 'com.youtube.playready'), 'probably',
-      'canPlayType result');
-  this.runner.checkEq(
-      video.canPlayType('audio/mp4', 'com.youtube.playready'), 'probably',
-      'canPlayType result');
-  this.runner.succeed();
-};
-
-
-var testWidevineSupport = createEmeTest('WidevineSupport', 'Key System Support');
-testWidevineSupport.prototype.title =
-    'Test if canPlay return is correct for Widevine.';
-testWidevineSupport.prototype.onsourceopen = function() {
-  var video = this.video;
-  if (!StreamDef.isWebM()) {
-    this.runner.checkEq(
-        video.canPlayType('video/mp4; codecs="avc1.640028"', 'com.widevine.alpha'), 'probably',
-        'canPlayType result');
-    this.runner.checkEq(
-        video.canPlayType('video/mp4', 'com.widevine.alpha'), 'maybe',
-        'canPlayType result');
-    this.runner.checkEq(
-        video.canPlayType('audio/mp4; codecs="mp4a.40.2"', 'com.widevine.alpha'), 'probably',
-        'canPlayType result');
-    this.runner.checkEq(
-         video.canPlayType('audio/mp4', 'com.widevine.alpha'), 'maybe',
-        'canPlayType result');
-    this.runner.succeed();
-  } else {
-    this.runner.checkEq(
-        video.canPlayType('video/webm; codecs="vp9"', 'com.widevine.alpha'), 'probably',
-        'canPlayType result');
-    this.runner.checkEq(
-        video.canPlayType('video/webm; codecs="vp9.0"', 'com.widevine.alpha'), 'probably',
-        'canPlayType result');
-    this.runner.checkEq(
-        video.canPlayType('video/webm; codecs="vp9,vp9.0"', 'com.widevine.alpha'), 'probably',
-        'canPlayType result');
-    this.runner.checkEq(
-        video.canPlayType('video/webm', 'com.widevine.alpha'), 'maybe',
-        'canPlayType result');
-    this.runner.checkEq(
-         video.canPlayType('audio/mp4; codecs="mp4a.40.2"', 'com.widevine.alpha'), 'probably',
-        'canPlayType result');
-    this.runner.checkEq(
-         video.canPlayType('audio/mp4', 'com.widevine.alpha'), 'maybe',
-        'canPlayType result');
-    this.runner.succeed();
-  }
-}
 
 
 return {tests: tests, info: info, fields: fields, viewType: 'extra compact'};
