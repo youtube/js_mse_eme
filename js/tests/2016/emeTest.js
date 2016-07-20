@@ -89,7 +89,23 @@ function setupBaseEmeTest(video, runner, videoStream, audioStream, cbSpies) {
     if (audioStream != null) {
       audioSb = ms.addSourceBuffer(audioStream.type);
       fetchStream(audioStream, function() {
-        audioSb.appendBuffer(this.getResponseData());
+        var maxNumAudioSegments = 4
+        var parsedData = parseMp4(this.getResponseData());
+        var videoBytes = this.getResponseData();
+        var slicedVideoBytes = [videoBytes.subarray(0, parsedData[0].offset)];
+        for (var index = 0; index < parsedData.length; index++) {
+          slicedVideoBytes.push(videoBytes.subarray(parsedData[index].offset,
+              parsedData[index].offset + parsedData[index].size));
+        }
+        var totalSegments = slicedVideoBytes.length;
+        audioSb.addEventListener('updateend', function appendAudio() {
+          if (slicedVideoBytes.length <= totalSegments - maxNumAudioSegments) {
+            audioSb.removeEventListener('updateend', appendAudio);
+            return;
+          }
+          audioSb.appendBuffer(slicedVideoBytes.shift());
+        });
+        audioSb.appendBuffer(slicedVideoBytes.shift());
       });
     }
 
@@ -174,7 +190,7 @@ testClearKeyAudio.prototype.start = function(runner, video) {
     runner.fail(err);
   }
   video.addEventListener('timeupdate', function onTimeUpdate(e) {
-    if (!video.paused && video.currentTime >= 3 &&
+    if (!video.paused && video.currentTime >= 15 &&
         testEmeHandler.keyAddedCount == 1) {
       video.removeEventListener('timeupdate', onTimeUpdate);
       runner.checkGE(video.currentTime, 3, 'currentTime');
@@ -570,7 +586,7 @@ testWidevineAacAudio.prototype.title =
 testWidevineAacAudio.prototype.start = function(runner, video) {
   var audioStream = StreamDef.AudioSmallCenc;
   try {
-    var testEmeHandler = setupBaseEmeTest(video, runner, audioStream, null);
+    var testEmeHandler = setupBaseEmeTest(video, runner, null, audioStream);
     var licenseManager = new LicenseManager(video, audioStream,
                                             LicenseManager.WIDEVINE);
     testEmeHandler.init(video, licenseManager);
@@ -648,7 +664,7 @@ testPlayReadyAacAudio.prototype.title =
 testPlayReadyAacAudio.prototype.start = function(runner, video) {
   var audioStream = StreamDef.AudioSmallCenc;
   try {
-    var testEmeHandler = setupBaseEmeTest(video, runner, audioStream, null);
+    var testEmeHandler = setupBaseEmeTest(video, runner, null, audioStream);
     var licenseManager = new LicenseManager(video, audioStream,
                                             LicenseManager.PLAYREADY);
     testEmeHandler.init(video, licenseManager);
