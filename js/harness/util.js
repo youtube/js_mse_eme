@@ -174,6 +174,16 @@ util.resize = function(str, newLength, fillValue) {
   return str;
 };
 
+util.stringToBoolean = function(str) {
+  if (typeof str === 'boolean') {
+    return str;
+  }
+  switch(str.toLowerCase().trim()) {
+    case 'false': case 'no': case 'off': case '0': case '': return false;
+    default: return true;
+  }
+};
+
 var DLOG_LEVEL = 3;
 
 // Log a debug message. Only logs if the given level is less than the current
@@ -196,4 +206,3 @@ util.dlog = function(level) {
 window.util = util;
 
 })();
-

@@ -41,7 +41,7 @@ TestBase.teardown = function(testSuiteVer) {
     if (testSuiteVer && testSuiteVer !== '0.5') // For backwards compatibility.
       window.URL.revokeObjectURL(this.video.src);
     this.video.src = '';
-    if (recycleVideoTag)
+    if (harnessConfig.recycleVideoTag)
       this.video.parentNode.removeChild(this.video);
   }
   this.ms = null;
@@ -271,8 +271,9 @@ TestRunner.prototype.onfinished = function() {
              this.longestTimeRatio + ' of its timeout.');
   }
 
-  var keepRunning = (!stoponfailure || this.lastResult === 'pass') &&
-      loop && (this.testView.anySelected() || this.numOfTestToRun === 1);
+  var keepRunning = (!harnessConfig.stoponfailure ||
+      this.lastResult === 'pass') && harnessConfig.loop &&
+      (this.testView.anySelected() || this.numOfTestToRun === 1);
   if (keepRunning) {
     this.testToRun = this.numOfTestToRun;
     this.currentTestIdx = this.startIndex;
@@ -298,7 +299,7 @@ TestRunner.prototype.onfinished = function() {
 TestRunner.prototype.sendTestReport = function(results) {
   var resultsURL = 'https://qual-e.appspot.com/api?command=save_result';
   resultsURL += '&source=mse_eme_conformance';
-  resultsURL += '&testid=' + (window.testid ? window.testid :
+  resultsURL += '&testid=' + (harnessConfig.testid ? harnessConfig.testid :
       (navigator.userAgent + '::' + this.runStartTime));
 
   var xhr = new XMLHttpRequest();
@@ -318,7 +319,7 @@ TestRunner.prototype.startTest = function(startIndex, numOfTestToRun) {
 };
 
 TestRunner.prototype.startNextTest = function() {
-  UpdateStreamDef(Number(enablewebm));
+  UpdateStreamDef(Number(harnessConfig.enablewebm));
   if (this.numOfTestToRun != 1) {
     while (this.testToRun > 0 &&
            !this.testView.getTest(this.currentTestIdx).selected()) {
@@ -327,7 +328,8 @@ TestRunner.prototype.startNextTest = function() {
     }
   }
 
-  if (this.testToRun <= 0 || (stoponfailure && this.lastResult != 'pass')) {
+  if (this.testToRun <= 0 || (harnessConfig.stoponfailure &&
+      this.lastResult != 'pass')) {
     this.onfinished();
     return;
   }

@@ -70,7 +70,7 @@ function TestView(testSuiteVer) {
   this.addTestSuites = function(testSuites) {
     for (var index in testSuites) {
       var testSuite = testSuites[index];
-      if (testSuite !== currentTestType) {
+      if (testSuite !== harnessConfig.testType) {
         var testSuiteName = testSuiteDescriptions[testSuite].name;
         this.addTestSuite(testSuiteName, '?test_type=' + testSuite);
       }
@@ -83,8 +83,8 @@ function TestView(testSuiteVer) {
 
   this.generate = function() {
     var heading = '[' + this.testSuiteVer + '] ' +
-        testSuiteDescriptions[currentTestType].heading + ' (v REVISION)';
-    document.title = testSuiteDescriptions[currentTestType].title;
+        testSuiteDescriptions[harnessConfig.testType].heading + ' (v REVISION)';
+    document.title = testSuiteDescriptions[harnessConfig.testType].title;
     document.body.appendChild(createElement('h3', 'title', null, heading));
     document.body.appendChild(createElement('h4', 'info'));
     document.body.appendChild(createElement('h4', 'usage'));
@@ -112,13 +112,13 @@ function TestView(testSuiteVer) {
     for (var i = 0; i < switches.length; ++i) {
       var id = switches[i].id;
       switchDiv.appendChild(document.createTextNode(switches[i].text));
-      switchDiv.appendChild(createAnchor(window[id] ? 'on' : 'off', id));
+      switchDiv.appendChild(createAnchor(harnessConfig[id] ? 'on' : 'off', id));
       switchDiv.lastChild.href = 'javascript:;';
       switchDiv.lastChild.onclick = (function(id) {
         return function(e) {
-          var wasOff = e.target.innerHTML === 'off';
+          var wasOff = !util.stringToBoolean(e.target.innerHTML);
           e.target.innerHTML = wasOff ? 'on' : 'off';
-          window[id] = wasOff;
+          harnessConfig[id] = wasOff;
         };
       })(id);
     }

@@ -43,7 +43,8 @@ window.testSuiteVersions = {
     ],
     'config' : {
       'defaultTestSuite': 'conformance-test',
-      'enablewebm': 'false'
+      'enablewebm': false,
+      'controlMediaFormatSelection': false
     }
   },
   '0.6' : {
@@ -53,7 +54,8 @@ window.testSuiteVersions = {
     ],
     'config' : {
       'defaultTestSuite': 'conformance-test',
-      'enablewebm': 'false'
+      'enablewebm': false,
+      'controlMediaFormatSelection': false
     }
   },
   '2015' : {
@@ -64,7 +66,8 @@ window.testSuiteVersions = {
     ],
     'config' : {
       'defaultTestSuite': 'conformance-test',
-      'enablewebm': 'false'
+      'enablewebm': false,
+      'controlMediaFormatSelection': true
     }
   },
   '2016' : {
@@ -75,7 +78,8 @@ window.testSuiteVersions = {
     ],
     'config' : {
       'defaultTestSuite': 'conformance-test',
-      'enablewebm': 'true'
+      'enablewebm': true,
+      'controlMediaFormatSelection': true
     }
   },
   'tip' : {
@@ -86,7 +90,8 @@ window.testSuiteVersions = {
     ],
     'config' : {
       'defaultTestSuite': 'conformance-test',
-      'enablewebm': 'true'
+      'enablewebm': true,
+      'controlMediaFormatSelection': false
     }
   }
 };

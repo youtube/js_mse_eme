@@ -37,12 +37,13 @@ var parseParams = function(testSuiteConfig) {
   config.testType = parseParam('test_type', testSuiteConfig.defaultTestSuite);
   config.timestamp = parseParam('timestamp');
   config.command = parseParam('command');
-  config.viewType = parseParam('view_type');
   config.timeout = parseParam('timeout', TestBase.timeout);
-  config.disableLog = parseParam('disable_log', 'false');
-  config.loop = parseParam('loop', 'false');
-  config.stoponfailure = parseParam('stoponfailure', 'false');
-  config.enablewebm = parseParam('enablewebm', testSuiteConfig.enablewebm);
+  config.logging = !util.stringToBoolean(parseParam('disable_log', false));
+  config.loop = util.stringToBoolean(parseParam('loop', false));
+  config.stoponfailure = util.stringToBoolean(
+      parseParam('stoponfailure', false));
+  config.enablewebm = util.stringToBoolean(
+      parseParam('enablewebm', testSuiteConfig.enablewebm));
   config.tests = parseParam('tests');
   config.exclude = parseParam('exclude');
   config.testsMask = parseParam('tests_mask', '');
@@ -50,42 +51,44 @@ var parseParams = function(testSuiteConfig) {
   return config;
 };
 
-var configureHarness = function(config) {
-  window.recycleVideoTag = true;
-  window.currentTestType = config.testType;
-  TestBase.timeout = config.timeout;
-  window.testid = config.testid;
-  window.logging = config.disableLog !== 'true';
-  window.loop = config.loop === 'true';
-  window.stoponfailure = config.stoponfailure === 'true';
-  window.enablewebm = config.enablewebm === 'true';
+var configureHarness = function(testSuiteConfig) {
+  harnessConfig.controlMediaFormatSelection =
+      testSuiteConfig.controlMediaFormatSelection;
+  harnessConfig.recycleVideoTag = true;
+  TestBase.timeout = harnessConfig.timeout;
 
-  if (config.tests) {
-    config.tests = config.tests.split(',').map(function(x) {return parseInt(x);}).
+  if (harnessConfig.testsMask) {
+    harnessConfig.testsMask += '0';
+  } else if (harnessConfig.tests) {
+    harnessConfig.tests = harnessConfig.tests.split(',').
+        map(function(x) {return parseInt(x);}).
         sort(function(a, b) {return a - b;});
-    for (var i = 0; i < config.tests.length; ++i) {
-      var index = config.tests[i] * 1 - 1;
+    for (var i = 0; i < harnessConfig.tests.length; ++i) {
+      var index = harnessConfig.tests[i] * 1 - 1;
       if (index < 0)
         continue;
-      config.testsMask = util.resize(config.testsMask, index, '0');
-      config.testsMask += '1';
+      harnessConfig.testsMask = util.resize(
+          harnessConfig.testsMask, index, '0');
+      harnessConfig.testsMask += '1';
     }
-    config.testsMask += '0';
-  } else if (config.exclude) {
-    config.exclude = config.exclude.split(',').map(function(x) {return parseInt(x);}).
+    harnessConfig.testsMask += '0';
+  } else if (harnessConfig.exclude) {
+    harnessConfig.exclude = harnessConfig.exclude.split(',').
+        map(function(x) {return parseInt(x);}).
         sort(function(a, b) {return a - b;});
-    for (var i = 0; i < config.exclude.length; ++i) {
-      var index = config.exclude[i] * 1 - 1;
+    for (var i = 0; i < harnessConfig.exclude.length; ++i) {
+      var index = harnessConfig.exclude[i] * 1 - 1;
       if (index < 0)
         continue;
-      config.testsMask = util.resize(config.testsMask, index, '1');
-      config.testsMask += '0';
+      harnessConfig.testsMask = util.resize(
+          harnessConfig.testsMask, index, '1');
+      harnessConfig.testsMask += '0';
     }
-    config.testsMask += '1';
+    harnessConfig.testsMask += '1';
   }
 
-  if (!config.testsMask) {
-    config.testsMask = '1';
+  if (!harnessConfig.testsMask) {
+    harnessConfig.testsMask = '1';
   }
 };
 
@@ -100,7 +103,7 @@ var reloadPageWithTimestamp = function() {
 
 var createLogger = function() {
   window.LOG = function() {
-    if (!window.logging)
+    if (!harnessConfig.logging)
       return;
     var output = document.getElementById('output');
     var text = '';
@@ -125,7 +128,7 @@ var createRunner = function(testSuite, testSuiteVer, testsMask) {
   runner.getNewVideoTag = function() {
     var testarea = document.getElementById('testarea');
     var vid = 'v' + id;
-    if (recycleVideoTag)
+    if (harnessConfig.recycleVideoTag)
       ++id;
     if (!document.getElementById(vid)) {
       testarea.innerHTML = '';
@@ -146,25 +149,22 @@ var createRunner = function(testSuite, testSuiteVer, testsMask) {
 window.startMseTest = function(testSuiteVer) {
   setupMsePortability(testSuiteVer);
   var testSuiteVersion = testSuiteVersions[testSuiteVer];
-  var config = parseParams(testSuiteVersion.config);
-  if (!config.timestamp) {
+  window.harnessConfig = parseParams(testSuiteVersion.config);
+  if (!harnessConfig.timestamp) {
     reloadPageWithTimestamp();
     return;
   }
-  if (!testSuiteVersion.testSuites.indexOf(config.testType) === -1) {
-    alert('Cannot find test type ' + config.testType);
-    throw 'Cannot find test type ' + config.testType;
+  if (!testSuiteVersion.testSuites.indexOf(harnessConfig.testType) === -1) {
+    alert('Cannot find test type ' + harnessConfig.testType);
+    throw 'Cannot find test type ' + harnessConfig.testType;
   }
 
-  configureHarness(config);
+  configureHarness(testSuiteVersion.config);
   createLogger();
 
-  var testSuite = loadTests(config.testType);
-  if (config.viewType)
-    testSuite.viewType = config.viewType;
-
-  var runner = createRunner(testSuite, testSuiteVer, config.testsMask);
-  if (config.command === 'run')
+  var testSuite = loadTests(harnessConfig.testType);
+  var runner = createRunner(testSuite, testSuiteVer, harnessConfig.testsMask);
+  if (harnessConfig.command === 'run')
     runner.startTest(0, runner.testList.length);
 };
 

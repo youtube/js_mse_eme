@@ -28,7 +28,9 @@ function CompactTestView(fields, style) {
     this.addSwitch('Loop: ', 'loop');
     this.addSwitch('Stop on failure: ', 'stoponfailure');
     this.addSwitch('Log: ', 'logging');
-    this.addSwitch('WebM/VP9: ', 'enablewebm');
+    if (harnessConfig.controlMediaFormatSelection) {
+      this.addSwitch('WebM/VP9: ', 'enablewebm');
+    }
 
     this.addCommand('Run All', 'run-selected', 'Run all tests in order.',
         function(e) {
