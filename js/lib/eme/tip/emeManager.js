@@ -59,8 +59,7 @@ EMEHandler.prototype.onEncrypted = function(event) {
       ]
     }
   ];
-  var promise = navigator.requestMediaKeySystemAccess("com.widevine.alpha",
-                                                      config);
+  var promise = navigator.requestMediaKeySystemAccess(this.keySystem, config);
   promise.then(function(keySystemAccess) {
     keySystemAccess.createMediaKeys().then(
       function(createdMediaKeys) {
