@@ -30,7 +30,7 @@ var LicenseManager = function(video, mediaStreams, flavor) {
     this.kids.push(this.mediaStreams[i].get('kid'));
   }
   // This doesn't handle situtations with multiple licenses.
-  this.licenseServer = 'http://dash-mse-test.appspot.com/api/drm/' +
+  this.licenseServer = 'https://dash-mse-test.appspot.com/api/drm/' +
                        this.flavor + '?drm_system=' + this.flavor +
                        '&source=YOUTUBE&ip=0.0.0.0&ipbits=0&' +
                        'expire=19000000000&key=test_key1&' +
