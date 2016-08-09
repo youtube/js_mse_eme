@@ -39,7 +39,17 @@ var parseParams = function(testSuiteConfig) {
   config.command = parseParam('command');
   config.timeout = parseParam('timeout', TestBase.timeout);
   config.logging = !util.stringToBoolean(parseParam('disable_log', false));
-  config.loop = util.stringToBoolean(parseParam('loop', false));
+  let loop = parseParam('loop', 1);
+  if (loop === 'true')
+    loop = Number.POSITIVE_INFINITY;
+  else {
+    loop = Number.parseInt(loop);
+    if (!Number.isFinite(loop))
+      loop = 1;
+    else
+      loop = Math.max(1, loop);
+  }
+  config.loop = loop;
   config.stoponfailure = util.stringToBoolean(
       parseParam('stoponfailure', false));
   config.enablewebm = util.stringToBoolean(
