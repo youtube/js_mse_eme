@@ -507,24 +507,4 @@ window.getTestResults = function(testStartId, testEndId) {
 };
 
 
-window.createSimpleTest = function() {
-  window.ms = new MediaSource;
-  ms.addEventListener('sourceopen', function() {
-    window.vsrc = ms.addSourceBuffer(StreamDef.VideoType);
-    window.asrc = ms.addSourceBuffer(StreamDef.AudioType);
-    console.log('Objects has been created:\n' +
-                'They are video, ms, logger, XHMManager, timeouts, ' +
-                'vchain, vsrc, achain, asrc');
-  });
-  window.video = document.createElement('video');
-  window.logger = createLogger();
-  window.XHRManager = createXHRManager(logger);
-  window.timeouts = createTimeoutManager(logger);
-  video.src = window.URL.createObjectURL(ms);
-  window.vchain = new ResetInit(new FileSource(
-      'media/car-20120827-85.mp4', XHRManager, timeouts));
-  window.achain = new ResetInit(new FileSource(
-      'media/car-20120827-8b.mp4', XHRManager, timeouts));
-};
-
 })();

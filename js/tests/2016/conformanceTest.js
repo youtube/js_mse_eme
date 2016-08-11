@@ -972,48 +972,48 @@ testAppendOutOfOrder.prototype.title =
 testAppendOutOfOrder.prototype.onsourceopen = function() {
   var runner = this.runner;
   var media = this.video;
-  var audioChain = new FileSource(StreamDef.AudioNormal.src, runner.XHRManager,
+  var stream = StreamDef.AudioNormal;
+  var chain = new FileSource(stream.src, runner.XHRManager,
       runner.timeouts);
-  var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
+  var sb = this.ms.addSourceBuffer(stream.type);
   var bufs = [];
 
-  function createAppendHook() {
-    var i = 0;
-    // Append order of the segments.
-    var appendOrder = [0, 2, 1, 4, 3];
-    // Number of segments given the append order, since segments get merged.
-    var bufferedLength = [0, 1, 1, 2, 1];
+  var i = 0;
+  // Append order of the segments.
+  var appendOrder = [0, 2, 1, 4, 3];
+  // Number of segments given the append order, since segments get merged.
+  var bufferedLength = [0, 1, 1, 2, 1];
 
-    audioSb.addEventListener('update', function() {
-      runner.checkEq(audioSb.buffered.length, bufferedLength[i],
-                     'Source buffer number');
-      if (i == 1)
-        runner.checkGr(audioSb.buffered.start(0), 0, 'Range start');
-      else if (i > 0)
-        runner.checkEq(audioSb.buffered.start(0), 0, 'Range start');
+  sb.addEventListener('updateend', function() {
+    runner.checkEq(sb.buffered.length, bufferedLength[i],
+	'Source buffer number');
+    if (i == 1) {
+      runner.checkGr(sb.buffered.start(0), 0, 'Range start');
+    } else if (i > 0) {
+      runner.checkEq(sb.buffered.start(0), 0, 'Range start');
+    }
 
-      ++i;
-      if (i < bufs.length)
-        runner.succeed();
-      else
-        audioSb.appendBuffer(bufs[appendOrder[i]]);
-    });
-  };
+    i++;
+    if (i >= bufs.length) {
+      runner.succeed();
+    } else {
+      sb.appendBuffer(bufs[appendOrder[i]]);
+    }
+  });
 
-  audioChain.init(0, function(buf) {
+  chain.init(0, function(buf) {
     bufs.push(buf);
-    audioChain.pull(function(buf) {
+    chain.pull(function(buf) {
       bufs.push(buf);
-      audioChain.pull(function(buf) {
-        bufs.push(buf);
-        audioChain.pull(function(buf) {
-          bufs.push(buf);
-          audioChain.pull(function(buf) {
-            bufs.push(buf);
-            createAppendHook();
-            audioSb.appendBuffer(bufs[0]);
-          });
-        });
+      chain.pull(function(buf) {
+	bufs.push(buf);
+	chain.pull(function(buf) {
+	  bufs.push(buf);
+	  chain.pull(function(buf) {
+	    bufs.push(buf);
+	    sb.appendBuffer(bufs[0]);
+	  });
+	});
       });
     });
   });
@@ -1467,17 +1467,6 @@ testEventTimestamp.prototype.onsourceopen = function() {
   }, 0, 1500000);
   videoXhr.send();
 };
-
-function checkDOMError(runner, e, code, name) {
-  if (code || name) {
-    if (e instanceof DOMException)
-      runner.checkEq(e.code, code, 'exception code');
-    else
-      runner.checkEq(e.name, name, 'exception name');
-  } else {
-    return e instanceof DOMException;
-  }
-}
 
 
 var frameTestOnSourceOpen = function() {

@@ -52,7 +52,90 @@ function revokeVideoSrc(test) {
 }
 
 
-var testPresence = createConformanceTest('Presence', 'MSE');
+var createInitialMediaStateTest = function(state, value, check) {
+  var test = createConformanceTest('InitialMedia' +
+                                   util.MakeCapitalName(state), 'Media Element Core');
+
+  check = typeof(check) === 'undefined' ? 'checkEq' : check;
+  test.prototype.title = 'Test if the state ' + state +
+      ' is correct when onsourceopen is called';
+  test.prototype.onsourceopen = function() {
+    this.runner[check](this.video[state], value, state);
+    this.runner.succeed();
+  };
+};
+
+createInitialMediaStateTest('duration', NaN);
+createInitialMediaStateTest('videoWidth', 0);
+createInitialMediaStateTest('videoHeight', 0);
+createInitialMediaStateTest('readyState', HTMLMediaElement.HAVE_NOTHING);
+createInitialMediaStateTest('src', '', 'checkNE');
+createInitialMediaStateTest('currentSrc', '', 'checkNE');
+
+
+var testXHRUint8Array = createConformanceTest('XHRUint8Array', 'XHR');
+testXHRUint8Array.prototype.title = 'Ensure that XHR can send an Uint8Array';
+testXHRUint8Array.prototype.timeout = 10000;
+testXHRUint8Array.prototype.start = function(runner, video) {
+  var s = 'XHR DATA';
+  var buf = new ArrayBuffer(s.length);
+  var view = new Uint8Array(buf);
+  for (var i = 0; i < s.length; i++) {
+    view[i] = s.charCodeAt(i);
+  }
+
+  var xhr = runner.XHRManager.createPostRequest(
+    'https://drmproxy.appspot.com/echo',
+    function(e) {
+      runner.checkEq(String.fromCharCode.apply(null, xhr.getResponseData()),
+                     s, 'XHR response');
+      runner.succeed();
+    },
+    view.length);
+  xhr.send(view);
+};
+
+
+var testXHRAbort = createConformanceTest('XHRAbort', 'XHR');
+testXHRAbort.prototype.title = 'Ensure that XHR aborts actually abort by ' +
+    'issuing an absurd number of them and then aborting all but one.';
+testXHRAbort.prototype.start = function(runner, video) {
+  var N = 100;
+  var startTime = Date.now();
+  var lastAbortTime;
+  function startXHR(i) {
+    var xhr = runner.XHRManager.createRequest(
+        Media.VP9.VideoNormal.src + '?x=' + Date.now() + '.' + i, function() {
+      if (i >= N) {
+        xhr.getResponseData();  // This will verify status internally.
+        runner.succeed();
+      }
+    });
+    if (i < N) {
+      runner.timeouts.setTimeout(xhr.abort.bind(xhr), 10);
+      runner.timeouts.setTimeout(startXHR.bind(null, i + 1), 1);
+      lastAbortTime = Date.now();
+    }
+    xhr.send();
+  };
+  startXHR(0);
+};
+
+
+var testXHROpenState = createConformanceTest('XHROpenState', 'XHR');
+testXHROpenState.prototype.title = 'Ensure XMLHttpRequest.open does not ' +
+    'reset XMLHttpRequest.responseType';
+testXHROpenState.prototype.start = function(runner, video) {
+  var xhr = new XMLHttpRequest;
+  // It should not be an error to set responseType before calling open
+  xhr.responseType = 'arraybuffer';
+  xhr.open('GET', 'http://google.com', true);
+  runner.checkEq(xhr.responseType, 'arraybuffer', 'XHR responseType');
+  runner.succeed();
+};
+
+
+var testPresence = createConformanceTest('Presence', 'MSE Core');
 testPresence.prototype.title = 'Test if MediaSource object is present.';
 testPresence.prototype.start = function(runner, video) {
   if (!window.MediaSource)
@@ -72,7 +155,7 @@ testPresence.prototype.start = function(runner, video) {
 testPresence.prototype.teardown = function() {};
 
 
-var testAttach = createConformanceTest('Attach', 'MSE');
+var testAttach = createConformanceTest('Attach', 'MSE Core');
 testAttach.prototype.timeout = 2000;
 testAttach.prototype.title =
     'Test if MediaSource object can be attached to video.';
@@ -89,40 +172,21 @@ testAttach.prototype.teardown = function() {
 };
 
 
-var testAddSourceBuffer = createConformanceTest('addSourceBuffer', 'MSE');
+var testAddSourceBuffer = createConformanceTest('AddSourceBuffer', 'MSE Core');
 testAddSourceBuffer.prototype.title =
     'Test if we can add source buffer';
 testAddSourceBuffer.prototype.onsourceopen = function() {
   this.runner.checkEq(this.ms.sourceBuffers.length, 0, 'Source buffer number');
-  this.ms.addSourceBuffer(StreamDef.AudioType);
+  this.ms.addSourceBuffer(Media.AAC.mimetype);
   this.runner.checkEq(this.ms.sourceBuffers.length, 1, 'Source buffer number');
-  this.ms.addSourceBuffer(StreamDef.VideoType);
+  this.ms.addSourceBuffer(Media.VP9.mimetype);
   this.runner.checkEq(this.ms.sourceBuffers.length, 2, 'Source buffer number');
   this.runner.succeed();
 };
 
 
-var testSupportedFormats = createConformanceTest('SupportedFormats', 'MSE');
-testSupportedFormats.prototype.title =
-    'Test if we support mp4 video (video/mp4; codecs="avc1.640008") and ' +
-    'audio (audio/mp4; codecs="mp4a.40.5") formats, or webm video' +
-    '(video/webm; codecs="vorbis,vp8")/(video/webm; codecs="vorbis,vp9") and' +
-    'audio (audio/webm; codecs="vorbis").';
-testSupportedFormats.prototype.onsourceopen = function() {
-  try {
-      this.log('Trying format ' + StreamDef.AudioType);
-      var src = this.ms.addSourceBuffer(StreamDef.AudioType);
-      this.log('Trying format ' + StreamDef.VideoType);
-      var src = this.ms.addSourceBuffer(StreamDef.VideoType);
-  } catch (e) {
-      return this.runner.fail(e);
-  }
-  this.runner.succeed();
-};
-
-
 var testAddSourceBufferException = createConformanceTest('AddSBException',
-                                                         'MSE');
+                                                         'MSE Core');
 testAddSourceBufferException.prototype.title = 'Test if add incorrect source ' +
     'buffer type will fire the correct exceptions.';
 testAddSourceBufferException.prototype.onsourceopen = function() {
@@ -134,37 +198,40 @@ testAddSourceBufferException.prototype.onsourceopen = function() {
 
   runner.checkException(function() {
     var ms = new MediaSource;
-    ms.addSourceBuffer(StreamDef.AudioType);
+    ms.addSourceBuffer(Media.AAC.mimetype);
   }, DOMException.INVALID_STATE_ERR);
 
   runner.succeed();
 };
 
 
-var createInitialMediaStateTest = function(state, value, check) {
-  var test = createConformanceTest('InitialMedia' +
-                                   util.MakeCapitalName(state), 'MSE');
-
-  check = typeof(check) === 'undefined' ? 'checkEq' : check;
-  test.prototype.title = 'Test if the state ' + state +
-      ' is correct when onsourceopen is called';
-  test.prototype.onsourceopen = function() {
-    this.runner[check](this.video[state], value, state);
-    this.runner.succeed();
-  };
+var testSourceRemove = createConformanceTest('RemoveSourceBuffer', 'MSE Core');
+testSourceRemove.prototype.title = 'Test if we can add/remove source buffers';
+testSourceRemove.prototype.onsourceopen = function() {
+  var sb = this.ms.addSourceBuffer(Media.AAC.mimetype);
+  this.ms.removeSourceBuffer(sb);
+  this.runner.checkEq(this.ms.sourceBuffers.length, 0, 'Source buffer number');
+  this.ms.addSourceBuffer(Media.AAC.mimetype);
+  this.runner.checkEq(this.ms.sourceBuffers.length, 1, 'Source buffer number');
+  for (var i = 0; i < 10; ++i) {
+    try {
+      sb = this.ms.addSourceBuffer(Media.VP9.mimetype);
+      this.runner.checkEq(this.ms.sourceBuffers.length, 2,
+                          'Source buffer number');
+      this.ms.removeSourceBuffer(sb);
+      this.runner.checkEq(this.ms.sourceBuffers.length, 1,
+                          'Source buffer number');
+    } catch (e) {
+      return this.runner.fail(e);
+    }
+  }
+  this.runner.succeed();
 };
-
-createInitialMediaStateTest('duration', NaN);
-createInitialMediaStateTest('videoWidth', 0);
-createInitialMediaStateTest('videoHeight', 0);
-createInitialMediaStateTest('readyState', HTMLMediaElement.HAVE_NOTHING);
-createInitialMediaStateTest('src', '', 'checkNE');
-createInitialMediaStateTest('currentSrc', '', 'checkNE');
 
 
 var createInitialMSStateTest = function(state, value, check) {
   var test = createConformanceTest('InitialMS' + util.MakeCapitalName(state),
-                                   'MSE');
+                                   'MSE Core');
 
   check = typeof(check) === 'undefined' ? 'checkEq' : check;
   test.prototype.title = 'Test if the state ' + state +
@@ -179,14 +246,285 @@ createInitialMSStateTest('duration', NaN);
 createInitialMSStateTest('readyState', 'open');
 
 
+var testDuration = createConformanceTest('Duration', 'MSE Core');
+testDuration.prototype.title =
+    'Test if we can set duration.';
+testDuration.prototype.onsourceopen = function() {
+  this.ms.duration = 10;
+  this.runner.checkEq(this.ms.duration, 10, 'ms.duration');
+  this.runner.succeed();
+};
+
+
+var mediaElementEvents = createConformanceTest('MediaElementEvents', 'MSE Core');
+mediaElementEvents.prototype.title = 'Test events on the MediaElement.';
+mediaElementEvents.prototype.onsourceopen = function() {
+  var runner = this.runner;
+  var media = this.video;
+  var ms = this.ms;
+  var audioStream = Media.AAC.Audio1MB;
+  var videoStream = Media.VP9.Video1MB;
+  var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
+  var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
+  var self = this;
+  var videoXhr = runner.XHRManager.createRequest(videoStream.src, function(e) {
+    self.log('onload called');
+    var onDurationChange = function() {
+      ms.endOfStream();
+      media.play();
+    }
+    var onUpdate = function() {
+      videoSb.removeEventListener('update', onUpdate);
+      videoSb.addEventListener('update', onDurationChange);
+      ms.duration = 1;
+    }
+    videoSb.addEventListener('update', onUpdate);
+    videoSb.appendBuffer(videoXhr.getResponseData());
+  });
+  var audioXhr = runner.XHRManager.createRequest(audioStream.src, function(e) {
+    self.log('onload called');
+    var onAudioUpdate =  function() {
+      audioSb.removeEventListener('update', onAudioUpdate);
+      videoXhr.send();
+    }
+    audioSb.addEventListener('update', onAudioUpdate);
+    audioSb.appendBuffer(audioXhr.getResponseData());
+  });
+
+  media.addEventListener('ended', function() {
+    self.log('onended called');
+    runner.succeed();
+  });
+
+  audioXhr.send();
+};
+
+
+var mediaSourceEvents = createConformanceTest('MediaSourceEvents', 'MSE Core');
+mediaSourceEvents.prototype.title = 'Test if the events on MediaSource are correct.';
+mediaSourceEvents.prototype.onsourceopen = function() {
+  var runner = this.runner;
+  var media = this.video;
+  var ms = this.ms;
+  var audioStream = Media.AAC.Audio1MB;
+  var videoStream = Media.VP9.Video1MB;
+  var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
+  var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
+  var lastState = 'open';
+  var self = this;
+  var videoXhr = runner.XHRManager.createRequest(videoStream.src, function(e) {
+      self.log('onload called');
+      videoSb.appendBuffer(videoXhr.getResponseData());
+      videoSb.abort();
+      ms.endOfStream();
+    });
+  var audioXhr = runner.XHRManager.createRequest(audioStream.src, function(e) {
+      self.log('onload called');
+      audioSb.appendBuffer(audioXhr.getResponseData());
+      audioSb.abort();
+      videoXhr.send();
+    });
+
+  ms.addEventListener('sourceclose', function() {
+    self.log('onsourceclose called');
+    runner.checkEq(lastState, 'ended', 'The previous state');
+    runner.succeed();
+  });
+
+  ms.addEventListener('sourceended', function() {
+    self.log('onsourceended called');
+    runner.checkEq(lastState, 'open', 'The previous state');
+    lastState = 'ended';
+    media.removeAttribute('src');
+    media.load();
+  });
+
+  audioXhr.send();
+};
+
+
+var testBufferSize = createConformanceTest('VideoBufferSize', 'MSE Core');
+testBufferSize.prototype.title = 'Determines video buffer sizes by ' +
+    'appending incrementally until discard occurs, and tests that it meets ' +
+    'the minimum requirements for streaming.';
+testBufferSize.prototype.onsourceopen = function() {
+  var runner = this.runner;
+  var stream = Media.VP9.Video1MB;
+  var sb = this.ms.addSourceBuffer(stream.mimetype);
+  var self = this;
+  var xhr = runner.XHRManager.createRequest(stream.src,
+      function(e) {
+    var onBufferFull = function() {
+      var MIN_SIZE = 12;
+      runner.checkGE(expectedTime - sb.buffered.start(0), MIN_SIZE,
+                     'Estimated source buffer size');
+      runner.succeed();
+    };
+    // The test clip has a bitrate which is nearly exactly 1MB/sec, and
+    // lasts 1s. We start appending it repeatedly until we get eviction.
+    var expectedTime = 0;
+    sb.appendBuffer(xhr.getResponseData());
+    sb.addEventListener('updateend', function onUpdate() {
+      if (sb.buffered.start(0) > 0 || expectedTime > sb.buffered.end(0) + 0.1) {
+        sb.removeEventListener('updateend', onUpdate);
+        onBufferFull();
+      } else {
+        expectedTime++;
+        sb.timestampOffset = expectedTime;
+        try {
+          sb.appendBuffer(xhr.getResponseData());
+        } catch (e) {
+          var QUOTA_EXCEEDED_ERROR_CODE = 22;
+          if (e.code == QUOTA_EXCEEDED_ERROR_CODE) {
+            sb.removeEventListener('updateend', onUpdate);
+            onBufferFull();
+          } else {
+            runner.fail(e);
+          }
+        }
+      }
+    });
+  });
+  xhr.send();
+};
+
+
+var testStartPlayWithoutData = createConformanceTest('StartPlayWithoutData',
+                                                     'MSE Core');
+testStartPlayWithoutData.prototype.title =
+    'Test if we can start play before feeding any data. The play should ' +
+    'start automatically after data is appended';
+testStartPlayWithoutData.prototype.onsourceopen = function() {
+  var runner = this.runner;
+  var media = this.video;
+  var audioStream = Media.AAC.AudioHuge;
+  var videoStream = Media.VP9.VideoHuge;
+  var videoChain = new ResetInit(
+      new FileSource(videoStream.src, runner.XHRManager, runner.timeouts));
+  var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
+  var audioChain = new ResetInit(
+      new FileSource(audioStream.src, runner.XHRManager, runner.timeouts));
+  var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
+
+  media.play();
+  appendUntil(runner.timeouts, media, videoSb, videoChain, 1, function() {
+    appendUntil(runner.timeouts, media, audioSb, audioChain, 1, function() {
+      playThrough(
+          runner.timeouts, media, 1, 2,
+          videoSb, videoChain, audioSb, audioChain, function() {
+        runner.checkGE(media.currentTime, 2, 'currentTime');
+        runner.succeed();
+      });
+    });
+  });
+};
+
+
+var testEventTimestamp = createConformanceTest('EventTimestamp', 'MSE Core');
+testEventTimestamp.prototype.title = 'Test Event Timestamp is relative to ' +
+    'the initial page load';
+testEventTimestamp.prototype.onsourceopen = function() {
+  var runner = this.runner;
+  var video = this.video;
+  var videoStream = Media.VP9.VideoTiny;
+  var audioStream = Media.AAC.AudioTiny;
+  var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
+  var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
+  runner.checkGr(Date.now(), 1360000000000, 'Date.now()');
+  var lastTime = 0.0;
+  var requestCounter = 0;
+
+  var audioXhr = runner.XHRManager.createRequest(audioStream.src, function(e) {
+    audioSb.appendBuffer(this.getResponseData());
+    video.addEventListener('timeupdate', function(e) {
+      runner.checkGE(e.timeStamp, lastTime, 'event.timeStamp');
+      lastTime = e.timeStamp;
+      if (!video.paused && video.currentTime >= 2 && requestCounter >= 3) {
+        runner.succeed();
+      }
+      requestCounter++;
+    });
+    video.play();
+  }, 0, 500000);
+
+  var videoXhr = runner.XHRManager.createRequest(videoStream.src, function(e) {
+    videoSb.appendBuffer(this.getResponseData());
+    audioXhr.send();
+  }, 0, 1500000);
+  videoXhr.send();
+};
+
+
+var testSeekTimeUpdate = createConformanceTest('SeekTimeUpdate', 'MSE Core');
+testSeekTimeUpdate.prototype.title =
+  'Timeupdate event fired with correct currentTime after seeking.';
+testSeekTimeUpdate.prototype.onsourceopen = function() {
+  var runner = this.runner;
+  var media = this.video;
+  var videoStream = Media.VP9.VideoNormal;
+  var audioStream = Media.AAC.AudioNormal;
+  var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
+  var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
+  var lastTime = 0;
+  var updateCount = 0;
+  var xhr = runner.XHRManager.createRequest(videoStream.src, function() {
+    videoSb.appendBuffer(xhr.getResponseData());
+    var xhr2 = runner.XHRManager.createRequest(audioStream.src, function() {
+      audioSb.appendBuffer(xhr2.getResponseData());
+      callAfterLoadedMetaData(media, function() {
+        media.addEventListener('timeupdate', function(e) {
+          if (!media.paused) {
+            ++updateCount;
+            runner.checkGE(media.currentTime, lastTime, 'media.currentTime');
+            if (updateCount > 3) {
+              updateCount = 0;
+              lastTime += 10;
+              if (lastTime >= 35)
+                runner.succeed();
+              else
+                media.currentTime = lastTime + 6;
+            }
+          }
+        });
+        media.play();
+      });
+    }, 0, 1000000);
+    xhr2.send();
+  }, 0, 5000000);
+  this.ms.duration = 100000000;  // Ensure that we can seek to any position.
+  xhr.send();
+};
+
+
+var createSupportTest = function(mimetype, desc) {
+  var test = createConformanceTest(desc + 'Support', 'MSE Formats');
+  test.prototype.title =
+      'Test if we support ' + desc + ' with mimetype: ' + mimetype;
+  test.prototype.onsourceopen = function() {
+    try {
+      this.log('Trying format ' + mimetype);
+      var src = this.ms.addSourceBuffer(mimetype);
+    } catch (e) {
+      return this.runner.fail(e);
+    }
+    this.runner.succeed();
+  };
+};
+
+createSupportTest(Media.AAC.mimetype, 'AAC');
+createSupportTest(Media.H264.mimetype, 'H264');
+createSupportTest(Media.VP9.mimetype, 'VP9');
+
+
 var createAppendTest = function(stream) {
   var test = createConformanceTest(
-      'Append' + util.MakeCapitalName(stream.name), 'MSE');
+      'Append' + stream.codec + util.MakeCapitalName(stream.mediatype),
+      'MSE (' + stream.codec + ')');
   test.prototype.title = 'Test if we can append a whole ' + 
-      stream.name + ' file whose size is 1MB.';
+      stream.mediatype + ' file whose size is 1MB.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
-    var sb = this.ms.addSourceBuffer(stream.type);
+    var sb = this.ms.addSourceBuffer(stream.mimetype);
     var xhr = runner.XHRManager.createRequest(stream.src, function(e) {
       var data = xhr.getResponseData();
       function updateEnd(e) {
@@ -227,17 +565,15 @@ var createAppendTest = function(stream) {
   };
 };
 
-createAppendTest(StreamDef.Audio1MB);
-createAppendTest(StreamDef.Video1MB);
-
 
 var createAbortTest = function(stream) {
   var test = createConformanceTest(
-      'Abort' + util.MakeCapitalName(stream.name), 'MSE');
+      'Abort' + stream.codec + util.MakeCapitalName(stream.mediatype),
+      'MSE (' + stream.codec + ')');
   test.prototype.title = 'Test if we can abort the current segment.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
-    var sb = this.ms.addSourceBuffer(stream.type);
+    var sb = this.ms.addSourceBuffer(stream.mimetype);
     var xhr = runner.XHRManager.createRequest(stream.src, function(e) {
       var responseData = xhr.getResponseData();
       var abortEnded = function(e) {
@@ -262,20 +598,16 @@ var createAbortTest = function(stream) {
   };
 };
 
-createAbortTest(StreamDef.Audio1MB);
-createAbortTest(StreamDef.Video1MB);
-
 
 var createTimestampOffsetTest = function(stream) {
   var test = createConformanceTest(
-      'TimestampOffset' + util.MakeCapitalName(stream.name),
-      'MSE');
+      'TimestampOffset' + stream.codec + util.MakeCapitalName(stream.mediatype),
+      'MSE (' + stream.codec + ')');
   test.prototype.title = 'Test if we can set timestamp offset.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
-    var sb = this.ms.addSourceBuffer(stream.type);
-    var xhr = runner.XHRManager.createRequest(stream.src,
-        function(e) {
+    var sb = this.ms.addSourceBuffer(stream.mimetype);
+    var xhr = runner.XHRManager.createRequest(stream.src, function(e) {
       sb.timestampOffset = 5;
       sb.appendBuffer(xhr.getResponseData());
       sb.addEventListener('updateend', function() {
@@ -290,120 +622,85 @@ var createTimestampOffsetTest = function(stream) {
   };
 };
 
-createTimestampOffsetTest(StreamDef.Audio1MB);
-createTimestampOffsetTest(StreamDef.Video1MB);
 
+var createDASHLatencyTest = function(stream) {
+  var test = createConformanceTest('DASHLatency' + stream.codec,
+      'MSE (' + stream.codec + ')');
+  test.prototype.title = 'Test SourceBuffer DASH switch latency';
+  test.prototype.onsourceopen = function() {
+    var self = this;
+    var runner = this.runner;
+    var sb = this.ms.addSourceBuffer(stream.mimetype);
+    var video = this.video;
 
-var testDASHLatency = createConformanceTest('DASHLatency', 'MSE');
-testDASHLatency.prototype.title = 'Test SourceBuffer DASH switch latency';
-testDASHLatency.prototype.onsourceopen = function() {
-  var self = this;
-  var runner = this.runner;
-  var sb = this.ms.addSourceBuffer(StreamDef.VideoType);
-  var video = this.video;
+    var xhr = runner.XHRManager.createRequest(stream.src, function(e) {
+      var videoContent = xhr.getResponseData();
+      var expectedTime = 0;
+      var loopCount = 0;
+      var MAX_ITER = 300;
+      var OVERFLOW_OFFSET = 1.0;
 
-  var xhr = runner.XHRManager.createRequest(StreamDef.VideoTiny.src,
-      function(e) {
-    var videoContent = xhr.getResponseData();
-    var expectedTime = 0;
-    var loopCount = 0;
-    var MAX_ITER = 300;
-    var OVERFLOW_OFFSET = 1.0;
+      var onBufferFull = function() {
+	var bufferSize = loopCount * stream.size / 1048576;
+	self.log('Buffer size: ' + Math.round(bufferSize) + 'MB');
 
-    var onBufferFull = function() {
-      var bufferSize = loopCount * StreamDef.VideoTiny.size / 1048576;
-      self.log('Buffer size: ' + Math.round(bufferSize) + 'MB');
+	var oldWidth = video.videoWidth;
+	var DASH_MAX_LATENCY = 1;
+	var newContentStartTime = sb.buffered.start(0) + 2;
+	self.log('Source buffer updated as exceeding buffer limit');
 
-      var oldWidth = video.videoWidth;
-      var DASH_MAX_LATENCY = 1;
-      var newContentStartTime = sb.buffered.start(0) + 2;
-      self.log('Source buffer updated as exceeding buffer limit');
+	video.addEventListener('timeupdate', function onTimeUpdate(e) {
+	  if (video.currentTime > newContentStartTime + DASH_MAX_LATENCY) {
+	    video.removeEventListener('timeupdate', onTimeUpdate);
+	    runner.succeed();
+	  }
+	});
+	video.play();
+      }
 
-      video.addEventListener('timeupdate', function onTimeUpdate(e) {
-        if (video.currentTime > newContentStartTime + DASH_MAX_LATENCY) {
-          video.removeEventListener('timeupdate', onTimeUpdate);
-          runner.succeed();
-        }
+      sb.addEventListener('update', function onUpdate() {
+	expectedTime += stream.duration;
+	sb.timestampOffset = expectedTime;
+	loopCount++;
+
+	if (loopCount > MAX_ITER) {
+	  runner.fail('Failed to fill up source buffer.');
+	}
+
+	// Fill up the buffer such that it overflow implementations.
+	if (expectedTime > sb.buffered.end(0) + OVERFLOW_OFFSET) {
+	  sb.removeEventListener('update', onUpdate);
+	  onBufferFull();
+	}
+	try {
+	  sb.appendBuffer(videoContent);
+	} catch (e) {
+	  sb.removeEventListener('update', onUpdate);
+	  var QUOTA_EXCEEDED_ERROR_CODE = 22;
+	  if (e.code == QUOTA_EXCEEDED_ERROR_CODE) {
+	    onBufferFull();
+	  } else {
+	    runner.fail(e);
+	  }
+	}
       });
-      video.play();
-    }
-
-    sb.addEventListener('update', function onUpdate() {
-      expectedTime += StreamDef.VideoTiny.duration;
-      sb.timestampOffset = expectedTime;
-      loopCount++;
-
-      if (loopCount > MAX_ITER) {
-        runner.fail('Failed to fill up source buffer.');
-      }
-
-      // Fill up the buffer such that it overflow implementations.
-      if (expectedTime > sb.buffered.end(0) + OVERFLOW_OFFSET) {
-        sb.removeEventListener('update', onUpdate);
-        onBufferFull();
-      }
-      try {
-        sb.appendBuffer(videoContent);
-      } catch (e) {
-        sb.removeEventListener('update', onUpdate);
-        var QUOTA_EXCEEDED_ERROR_CODE = 22;
-        if (e.code == QUOTA_EXCEEDED_ERROR_CODE) {
-          onBufferFull();
-        } else {
-          runner.fail(e);
-        }
-      }
+      sb.appendBuffer(videoContent);;
     });
-    sb.appendBuffer(videoContent);;
-  });
-  xhr.send();
-};
-
-
-var testDuration = createConformanceTest('Duration', 'MSE');
-testDuration.prototype.title =
-    'Test if we can set duration.';
-testDuration.prototype.onsourceopen = function() {
-  this.ms.duration = 10;
-  this.runner.checkEq(this.ms.duration, 10, 'ms.duration');
-  this.runner.succeed();
-};
-
-
-var testSourceRemove = createConformanceTest('SourceRemove', 'MSE');
-testSourceRemove.prototype.title =
-    'Test if we can add/remove source buffer and do it for more than once';
-testSourceRemove.prototype.onsourceopen = function() {
-  var sb = this.ms.addSourceBuffer(StreamDef.AudioType);
-  this.ms.removeSourceBuffer(sb);
-  this.runner.checkEq(this.ms.sourceBuffers.length, 0, 'Source buffer number');
-  this.ms.addSourceBuffer(StreamDef.AudioType);
-  this.runner.checkEq(this.ms.sourceBuffers.length, 1, 'Source buffer number');
-  for (var i = 0; i < 10; ++i) {
-    try {
-      sb = this.ms.addSourceBuffer(StreamDef.VideoType);
-      this.runner.checkEq(this.ms.sourceBuffers.length, 2,
-                          'Source buffer number');
-      this.ms.removeSourceBuffer(sb);
-      this.runner.checkEq(this.ms.sourceBuffers.length, 1,
-                          'Source buffer number');
-    } catch (e) {
-      return this.runner.fail(e);
-    }
-  }
-  this.runner.succeed();
+    xhr.send();
+  };
 };
 
 
 var createDurationAfterAppendTest = function(stream) {
-  var test = createConformanceTest('DurationAfterAppend' +
-      util.MakeCapitalName(stream.name), 'MSE');
+  var test = createConformanceTest(
+      'DurationAfterAppend' + stream.codec + util.MakeCapitalName(stream.mediatype),
+      'MSE (' + stream.codec + ')');
   test.prototype.title = 'Test if the duration expands after appending data.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
     var media = this.video;
     var ms = this.ms;
-    var sb = ms.addSourceBuffer(stream.type);
+    var sb = ms.addSourceBuffer(stream.mimetype);
     var self = this;
 
     var xhr = runner.XHRManager.createRequest(stream.src,
@@ -460,20 +757,18 @@ var createDurationAfterAppendTest = function(stream) {
   };
 };
 
-createDurationAfterAppendTest(StreamDef.Audio1MB);
-createDurationAfterAppendTest(StreamDef.Video1MB);
-
 
 var createPausedTest = function(stream) {
-  var test = createConformanceTest('PausedStateWith' + 
-      util.MakeCapitalName(stream.name), 'MSE');
+  var test = createConformanceTest(
+      'PausedStateWith' + stream.codec + util.MakeCapitalName(stream.mediatype),
+      'MSE (' + stream.codec + ')');
   test.prototype.title = 'Test if the paused state is correct before or ' +
       ' after appending data.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
     var media = this.video;
     var ms = this.ms;
-    var sb = ms.addSourceBuffer(stream.type);
+    var sb = ms.addSourceBuffer(stream.mimetype);
 
     runner.checkEq(media.paused, true, 'media.paused');
 
@@ -491,432 +786,240 @@ var createPausedTest = function(stream) {
   };
 };
 
-createPausedTest(StreamDef.Audio1MB);
-createPausedTest(StreamDef.Video1MB);
 
-
-var createMediaElementEventsTest = function() {
-  var test = createConformanceTest('MediaElementEvents', 'MSE');
-  test.prototype.title = 'Test events on the MediaElement.';
+var createVideoDimensionTest = function(stream) {
+  var test = createConformanceTest('VideoDimension' + stream.codec,
+      'MSE (' + stream.codec + ')');
+  test.prototype.title =
+      'Test if the readyState transition is correct.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
     var media = this.video;
-    var ms = this.ms;
-    var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
-    var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
+    var videoChain = new ResetInit(new FixedAppendSize(
+	new FileSource(stream.src, runner.XHRManager, runner.timeouts), 65536));
+    var videoSb = this.ms.addSourceBuffer(stream.mimetype);
     var self = this;
-    var videoXhr = runner.XHRManager.createRequest(StreamDef.Video1MB.src,
-        function(e) {
-      self.log('onload called');
-      var onDurationChange = function() {
-        ms.endOfStream();
-        media.play();
-      }
-      var onUpdate = function() {
-        videoSb.removeEventListener('update', onUpdate);
-        videoSb.addEventListener('update', onDurationChange);
-        ms.duration = 1;
-      }
-      videoSb.addEventListener('update', onUpdate);
-      videoSb.appendBuffer(videoXhr.getResponseData());
-    });
-    var audioXhr = runner.XHRManager.createRequest(StreamDef.Audio1MB.src,
-        function(e) {
-      self.log('onload called');
-      var onAudioUpdate =  function() {
-        audioSb.removeEventListener('update', onAudioUpdate);
-        videoXhr.send();
-      }
-      audioSb.addEventListener('update', onAudioUpdate);
-      audioSb.appendBuffer(audioXhr.getResponseData());
+
+    runner.checkEq(media.videoWidth, 0, 'video width');
+    runner.checkEq(media.videoHeight, 0, 'video height');
+
+    var totalSuccess = 0;
+    function checkSuccess() {
+      totalSuccess++;
+      if (totalSuccess == 2)
+	runner.succeed();
+    }
+
+    media.addEventListener('loadedmetadata', function(e) {
+      self.log('loadedmetadata called');
+      runner.checkEq(media.videoWidth, 640, 'video width');
+      runner.checkEq(media.videoHeight, 360, 'video height');
+      checkSuccess();
     });
 
-    media.addEventListener('ended', function() {
-      self.log('onended called');
-      runner.succeed();
-    });
+    runner.checkEq(media.readyState, media.HAVE_NOTHING, 'readyState');
+    appendInit(media, videoSb, videoChain, 0, checkSuccess);
+  };
+};
 
+
+var createPlaybackStateTest = function(stream) {
+  var test = createConformanceTest('PlaybackState' + stream.codec,
+      'MSE (' + stream.codec + ')');
+  test.prototype.title = 'Test if the playback state transition is correct.';
+  test.prototype.onsourceopen = function() {
+    var runner = this.runner;
+    var media = this.video;
+    var videoStream = stream;
+    var audioStream = Media.AAC.AudioTiny;
+    var videoChain = new ResetInit(new FixedAppendSize(
+	new FileSource(videoStream.src, runner.XHRManager, runner.timeouts),
+	65536));
+    var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
+    var audioChain = new ResetInit(new FixedAppendSize(
+	new FileSource(audioStream.src, runner.XHRManager, runner.timeouts),
+	65536));
+    var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
+    var self = this;
+
+    media.play();
+    runner.checkEq(media.currentTime, 0, 'media.currentTime');
+    media.pause();
+    runner.checkEq(media.currentTime, 0, 'media.currentTime');
+
+    appendInit(media, audioSb, audioChain, 0, function() {
+      appendInit(media, videoSb, videoChain, 0, function() {
+	callAfterLoadedMetaData(media, function() {
+	  media.play();
+	  runner.checkEq(media.currentTime, 0, 'media.currentTime');
+	  media.pause();
+	  runner.checkEq(media.currentTime, 0, 'media.currentTime');
+	  media.play();
+	  appendUntil(runner.timeouts, media, audioSb, audioChain, 5, function() {
+	    appendUntil(runner.timeouts, media,
+			videoSb, videoChain, 5, function() {
+	      playThrough(runner.timeouts, media, 1, 2,
+			  audioSb, audioChain, videoSb, videoChain, function() {
+		var time = media.currentTime;
+		media.pause();
+		runner.checkApproxEq(media.currentTime, time,
+				     'media.currentTime');
+		runner.succeed();
+	      });
+	    });
+	  });
+	});
+      });
+    });
+  };
+};
+
+
+var createPlayPartialSegmentTest = function(stream) {
+  var test = createConformanceTest('PlayPartial' + stream.codec + 'Segment',
+      'MSE (' + stream.codec + ')');
+  test.prototype.title =
+      'Test if we can play a partially appended video segment.';
+  test.prototype.onsourceopen = function() {
+    var runner = this.runner;
+    var video = this.video;
+    var videoStream = stream;
+    var audioStream = Media.AAC.AudioTiny;
+    var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
+    var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
+    var videoXhr = runner.XHRManager.createRequest(videoStream.src, function(e) {
+      videoSb.appendBuffer(this.getResponseData());
+      video.addEventListener('timeupdate', function(e) {
+	if (!video.paused && video.currentTime >= 2) {
+	  runner.succeed();
+	}
+      });
+      video.play();
+    }, 0, 1500000);
+    var audioXhr = runner.XHRManager.createRequest(audioStream.src, function(e) {
+      audioSb.appendBuffer(this.getResponseData());
+      videoXhr.send();
+    }, 0, 500000);
     audioXhr.send();
   };
 };
 
-createMediaElementEventsTest();
 
-
-var createMediaSourceEventsTest = function() {
-  var test = createConformanceTest('MediaSourceEvents', 'MSE');
-  test.prototype.title = 'Test if the events on MediaSource are correct.';
+var createIncrementalAudioTest = function(stream) {
+  var test = createConformanceTest('Incremental' + stream.codec + 'Audio',
+      'MSE (' + stream.codec + ')');
+  test.prototype.title =
+      'Test if we can play a partially appended audio segment.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
-    var media = this.video;
-    var ms = this.ms;
-    var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
-    var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
-    var lastState = 'open';
-    var self = this;
-    var videoXhr = runner.XHRManager.createRequest(StreamDef.Video1MB.src,
-      function(e) {
-        self.log('onload called');
-        videoSb.appendBuffer(videoXhr.getResponseData());
-        videoSb.abort();
-        ms.endOfStream();
+    var sb = this.ms.addSourceBuffer(stream.mimetype);
+    var xhr = runner.XHRManager.createRequest(stream.src, function(e) {
+      sb.appendBuffer(xhr.getResponseData());
+      sb.addEventListener('updateend', function() {
+	runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
+	runner.checkEq(sb.buffered.start(0), 0, 'Range start');
+	runner.checkApproxEq(sb.buffered.end(0), stream.customMap[200000], 'Range end');
+	runner.succeed();
       });
-    var audioXhr = runner.XHRManager.createRequest(StreamDef.Audio1MB.src,
-      function(e) {
-        self.log('onload called');
-        audioSb.appendBuffer(audioXhr.getResponseData());
-        audioSb.abort();
-        videoXhr.send();
-      });
-
-    ms.addEventListener('sourceclose', function() {
-      self.log('onsourceclose called');
-      runner.checkEq(lastState, 'ended', 'The previous state');
-      runner.succeed();
-    });
-
-    ms.addEventListener('sourceended', function() {
-      self.log('onsourceended called');
-      runner.checkEq(lastState, 'open', 'The previous state');
-      lastState = 'ended';
-      media.removeAttribute('src');
-      media.load();
-    });
-
-    audioXhr.send();
+    }, 0, 200000);
+    xhr.send();
   };
 };
 
-createMediaSourceEventsTest();
 
-
-var testBufferSize = createConformanceTest('VideoBufferSize', 'MSE');
-testBufferSize.prototype.title = 'Determines video buffer sizes by ' +
-    'appending incrementally until discard occurs, and tests that it meets ' +
-    'the minimum requirements for streaming.';
-testBufferSize.prototype.onsourceopen = function() {
-  var runner = this.runner;
-  var sb = this.ms.addSourceBuffer(StreamDef.VideoType);
-  var self = this;
-  var xhr = runner.XHRManager.createRequest(StreamDef.Video1MB.src, 
-      function(e) {
-    var onBufferFull = function() {
-      var MIN_SIZE = 12;
-      runner.checkGE(expectedTime - sb.buffered.start(0), MIN_SIZE,
-                     'Estimated source buffer size');
-      runner.succeed();
-    };
-    // The test clip has a bitrate which is nearly exactly 1MB/sec, and
-    // lasts 1s. We start appending it repeatedly until we get eviction.
-    var expectedTime = 0;
-    sb.appendBuffer(xhr.getResponseData());
-    sb.addEventListener('updateend', function onUpdate() {
-      if (sb.buffered.start(0) > 0 || expectedTime > sb.buffered.end(0) + 0.1) {
-        sb.removeEventListener('updateend', onUpdate);
-        onBufferFull();
-      } else {
-        expectedTime++;
-        sb.timestampOffset = expectedTime;
-        try {
-          sb.appendBuffer(xhr.getResponseData());
-        } catch (e) {
-          var QUOTA_EXCEEDED_ERROR_CODE = 22;
-          if (e.code == QUOTA_EXCEEDED_ERROR_CODE) {
-            sb.removeEventListener('updateend', onUpdate);
-            onBufferFull();
-          } else {
-            runner.fail(e);
-          }
-        }
-      }
-    });
-  });
-  xhr.send();
-};
-
-
-var testSourceChain = createConformanceTest('SourceChain', 'MSE');
-testSourceChain.prototype.title =
-    'Test if Source Chain works properly. Source Chain is a stack of ' +
-    'classes that help with common tasks like appending init segment or ' +
-    'append data in random size.';
-testSourceChain.prototype.onsourceopen = function() {
-  var runner = this.runner;
-  var media = this.video;
-  var videoChain = new RandomAppendSize(new ResetInit(
-      new FileSource(StreamDef.VideoTiny.src, runner.XHRManager,
-                     runner.timeouts)));
-  var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
-  var audioChain = new FixedAppendSize(new ResetInit(
-      new FileSource(StreamDef.AudioTiny.src, runner.XHRManager,
-                     runner.timeouts)));
-  var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
-
-  appendUntil(runner.timeouts, media, videoSb, videoChain, 5, function() {
-    appendUntil(runner.timeouts, media, audioSb, audioChain, 5, function() {
-      media.play();
-      playThrough(
-          runner.timeouts, media, 1, 2, videoSb,
-          videoChain, audioSb, audioChain, function() {
-        runner.checkGE(media.currentTime, 2, 'currentTime');
-        runner.succeed();
+var createAppendAudioOffsetTest = function(stream1, stream2) {
+  var test = createConformanceTest('Append' + stream1.codec + 'AudioOffset',
+      'MSE (' + stream1.codec + ')');
+  test.prototype.title =
+      'Test if we can append audio data with an explicit offset.';
+  test.prototype.onsourceopen = function() {
+    var runner = this.runner;
+    var video = this.video;
+    var sb = this.ms.addSourceBuffer(stream1.mimetype);
+    var xhr = runner.XHRManager.createRequest(stream1.src, function(e) {
+      sb.timestampOffset = 5;
+      sb.appendBuffer(this.getResponseData());
+      sb.addEventListener('updateend', function callXhr2() {
+	sb.removeEventListener('updateend', callXhr2);
+	xhr2.send();
       });
-    });
-  });
-};
-
-
-var testVideoDimension = createConformanceTest('VideoDimension', 'MSE');
-testVideoDimension.prototype.title =
-    'Test if the readyState transition is correct.';
-testVideoDimension.prototype.onsourceopen = function() {
-  var runner = this.runner;
-  var media = this.video;
-  var videoChain = new ResetInit(new FixedAppendSize(
-      new FileSource(StreamDef.VideoNormal.src, runner.XHRManager,
-                     runner.timeouts), 65536));
-  var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
-  var self = this;
-
-  runner.checkEq(media.videoWidth, 0, 'video width');
-  runner.checkEq(media.videoHeight, 0, 'video height');
-
-  var totalSuccess = 0;
-  function checkSuccess() {
-    totalSuccess++;
-    if (totalSuccess == 2)
-      runner.succeed();
-  }
-
-  media.addEventListener('loadedmetadata', function(e) {
-    self.log('loadedmetadata called');
-    runner.checkEq(media.videoWidth, 640, 'video width');
-    runner.checkEq(media.videoHeight, 360, 'video height');
-    checkSuccess();
-  });
-
-  runner.checkEq(media.readyState, media.HAVE_NOTHING, 'readyState');
-  appendInit(media, videoSb, videoChain, 0, checkSuccess);
-};
-
-
-var testPlaybackState = createConformanceTest('PlaybackState', 'MSE');
-testPlaybackState.prototype.title =
-    'Test if the playback state transition is correct.';
-testPlaybackState.prototype.onsourceopen = function() {
-  var runner = this.runner;
-  var media = this.video;
-  var videoChain = new ResetInit(new FixedAppendSize(
-      new FileSource(StreamDef.VideoNormal.src, runner.XHRManager,
-                     runner.timeouts), 65536));
-  var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
-  var audioChain = new ResetInit(new FixedAppendSize(
-      new FileSource(StreamDef.AudioTiny.src, runner.XHRManager,
-                     runner.timeouts), 65536));
-  var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
-  var self = this;
-
-  media.play();
-  runner.checkEq(media.currentTime, 0, 'media.currentTime');
-  media.pause();
-  runner.checkEq(media.currentTime, 0, 'media.currentTime');
-
-  appendInit(media, audioSb, audioChain, 0, function() {
-    appendInit(media, videoSb, videoChain, 0, function() {
-      callAfterLoadedMetaData(media, function() {
-        media.play();
-        runner.checkEq(media.currentTime, 0, 'media.currentTime');
-        media.pause();
-        runner.checkEq(media.currentTime, 0, 'media.currentTime');
-        media.play();
-        appendUntil(runner.timeouts, media, audioSb, audioChain, 5, function() {
-          appendUntil(runner.timeouts, media,
-                      videoSb, videoChain, 5, function() {
-            playThrough(runner.timeouts, media, 1, 2,
-                        audioSb, audioChain, videoSb, videoChain, function() {
-              var time = media.currentTime;
-              media.pause();
-              runner.checkApproxEq(media.currentTime, time,
-                                   'media.currentTime');
-              runner.succeed();
-            });
-          });
-        });
+    }, 0, 200000);
+    var xhr2 = runner.XHRManager.createRequest(stream2.src, function(e) {
+      sb.abort();
+      sb.timestampOffset = 0;
+      sb.appendBuffer(this.getResponseData());
+      sb.addEventListener('updateend', function() {
+	runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
+	runner.checkEq(sb.buffered.start(0), 0, 'Range start');
+	runner.checkApproxEq(sb.buffered.end(0),
+	  stream2.customMap['appendAudioOffset'], 'Range end');
+	runner.succeed();
       });
-    });
-  });
+    }, 0, 200000);
+    xhr.send();
+  };
 };
 
 
-var testStartPlayWithoutData = createConformanceTest(
-    'StartPlayWithoutData', 'MSE');
-testStartPlayWithoutData.prototype.title =
-    'Test if we can start play before feeding any data. The play should ' +
-    'start automatically after data is appended';
-testStartPlayWithoutData.prototype.onsourceopen = function() {
-  var runner = this.runner;
-  var media = this.video;
-  var videoChain = new ResetInit(
-      new FileSource(StreamDef.VideoHuge.src, runner.XHRManager,
-                     runner.timeouts));
-  var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
-  var audioChain = new ResetInit(
-      new FileSource(StreamDef.AudioHuge.src, runner.XHRManager,
-                     runner.timeouts));
-  var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
-
-  media.play();
-  appendUntil(runner.timeouts, media, videoSb, videoChain, 1, function() {
-    appendUntil(runner.timeouts, media, audioSb, audioChain, 1, function() {
-      playThrough(
-          runner.timeouts, media, 1, 2,
-          videoSb, videoChain, audioSb, audioChain, function() {
-        runner.checkGE(media.currentTime, 2, 'currentTime');
-        runner.succeed();
+var createAppendVideoOffsetTest = function(stream1, stream2) {
+  var test = createConformanceTest('Append' + stream1.codec + 'VideoOffset',
+      'MSE (' + stream1.codec + ')');
+  test.prototype.title =
+      'Test if we can append video data with an explicit offset.';
+  test.prototype.onsourceopen = function() {
+    var self = this;
+    var runner = this.runner;
+    var video = this.video;
+    var sb = this.ms.addSourceBuffer(stream1.mimetype);
+    var xhr = runner.XHRManager.createRequest(stream1.src, function(e) {
+      sb.timestampOffset = 5;
+      sb.appendBuffer(this.getResponseData());
+      sb.addEventListener('update', function callXhr2() {
+	sb.removeEventListener('update', callXhr2);
+	xhr2.send();
       });
-    });
-  });
-};
-
-
-var testPlayPartialSegment = createConformanceTest('PlayPartialSegment', 'MSE');
-testPlayPartialSegment.prototype.title =
-    'Test if we can play a partially appended video segment.';
-testPlayPartialSegment.prototype.onsourceopen = function() {
-  var runner = this.runner;
-  var video = this.video;
-  var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
-  var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
-  var videoXhr = runner.XHRManager.createRequest(StreamDef.VideoTiny.src,
-      function(e) {
-    videoSb.appendBuffer(this.getResponseData());
-    video.addEventListener('timeupdate', function(e) {
-      if (!video.paused && video.currentTime >= 2) {
-        runner.succeed();
-      }
-    });
-    video.play();
-  }, 0, 1500000);
-  var audioXhr = runner.XHRManager.createRequest(StreamDef.AudioTiny.src,
-      function(e) {
-    audioSb.appendBuffer(this.getResponseData());
-    videoXhr.send();
-  }, 0, 500000);
-  audioXhr.send();
-};
-
-
-var testIncrementalAudio = createConformanceTest('IncrementalAudio', 'MSE');
-testIncrementalAudio.prototype.title =
-    'Test if we can append audio not in the unit of segment.';
-testIncrementalAudio.prototype.onsourceopen = function() {
-  var runner = this.runner;
-  var sb = this.ms.addSourceBuffer(StreamDef.AudioType);
-  var xhr = runner.XHRManager.createRequest(StreamDef.AudioNormalAdv.src,
-      function(e) {
-    sb.appendBuffer(xhr.getResponseData());
-    sb.addEventListener('updateend', function() {
-      runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
-      runner.checkEq(sb.buffered.start(0), 0, 'Range start');
-      runner.checkApproxEq(sb.buffered.end(0),
-          StreamDef.AudioNormalAdv.customMap[200000], 'Range end');
-      runner.succeed();
-    });
-  }, 0, 200000);
-  xhr.send();
-};
-
-
-var testAppendAudioOffset = createConformanceTest('AppendAudioOffset', 'MSE');
-testAppendAudioOffset.prototype.title =
-    'Test if we can append audio data with an explicit offset.';
-testAppendAudioOffset.prototype.onsourceopen = function() {
-  var runner = this.runner;
-  var video = this.video;
-  var sb = this.ms.addSourceBuffer(StreamDef.AudioType);
-  var xhr = runner.XHRManager.createRequest(StreamDef.AudioNormalAdv.src,
-      function(e) {
-    sb.timestampOffset = 5;
-    sb.appendBuffer(this.getResponseData());
-    sb.addEventListener('updateend', function callXhr2() {
-      sb.removeEventListener('updateend', callXhr2);
-      xhr2.send();
-    });
-  }, 0, 200000);
-  var xhr2 = runner.XHRManager.createRequest(StreamDef.AudioHuge.src,
-      function(e) {
-    sb.abort();
-    sb.timestampOffset = 0;
-    sb.appendBuffer(this.getResponseData());
-    sb.addEventListener('updateend', function() {
-      runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
-      runner.checkEq(sb.buffered.start(0), 0, 'Range start');
-      runner.checkApproxEq(sb.buffered.end(0),
-        StreamDef.AudioHuge.customMap['appendAudioOffset'], 'Range end');
-      runner.succeed();
-    });
-  }, 0, 200000);
-  xhr.send();
-};
-
-
-var testVideoChangeRate = createConformanceTest('VideoChangeRate', 'MSE');
-testVideoChangeRate.prototype.title =
-    'Test if we can change the format of video on the fly.';
-testVideoChangeRate.prototype.onsourceopen = function() {
-  var self = this;
-  var runner = this.runner;
-  var video = this.video;
-  var sb = this.ms.addSourceBuffer(StreamDef.VideoType);
-  var xhr = runner.XHRManager.createRequest(StreamDef.VideoNormal.src,
-      function(e) {
-    sb.timestampOffset = 5;
-    sb.appendBuffer(this.getResponseData());
-    sb.addEventListener('update', function callXhr2() {
-      sb.removeEventListener('update', callXhr2);
-      xhr2.send();
-    });
-  }, 0, 200000);
-  var xhr2 = runner.XHRManager.createRequest(StreamDef.VideoTiny.src,
-      function(e) {
-    sb.abort();
-    sb.timestampOffset = 0;
-    sb.appendBuffer(this.getResponseData());
-    sb.addEventListener('updateend', function() {
-      runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
-      runner.checkEq(sb.buffered.start(0), 0, 'Range start');
-      runner.checkApproxEq(sb.buffered.end(0),
-          StreamDef.VideoTiny.customMap['videoChangeRate'], 'Range end');
-      callAfterLoadedMetaData(video, function() {
-        video.currentTime = 3;
-        video.addEventListener('seeked', function(e) {
-          self.log('seeked called');
-          video.addEventListener('timeupdate', function(e) {
-            self.log('timeupdate called with ' + video.currentTime);
-            if (!video.paused && video.currentTime >= 2) {
-              runner.succeed();
-            }
-          });
-        });
+    }, 0, 200000);
+    var xhr2 = runner.XHRManager.createRequest(stream2.src, function(e) {
+      sb.abort();
+      sb.timestampOffset = 0;
+      sb.appendBuffer(this.getResponseData());
+      sb.addEventListener('updateend', function() {
+	runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
+	runner.checkEq(sb.buffered.start(0), 0, 'Range start');
+	runner.checkApproxEq(sb.buffered.end(0),
+	    stream2.customMap['videoChangeRate'], 'Range end');
+	callAfterLoadedMetaData(video, function() {
+	  video.currentTime = 3;
+	  video.addEventListener('seeked', function(e) {
+	    self.log('seeked called');
+	    video.addEventListener('timeupdate', function(e) {
+	      self.log('timeupdate called with ' + video.currentTime);
+	      if (!video.paused && video.currentTime >= 2) {
+		runner.succeed();
+	      }
+	    });
+	  });
+	});
       });
-    });
-    video.play();
-  }, 0, 400000);
-  this.ms.duration = 100000000;  // Ensure that we can seek to any position.
-  xhr.send();
+      video.play();
+    }, 0, 400000);
+    this.ms.duration = 100000000;  // Ensure that we can seek to any position.
+    xhr.send();
+  };
 };
 
 
 var createAppendMultipleInitTest = function(stream) {
   var test = createConformanceTest(
-      'AppendMultipleInit' + util.MakeCapitalName(stream.name), 'MSE');
+      'AppendMultipleInit' + stream.codec + util.MakeCapitalName(stream.mediatype),
+      'MSE (' + stream.codec + ')');
   test.prototype.title = 'Test if we can append multiple init segments.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
     var media = this.video;
     var chain = new FileSource(stream.src, runner.XHRManager, runner.timeouts,
                                0, stream.size, stream.size);
-    var src = this.ms.addSourceBuffer(stream.type);
+    var src = this.ms.addSourceBuffer(stream.mimetype);
     var init;
 
     function getEventAppend(cb, endCb) {
@@ -961,450 +1064,411 @@ var createAppendMultipleInitTest = function(stream) {
   };
 };
 
-createAppendMultipleInitTest(StreamDef.Audio1MB);
-createAppendMultipleInitTest(StreamDef.Video1MB);
 
+var createAppendOutOfOrderTest = function(stream) {
+  var test = createConformanceTest(
+      'Append' + stream.codec + util.MakeCapitalName(stream.mediatype) + 'OutOfOrder',
+      'MSE (' + stream.codec + ')');
+  test.prototype.title = 'Test appending segments out of order.';
+  test.prototype.onsourceopen = function() {
+    var runner = this.runner;
+    var media = this.video;
+    var chain = new FileSource(stream.src, runner.XHRManager,
+	runner.timeouts);
+    var sb = this.ms.addSourceBuffer(stream.mimetype);
+    var bufs = [];
 
-var testAppendOutOfOrder = createConformanceTest('AppendOutOfOrder', 'MSE');
-testAppendOutOfOrder.prototype.title =
-    'Test if we can append segments out of order. This is valid according' +
-    ' to MSE v0.6 section 2.3.';
-testAppendOutOfOrder.prototype.onsourceopen = function() {
-  var runner = this.runner;
-  var media = this.video;
-  var audioChain = new FileSource(StreamDef.AudioNormal.src, runner.XHRManager,
-      runner.timeouts);
-  var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
-  var bufs = [];
-
-  function createAppendHook() {
     var i = 0;
     // Append order of the segments.
     var appendOrder = [0, 2, 1, 4, 3];
     // Number of segments given the append order, since segments get merged.
     var bufferedLength = [0, 1, 1, 2, 1];
 
-    audioSb.addEventListener('update', function() {
-      runner.checkEq(audioSb.buffered.length, bufferedLength[i],
-                     'Source buffer number');
-      if (i == 1)
-        runner.checkGr(audioSb.buffered.start(0), 0, 'Range start');
-      else if (i > 0)
-        runner.checkEq(audioSb.buffered.start(0), 0, 'Range start');
+    sb.addEventListener('updateend', function() {
+      runner.checkEq(sb.buffered.length, bufferedLength[i],
+          'Source buffer number');
+      if (i == 1) {
+        runner.checkGr(sb.buffered.start(0), 0, 'Range start');
+      } else if (i > 0) {
+        runner.checkEq(sb.buffered.start(0), 0, 'Range start');
+      }
 
-      ++i;
-      if (i < bufs.length)
+      i++;
+      if (i >= bufs.length) {
         runner.succeed();
-      else
-        audioSb.appendBuffer(bufs[appendOrder[i]]);
+      } else {
+        sb.appendBuffer(bufs[appendOrder[i]]);
+      }
     });
-  };
 
-  audioChain.init(0, function(buf) {
-    bufs.push(buf);
-    audioChain.pull(function(buf) {
+    chain.init(0, function(buf) {
       bufs.push(buf);
-      audioChain.pull(function(buf) {
-        bufs.push(buf);
-        audioChain.pull(function(buf) {
-          bufs.push(buf);
-          audioChain.pull(function(buf) {
-            bufs.push(buf);
-            createAppendHook();
-            audioSb.appendBuffer(bufs[0]);
-          });
-        });
+      chain.pull(function(buf) {
+	bufs.push(buf);
+	chain.pull(function(buf) {
+	  bufs.push(buf);
+	  chain.pull(function(buf) {
+	    bufs.push(buf);
+	    chain.pull(function(buf) {
+	      bufs.push(buf);
+	      sb.appendBuffer(bufs[0]);
+	    });
+	  });
+	});
       });
     });
-  });
-};
-
-
-var testBufferedRange = createConformanceTest('BufferedRange', 'MSE');
-testBufferedRange.prototype.title =
-    'Test if SourceBuffer.buffered get updated correctly after feeding data.';
-testBufferedRange.prototype.onsourceopen = function() {
-  var runner = this.runner;
-  var media = this.video;
-  var videoChain = new ResetInit(
-      new FileSource(StreamDef.VideoNormal.src, runner.XHRManager,
-                     runner.timeouts));
-  var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
-  var audioChain = new ResetInit(
-      new FileSource(StreamDef.AudioNormal.src, runner.XHRManager,
-          runner.timeouts));
-  var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
-
-  runner.checkEq(videoSb.buffered.length, 0, 'Source buffer number');
-  runner.checkEq(audioSb.buffered.length, 0, 'Source buffer number');
-  appendInit(media, videoSb, videoChain, 0, function() {
-    appendInit(media, audioSb, audioChain, 0, function() {
-      runner.checkEq(videoSb.buffered.length, 0, 'Source buffer number');
-      runner.checkEq(audioSb.buffered.length, 0, 'Source buffer number');
-      appendUntil(runner.timeouts, media, videoSb, videoChain, 5, function() {
-        runner.checkEq(videoSb.buffered.length, 1, 'Source buffer number');
-        runner.checkEq(videoSb.buffered.start(0), 0, 'Source buffer number');
-        runner.checkGE(videoSb.buffered.end(0), 5, 'Range end');
-        appendUntil(runner.timeouts, media, audioSb, audioChain, 5, function() {
-          runner.checkEq(audioSb.buffered.length, 1, 'Source buffer number');
-          runner.checkEq(audioSb.buffered.start(0), 0, 'Source buffer number');
-          runner.checkGE(audioSb.buffered.end(0), 5, 'Range end');
-          runner.succeed();
-        });
-      });
-    });
-  });
-};
-
-
-var testMediaSourceDuration = createConformanceTest(
-    'MediaSourceDuration', 'MSE');
-testMediaSourceDuration.prototype.title =
-    'Test if the duration on MediaSource can be set and retrieved sucessfully.';
-testMediaSourceDuration.prototype.onsourceopen = function() {
-  var runner = this.runner;
-  var media = this.video;
-  var ms = this.ms;
-  var videoChain = new ResetInit(
-      new FileSource(StreamDef.VideoNormal.src, runner.XHRManager,
-          runner.timeouts));
-  var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
-  var self = this;
-  var onsourceclose = function() {
-    self.log('onsourceclose called');
-    runner.assert(isNaN(ms.duration));
-    runner.succeed();
   };
+};
 
-  runner.assert(isNaN(media.duration), 'Initial media duration not NaN');
-  media.play();
-  appendInit(media, videoSb, videoChain, 0, function() {
-    appendUntil(runner.timeouts, media, videoSb, videoChain, 10, function() {
-      runner.checkApproxEq(ms.duration,
-                           StreamDef.VideoNormal.customMap.mediaSourceDuration,
-                           'ms.duration', 0.01);
-      videoSb.addEventListener('update', function onDurationChange() {
-        videoSb.removeEventListener('update', onDurationChange);
-        runner.checkEq(ms.duration, 5, 'ms.duration');
-        runner.checkEq(media.duration, 5, 'media.duration');
-        runner.checkLE(videoSb.buffered.end(0), 5.1, 'Range end');
-        videoSb.abort();
-        videoChain.seek(0);
-        appendInit(media, videoSb, videoChain, 0, function() {
-          appendUntil(runner.timeouts, media, videoSb, videoChain, 10,
-                      function() {
-            runner.checkApproxEq(ms.duration, 10, 'ms.duration');
-            videoSb.addEventListener('update', function buffersRemoved() {
-              videoSb.removeEventListener('update', buffersRemoved);
-              var duration = videoSb.buffered.end(0);
-              ms.endOfStream();
-              runner.checkApproxEq(ms.duration, duration, 'ms.duration', 0.01);
-              ms.addEventListener('sourceended', function() {
-                runner.checkApproxEq(ms.duration, duration, 'ms.duration',
-                                     0.01);
-                runner.checkEq(media.duration, duration, 'media.duration');
-                ms.addEventListener('sourceclose', onsourceclose);
-                media.removeAttribute('src');
-                media.load();
+
+var createBufferedRangeTest = function(stream) {
+  var test = createConformanceTest(
+      'BufferedRange' + stream.codec + util.MakeCapitalName(stream.mediatype),
+      'MSE (' + stream.codec + ')');
+  test.prototype.title =
+      'Test SourceBuffer.buffered get updated correctly after feeding data.';
+  test.prototype.onsourceopen = function() {
+    var runner = this.runner;
+    var media = this.video;
+    var chain = new ResetInit(
+	new FileSource(stream.src, runner.XHRManager, runner.timeouts));
+    var sb = this.ms.addSourceBuffer(stream.mimetype);
+
+    runner.checkEq(sb.buffered.length, 0, 'Source buffer number');
+    appendInit(media, sb, chain, 0, function() {
+      runner.checkEq(sb.buffered.length, 0, 'Source buffer number');
+      appendUntil(runner.timeouts, media, sb, chain, 5, function() {
+	runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
+	runner.checkEq(sb.buffered.start(0), 0, 'Source buffer number');
+	runner.checkGE(sb.buffered.end(0), 5, 'Range end');
+	runner.succeed();
+      });
+    });
+  };
+};
+
+
+var createMediaSourceDurationTest = function(videoStream) {
+  var test = createConformanceTest('MediaSourceDuration' + videoStream.codec,
+      'MSE (' + videoStream.codec + ')');
+  test.prototype.title =
+      'Test if the duration on MediaSource can be set and retrieved sucessfully.';
+  test.prototype.onsourceopen = function() {
+    var runner = this.runner;
+    var media = this.video;
+    var ms = this.ms;
+    var videoChain = new ResetInit(
+	new FileSource(videoStream.src, runner.XHRManager, runner.timeouts));
+    var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
+    var self = this;
+    var onsourceclose = function() {
+      self.log('onsourceclose called');
+      runner.assert(isNaN(ms.duration));
+      runner.succeed();
+    };
+
+    runner.assert(isNaN(media.duration), 'Initial media duration not NaN');
+    media.play();
+    appendInit(media, videoSb, videoChain, 0, function() {
+      appendUntil(runner.timeouts, media, videoSb, videoChain, 10, function() {
+	runner.checkApproxEq(ms.duration,
+			     videoStream.customMap.mediaSourceDuration,
+			     'ms.duration', 0.01);
+	videoSb.addEventListener('update', function onDurationChange() {
+	  videoSb.removeEventListener('update', onDurationChange);
+	  runner.checkEq(ms.duration, 5, 'ms.duration');
+	  runner.checkEq(media.duration, 5, 'media.duration');
+	  runner.checkLE(videoSb.buffered.end(0), 5.1, 'Range end');
+	  videoSb.abort();
+	  videoChain.seek(0);
+	  appendInit(media, videoSb, videoChain, 0, function() {
+	    appendUntil(runner.timeouts, media, videoSb, videoChain, 10,
+			function() {
+	      runner.checkApproxEq(ms.duration, 10, 'ms.duration');
+	      videoSb.addEventListener('update', function buffersRemoved() {
+		videoSb.removeEventListener('update', buffersRemoved);
+		var duration = videoSb.buffered.end(0);
+		ms.endOfStream();
+		runner.checkApproxEq(ms.duration, duration, 'ms.duration', 0.01);
+		ms.addEventListener('sourceended', function() {
+		  runner.checkApproxEq(ms.duration, duration, 'ms.duration',
+				       0.01);
+		  runner.checkEq(media.duration, duration, 'media.duration');
+		  ms.addEventListener('sourceclose', onsourceclose);
+		  media.removeAttribute('src');
+		  media.load();
+		});
+		media.play();
+	      });
+	      ms.duration = 5;
+	    });
+	  });
+	});
+	ms.duration = 5;
+      });
+    });
+  };
+};
+
+
+var createOverlapTest = function(stream) {
+  var test = createConformanceTest(
+      stream.codec + util.MakeCapitalName(stream.mediatype) + 'WithOverlap',
+      'MSE (' + stream.codec + ')');
+  test.prototype.title =
+      'Test if media data with overlap will be merged into one range.';
+  test.prototype.onsourceopen = function() {
+    var runner = this.runner;
+    var media = this.video;
+    var chain = new ResetInit(
+	new FileSource(stream.src, runner.XHRManager, runner.timeouts));
+    var sb = this.ms.addSourceBuffer(stream.mimetype);
+    var GAP = 0.1;
+
+    appendInit(media, sb, chain, 0, function() {
+      chain.pull(function(buf) {
+	sb.addEventListener('update', function appendOuter() {
+	  sb.removeEventListener('update', appendOuter);
+	  runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
+	  var segmentDuration = sb.buffered.end(0);
+	  sb.timestampOffset = segmentDuration - GAP;
+	  chain.seek(0);
+	  chain.pull(function(buf) {
+	    sb.addEventListener('update', function appendMiddle() {
+	      sb.removeEventListener('update', appendMiddle);
+	      chain.pull(function(buf) {
+		sb.addEventListener('update', function appendInner() {
+		  runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
+		  runner.checkApproxEq(sb.buffered.end(0),
+				       segmentDuration * 2 - GAP, 'Range end');
+		  runner.succeed();
+		});
+		runner.assert(safeAppend(sb, buf), 'safeAppend failed');
+	      });
+	    });
+	    runner.assert(safeAppend(sb, buf), 'safeAppend failed');
+	  });
+	});
+	runner.assert(safeAppend(sb, buf), 'safeAppend failed');
+      });
+    });
+  };
+};
+
+
+var createSmallGapTest = function(stream) {
+  var test = createConformanceTest(
+      stream.codec + util.MakeCapitalName(stream.mediatype) + 'WithSmallGap',
+      'MSE (' + stream.codec + ')');
+  test.prototype.title =
+      'Test if media data with a gap smaller than an media frame size ' +
+      'will be merged into one buffered range.';
+  test.prototype.onsourceopen = function() {
+    var runner = this.runner;
+    var media = this.video;
+    var chain = new ResetInit(
+        new FileSource(stream.src, runner.XHRManager, runner.timeouts));
+    var sb = this.ms.addSourceBuffer(stream.mimetype);
+    var GAP = 0.01;  
+
+    appendInit(media, sb, chain, 0, function() {
+      chain.pull(function(buf) {
+        sb.addEventListener('update', function appendOuter() {
+          sb.removeEventListener('update', appendOuter);
+          runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
+          var segmentDuration = sb.buffered.end(0);
+          sb.timestampOffset = segmentDuration + GAP;
+          chain.seek(0);
+          chain.pull(function(buf) {
+            sb.addEventListener('update', function appendMiddle() {
+              sb.removeEventListener('update', appendMiddle);
+              chain.pull(function(buf) {
+                sb.addEventListener('update', function appendInner() {
+                  runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
+                  runner.checkApproxEq(sb.buffered.end(0),
+                                       segmentDuration * 2 + GAP, 'Range end');
+                  runner.succeed();
+                });
+                runner.assert(safeAppend(sb, buf), 'safeAppend failed');
               });
-              media.play();
             });
-            ms.duration = 5;
+            runner.assert(safeAppend(sb, buf), 'safeAppend failed');
           });
         });
+        runner.assert(safeAppend(sb, buf), 'safeAppend failed');
       });
-      ms.duration = 5;
     });
-  });
+  };
 };
 
 
-var testAudioWithOverlap = createConformanceTest('AudioWithOverlap', 'MSE');
-testAudioWithOverlap.prototype.title =
-    'Test if audio data with overlap will be merged into one range.';
-testAudioWithOverlap.prototype.onsourceopen = function() {
-  var runner = this.runner;
-  var media = this.video;
-  var audioChain = new ResetInit(
-      new FileSource(StreamDef.AudioNormal.src, runner.XHRManager,
-                     runner.timeouts));
-  var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
-  var GAP = 0.1;
+var createLargeGapTest = function(stream) {
+  var test = createConformanceTest(
+      stream.codec + util.MakeCapitalName(stream.mediatype) + 'WithLargeGap',
+      'MSE (' + stream.codec + ')');
+  test.prototype.title =
+      'Test if media data with a gap larger than an media frame size ' +
+      'will not be merged into one buffered range.';
+  test.prototype.onsourceopen = function() {
+    var runner = this.runner;
+    var media = this.video;
+    var chain = new ResetInit(
+        new FileSource(stream.src, runner.XHRManager, runner.timeouts));
+    var sb = this.ms.addSourceBuffer(stream.mimetype);
+    var GAP = 0.3;
 
-  appendInit(media, audioSb, audioChain, 0, function() {
-    audioChain.pull(function(buf) {
-      audioSb.addEventListener('update', function appendOuter() {
-        audioSb.removeEventListener('update', appendOuter);
-        runner.checkEq(audioSb.buffered.length, 1, 'Source buffer number');
-        var segmentDuration = audioSb.buffered.end(0);
-        audioSb.timestampOffset = segmentDuration - GAP;
-        audioChain.seek(0);
-        audioChain.pull(function(buf) {
-          audioSb.addEventListener('update', function appendMiddle() {
-            audioSb.removeEventListener('update', appendMiddle);
-            audioChain.pull(function(buf) {
-              audioSb.addEventListener('update', function appendInner() {
-                runner.checkEq(audioSb.buffered.length, 1,
-                               'Source buffer number');
-                runner.checkApproxEq(audioSb.buffered.end(0),
-                                     segmentDuration * 2 - GAP, 'Range end');
-                runner.succeed();
+    appendInit(media, sb, chain, 0, function() {
+      chain.pull(function(buf) {
+        sb.addEventListener('update', function appendOuter() {
+          sb.removeEventListener('update', appendOuter);
+          runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
+          var segmentDuration = sb.buffered.end(0);
+          sb.timestampOffset = segmentDuration + GAP;
+          chain.seek(0);
+          chain.pull(function(buf) {
+            sb.addEventListener('update', function appendMiddle() {
+              sb.removeEventListener('update', appendMiddle);
+              chain.pull(function(buf) {
+                sb.addEventListener('update', function appendInner() {
+                  runner.checkEq(sb.buffered.length, 2, 'Source buffer number');
+                  runner.succeed();
+                });
+                runner.assert(safeAppend(sb, buf), 'safeAppend failed');
               });
-              runner.assert(safeAppend(audioSb, buf), 'safeAppend failed');
             });
+            runner.assert(safeAppend(sb, buf), 'safeAppend failed');
           });
-          runner.assert(safeAppend(audioSb, buf), 'safeAppend failed');
         });
+        runner.assert(safeAppend(sb, buf), 'safeAppend failed');
       });
-      runner.assert(safeAppend(audioSb, buf), 'safeAppend failed');
     });
-  });
+  };
 };
 
 
-var testAudioWithSmallGap = createConformanceTest('AudioWithSmallGap', 'MSE');
-testAudioWithSmallGap.prototype.title =
-    'Test if audio data with a gap smaller than an audio frame size ' +
-    'will be merged into one buffered range.';
-testAudioWithSmallGap.prototype.onsourceopen = function() {
-  var runner = this.runner;
-  var media = this.video;
-  var audioChain = new ResetInit(
-      new FileSource(StreamDef.AudioNormal.src, runner.XHRManager,
-                     runner.timeouts));
-  var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
-  var GAP = 0.01;  // The audio frame size of this file is 0.0232
+var createSeekTest = function(videoStream) {
+  var test = createConformanceTest('Seek' + videoStream.codec,
+      'MSE (' + videoStream.codec + ')');
+  test.prototype.title = 'Test if we can seek during playing. It' +
+      ' also tests if the implementation properly supports seek operation' +
+      ' fired immediately after another seek that hasn\'t been completed.';
+  test.prototype.onsourceopen = function() {
+    var runner = this.runner;
+    var media = this.video;
+    var audioStream = Media.AAC.AudioNormal;
+    var videoChain = new ResetInit(new FileSource(
+        videoStream.src, runner.XHRManager, runner.timeouts));
+    var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
+    var audioChain = new ResetInit(new FileSource(
+        audioStream.src, runner.XHRManager, runner.timeouts));
+    var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
+    var self = this;
 
-  appendInit(media, audioSb, audioChain, 0, function() {
-    audioChain.pull(function(buf) {
-      audioSb.addEventListener('update', function appendOuter() {
-        audioSb.removeEventListener('update', appendOuter);
-        runner.checkEq(audioSb.buffered.length, 1, 'Source buffer number');
-        var segmentDuration = audioSb.buffered.end(0);
-        audioSb.timestampOffset = segmentDuration + GAP;
-        audioChain.seek(0);
-        audioChain.pull(function(buf) {
-          audioSb.addEventListener('update', function appendMiddle() {
-            audioSb.removeEventListener('update', appendMiddle);
-            audioChain.pull(function(buf) {
-              audioSb.addEventListener('update', function appendInner() {
-                runner.checkEq(audioSb.buffered.length, 1,
-                               'Source buffer number');
-                runner.checkApproxEq(audioSb.buffered.end(0),
-                                     segmentDuration * 2 + GAP, 'Range end');
-                runner.succeed();
-              });
-              runner.assert(safeAppend(audioSb, buf), 'safeAppend failed');
-            });
-          });
-          runner.assert(safeAppend(audioSb, buf), 'safeAppend failed');
-        });
-      });
-      runner.assert(safeAppend(audioSb, buf), 'safeAppend failed');
-    });
-  });
-};
+    this.ms.duration = 100000000;  // Ensure that we can seek to any position.
 
-
-var testAudioWithLargeGap = createConformanceTest('AudioWithLargeGap', 'MSE');
-testAudioWithLargeGap.prototype.title =
-    'Test if audio data with a gap larger than an audio frame size ' +
-    'will not be merged into one buffered range.';
-testAudioWithLargeGap.prototype.onsourceopen = function() {
-  var runner = this.runner;
-  var media = this.video;
-  var audioChain = new ResetInit(
-      new FileSource(StreamDef.AudioNormal.src, runner.XHRManager,
-                     runner.timeouts));
-  var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
-  var GAP = 0.03;  // The audio frame size of this file is 0.0232
-
-  appendInit(media, audioSb, audioChain, 0, function() {
-    audioChain.pull(function(buf) {
-      audioSb.addEventListener('update', function appendOuter() {
-        audioSb.removeEventListener('update', appendOuter);
-        runner.checkEq(audioSb.buffered.length, 1, 'Source buffer number');
-        var segmentDuration = audioSb.buffered.end(0);
-        audioSb.timestampOffset = segmentDuration + GAP;
-        audioChain.seek(0);
-        audioChain.pull(function(buf) {
-          audioSb.addEventListener('update', function appendMiddle() {
-            audioSb.removeEventListener('update', appendMiddle);
-            audioChain.pull(function(buf) {
-              audioSb.addEventListener('update', function appendInner() {
-                runner.checkEq(audioSb.buffered.length, 2,
-                               'Source buffer number');
-                runner.succeed();
-              });
-              runner.assert(safeAppend(audioSb, buf), 'safeAppend failed');
-            });
-          });
-          runner.assert(safeAppend(audioSb, buf), 'safeAppend failed');
-        });
-      });
-      runner.assert(safeAppend(audioSb, buf), 'safeAppend failed');
-    });
-  });
-};
-
-
-var testSeekTimeUpdate = createConformanceTest('SeekTimeUpdate', 'MSE');
-testSeekTimeUpdate.prototype.title =
-  'Timeupdate event fired with correct currentTime after seeking.';
-testSeekTimeUpdate.prototype.onsourceopen = function() {
-  var runner = this.runner;
-  var media = this.video;
-  var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
-  var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
-  var lastTime = 0;
-  var updateCount = 0;
-  var xhr = runner.XHRManager.createRequest(StreamDef.VideoNormal.src,
-      function() {
-    videoSb.appendBuffer(xhr.getResponseData());
-    var xhr2 = runner.XHRManager.createRequest(StreamDef.AudioNormal.src,
-        function() {
-      audioSb.appendBuffer(xhr2.getResponseData());
-      callAfterLoadedMetaData(media, function() {
-        media.addEventListener('timeupdate', function(e) {
-          if (!media.paused) {
-            ++updateCount;
-            runner.checkGE(media.currentTime, lastTime, 'media.currentTime');
-            if (updateCount > 3) {
-              updateCount = 0;
-              lastTime += 10;
-              if (lastTime >= 35)
-                runner.succeed();
-              else
-                media.currentTime = lastTime + 6;
-            }
-          }
-        });
-        media.play();
-      });
-    }, 0, 1000000);
-    xhr2.send();
-  }, 0, 5000000);
-  this.ms.duration = 100000000;  // Ensure that we can seek to any position.
-  xhr.send();
-};
-
-
-var testSourceSeek = createConformanceTest('Seek', 'MSE');
-testSourceSeek.prototype.title = 'Test if we can seek during playing. It' +
-    ' also tests if the implementation properly supports seek operation' +
-    ' fired immediately after another seek that hasn\'t been completed.';
-testSourceSeek.prototype.onsourceopen = function() {
-  var runner = this.runner;
-  var media = this.video;
-  var videoChain = new ResetInit(new FileSource(
-      StreamDef.VideoNormal.src, runner.XHRManager, runner.timeouts));
-  var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
-  var audioChain = new ResetInit(new FileSource(
-      StreamDef.AudioNormal.src, runner.XHRManager, runner.timeouts));
-  var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
-  var self = this;
-
-  this.ms.duration = 100000000;  // Ensure that we can seek to any position.
-
-  appendUntil(runner.timeouts, media, videoSb, videoChain, 20, function() {
-    appendUntil(runner.timeouts, media, audioSb, audioChain, 20, function() {
-      self.log('Seek to 17s');
-      callAfterLoadedMetaData(media, function() {
-        media.currentTime = 17;
-        media.play();
-        playThrough(
-            runner.timeouts, media, 10, 19,
-            videoSb, videoChain, audioSb, audioChain, function() {
-          runner.checkGE(media.currentTime, 19, 'currentTime');
-          self.log('Seek to 28s');
-          media.currentTime = 53;
-          media.currentTime = 58;
+    appendUntil(runner.timeouts, media, videoSb, videoChain, 20, function() {
+      appendUntil(runner.timeouts, media, audioSb, audioChain, 20, function() {
+        self.log('Seek to 17s');
+        callAfterLoadedMetaData(media, function() {
+          media.currentTime = 17;
+          media.play();
           playThrough(
-              runner.timeouts, media, 10, 60,
+              runner.timeouts, media, 10, 19,
               videoSb, videoChain, audioSb, audioChain, function() {
-            runner.checkGE(media.currentTime, 60, 'currentTime');
-            self.log('Seek to 7s');
-            media.currentTime = 0;
-            media.currentTime = 7;
-            videoChain.seek(7, videoSb);
-            audioChain.seek(7, audioSb);
-            playThrough(runner.timeouts, media, 10, 9,
+            runner.checkGE(media.currentTime, 19, 'currentTime');
+            self.log('Seek to 28s');
+            media.currentTime = 53;
+            media.currentTime = 58;
+            playThrough(
+                runner.timeouts, media, 10, 60,
                 videoSb, videoChain, audioSb, audioChain, function() {
-              runner.checkGE(media.currentTime, 9, 'currentTime');
-              runner.succeed();
+              runner.checkGE(media.currentTime, 60, 'currentTime');
+              self.log('Seek to 7s');
+              media.currentTime = 0;
+              media.currentTime = 7;
+              videoChain.seek(7, videoSb);
+              audioChain.seek(7, audioSb);
+              playThrough(runner.timeouts, media, 10, 9,
+                  videoSb, videoChain, audioSb, audioChain, function() {
+                runner.checkGE(media.currentTime, 9, 'currentTime');
+                runner.succeed();
+              });
             });
           });
         });
       });
     });
-  });
+  };
 };
 
 
-var testBufUnbufSeek = createConformanceTest('BufUnbufSeek', 'MSE');
-testBufUnbufSeek.prototype.title = 'Seek into and out of a buffered region.';
-testBufUnbufSeek.prototype.onsourceopen = function() {
-  var runner = this.runner;
-  var media = this.video;
-  var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
-  var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
-  var xhr = runner.XHRManager.createRequest(StreamDef.VideoNormal.src,
-      function() {
-    videoSb.appendBuffer(xhr.getResponseData());
-    var xhr2 = runner.XHRManager.createRequest(StreamDef.AudioNormal.src,
-        function() {
-      audioSb.appendBuffer(xhr2.getResponseData());
-      callAfterLoadedMetaData(media, function() {
-        var N = 30;
-        function loop(i) {
-          if (i > N) {
-            media.currentTime = 1.005;
-            media.addEventListener('timeupdate', function(e) {
-              if (!media.paused && media.currentTime > 3)
-                runner.succeed();
-            });
-            return;
+var createBufUnbufSeekTest = function(videoStream) {
+  var test = createConformanceTest('BufUnbufSeek' + videoStream.codec,
+      'MSE (' + videoStream.codec + ')');
+  test.prototype.title = 'Seek into and out of a buffered region.';
+  test.prototype.onsourceopen = function() {
+    var runner = this.runner;
+    var media = this.video;
+    var audioStream = Media.AAC.AudioNormal;
+    var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
+    var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
+    var xhr = runner.XHRManager.createRequest(videoStream.src, function() {
+      videoSb.appendBuffer(xhr.getResponseData());
+      var xhr2 = runner.XHRManager.createRequest(audioStream.src, function() {
+        audioSb.appendBuffer(xhr2.getResponseData());
+        callAfterLoadedMetaData(media, function() {
+          var N = 30;
+          function loop(i) {
+            if (i > N) {
+              media.currentTime = 1.005;
+              media.addEventListener('timeupdate', function(e) {
+                if (!media.paused && media.currentTime > 3)
+                  runner.succeed();
+              });
+              return;
+            }
+            // bored of shitty test scripts now => test scripts get shittier
+            media.currentTime = (i++ % 2) * 1.0e6 + 1;
+            runner.timeouts.setTimeout(loop.bind(null, i), 50);
           }
-          // bored of shitty test scripts now => test scripts get shittier
-          media.currentTime = (i++ % 2) * 1.0e6 + 1;
-          runner.timeouts.setTimeout(loop.bind(null, i), 50);
-        }
-        media.play();
-        media.addEventListener('play', loop.bind(null, 0));
-      });
-    }, 0, 100000);
-    xhr2.send();
-  }, 0, 1000000);
-  this.ms.duration = 100000000;  // Ensure that we can seek to any position.
-  xhr.send();
+          media.play();
+          media.addEventListener('play', loop.bind(null, 0));
+        });
+      }, 0, 100000);
+      xhr2.send();
+    }, 0, 1000000);
+    this.ms.duration = 100000000;  // Ensure that we can seek to any position.
+    xhr.send();
+  };
 };
 
 
 var createDelayedTest = function(delayed, nonDelayed) {
-  var test = createConformanceTest('Delayed' +
-      util.MakeCapitalName(delayed.name), 'MSE');
+  var test = createConformanceTest(
+      'Delayed' + delayed.codec + util.MakeCapitalName(delayed.mediatype),
+      'MSE (' + delayed.codec + ')');
   test.prototype.title = 'Test if we can play properly when there' +
-    ' is not enough ' + delayed.name + ' data. The play should resume once ' +
-    delayed.name + ' data is appended.';
+    ' is not enough ' + delayed.mediatype + ' data. The play should resume once ' +
+    delayed.mediatype + ' data is appended.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
     var media = this.video;
     // Chrome allows for 3 seconds of underflow for streams that have audio
     // but are video starved. See code.google.com/p/chromium/issues/detail?id=423801
     var underflowTime = 0.0;
-    if (delayed.name == 'video') {
+    if (delayed.mediatype == 'video') {
       underflowTime = 3.0;
     }
     var chain = new FixedAppendSize(
       new ResetInit(
         new FileSource(nonDelayed.src, runner.XHRManager, runner.timeouts)
       ), 16384);
-    var src = this.ms.addSourceBuffer(nonDelayed.type);
+    var src = this.ms.addSourceBuffer(nonDelayed.mimetype);
     var delayedChain = new FixedAppendSize(
       new ResetInit(
         new FileSource(delayed.src, runner.XHRManager, runner.timeouts)
       ), 16384);
-    var delayedSrc = this.ms.addSourceBuffer(delayed.type);
+    var delayedSrc = this.ms.addSourceBuffer(delayed.mimetype);
     var self = this;
     var ontimeupdate = function(e) {
       if (!media.paused) {
@@ -1432,99 +1496,110 @@ var createDelayedTest = function(delayed, nonDelayed) {
   };
 };
 
-createDelayedTest(StreamDef.AudioNormal, StreamDef.VideoNormal);
-createDelayedTest(StreamDef.VideoNormal, StreamDef.AudioNormal);
 
+// AAC Specific tests.
+createAppendTest(Media.AAC.Audio1MB);
+createAbortTest(Media.AAC.Audio1MB);
+createTimestampOffsetTest(Media.AAC.Audio1MB);
+createDurationAfterAppendTest(Media.AAC.Audio1MB);
+createPausedTest(Media.AAC.Audio1MB);
+createIncrementalAudioTest(Media.AAC.AudioNormalAdv);
+createAppendAudioOffsetTest(Media.AAC.AudioNormalAdv, Media.AAC.AudioHuge);
+createAppendMultipleInitTest(Media.AAC.Audio1MB);
+createAppendOutOfOrderTest(Media.AAC.AudioNormal);
+createBufferedRangeTest(Media.AAC.AudioNormal);
+createOverlapTest(Media.AAC.AudioNormal);
+createSmallGapTest(Media.AAC.AudioNormal);
+createLargeGapTest(Media.AAC.AudioNormal);
+createDelayedTest(Media.AAC.AudioNormal, Media.VP9.VideoNormal);
 
-var testEventTimestamp = createConformanceTest('EventTimestamp', 'MSE');
-testEventTimestamp.prototype.title = 'Test Event Timestamp is relative to ' +
-    'the initial page load';
-testEventTimestamp.prototype.onsourceopen = function() {
-  var runner = this.runner;
-  var video = this.video;
-  var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
-  var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
-  runner.checkGr(Date.now(), 1360000000000, 'Date.now()');
-  var lastTime = 0.0;
-  var requestCounter = 0;
+// VP9 Specific tests.
+createAppendTest(Media.VP9.Video1MB);
+createAbortTest(Media.VP9.Video1MB);
+createTimestampOffsetTest(Media.VP9.Video1MB);
+createDASHLatencyTest(Media.VP9.VideoTiny);
+createDurationAfterAppendTest(Media.VP9.Video1MB);
+createPausedTest(Media.VP9.Video1MB);
+createVideoDimensionTest(Media.VP9.VideoNormal);
+createPlaybackStateTest(Media.VP9.VideoNormal);
+createPlayPartialSegmentTest(Media.VP9.VideoTiny);
+createAppendVideoOffsetTest(Media.VP9.VideoNormal,  Media.VP9.VideoTiny);
+createAppendMultipleInitTest(Media.VP9.Video1MB);
+createAppendOutOfOrderTest(Media.VP9.VideoNormal);
+createBufferedRangeTest(Media.VP9.VideoNormal);
+createMediaSourceDurationTest(Media.VP9.VideoNormal);
+createOverlapTest(Media.VP9.VideoNormal);
+createSmallGapTest(Media.VP9.VideoNormal);
+createLargeGapTest(Media.VP9.VideoNormal);
+createSeekTest(Media.VP9.VideoNormal);
+createBufUnbufSeekTest(Media.VP9.VideoNormal);
+createDelayedTest(Media.VP9.VideoNormal, Media.AAC.AudioNormal);
 
-  var audioXhr = runner.XHRManager.createRequest(StreamDef.AudioTiny.src,
-      function(e) {
-    audioSb.appendBuffer(this.getResponseData());
-    video.addEventListener('timeupdate', function(e) {
-      runner.checkGE(e.timeStamp, lastTime, 'event.timeStamp');
-      lastTime = e.timeStamp;
-      if (!video.paused && video.currentTime >= 2 && requestCounter >= 3) {
-        runner.succeed();
-      }
-      requestCounter++;
-    });
-    video.play();
-  }, 0, 500000);
-
-  var videoXhr = runner.XHRManager.createRequest(StreamDef.VideoTiny.src,
-      function(e) {
-    videoSb.appendBuffer(this.getResponseData());
-    audioXhr.send();
-  }, 0, 1500000);
-  videoXhr.send();
-};
-
-function checkDOMError(runner, e, code, name) {
-  if (code || name) {
-    if (e instanceof DOMException)
-      runner.checkEq(e.code, code, 'exception code');
-    else
-      runner.checkEq(e.name, name, 'exception name');
-  } else {
-    return e instanceof DOMException;
-  }
-}
+// H264 Specific tests.
+createAppendTest(Media.H264.Video1MB);
+createAbortTest(Media.H264.Video1MB);
+createTimestampOffsetTest(Media.H264.Video1MB);
+createDASHLatencyTest(Media.H264.VideoTiny);
+createDurationAfterAppendTest(Media.H264.Video1MB);
+createPausedTest(Media.H264.Video1MB);
+createVideoDimensionTest(Media.H264.VideoNormal);
+createPlaybackStateTest(Media.H264.VideoNormal);
+createPlayPartialSegmentTest(Media.H264.VideoTiny);
+createAppendVideoOffsetTest(Media.H264.VideoNormal,  Media.H264.VideoTiny);
+createAppendMultipleInitTest(Media.H264.Video1MB);
+createAppendOutOfOrderTest(Media.H264.VideoNormal);
+createBufferedRangeTest(Media.H264.VideoNormal);
+createMediaSourceDurationTest(Media.H264.VideoNormal);
+createOverlapTest(Media.H264.VideoNormal);
+createSmallGapTest(Media.H264.VideoNormal);
+createLargeGapTest(Media.H264.VideoNormal);
+createSeekTest(Media.H264.VideoNormal);
+createBufUnbufSeekTest(Media.H264.VideoNormal);
+createDelayedTest(Media.H264.VideoNormal, Media.AAC.AudioNormal);
 
 
 var frameTestOnSourceOpen = function() {
   var runner = this.runner;
   var media = this.video;
+  var audioStream = Media.AAC.AudioNormal;
   var videoChain = new FixedAppendSize(new ResetInit(
-      new FileSource(this.filename, runner.XHRManager,
-                     runner.timeouts)));
-  var videoSb = this.ms.addSourceBuffer(StreamDef.H264.VideoType);
+      new FileSource(this.filename, runner.XHRManager, runner.timeouts)));
+  var videoSb = this.ms.addSourceBuffer(Media.H264.mimetype);
   var audioChain = new FixedAppendSize(new ResetInit(
-      new FileSource(StreamDef.AudioNormal.src, runner.XHRManager,
-                     runner.timeouts)));
-  var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
+      new FileSource(audioStream.src, runner.XHRManager, runner.timeouts)));
+  var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
   media.play();
   playThrough(runner.timeouts, media, 5, 18, videoSb, videoChain,
               audioSb, audioChain, runner.succeed.bind(runner));
 };
 
 
-var testFrameGaps = createConformanceTest('FrameGaps', 'MSE Media');
+var testFrameGaps = createConformanceTest('H264 FrameGaps', 'Media');
 testFrameGaps.prototype.title = 'Test media with frame durations of 24FPS ' +
     'but segment timing corresponding to 23.976FPS';
-testFrameGaps.prototype.filename = StreamDef.H264.FrameGap.src;
+testFrameGaps.prototype.filename = Media.H264.FrameGap.src;
 testFrameGaps.prototype.onsourceopen = frameTestOnSourceOpen;
 
 
-var testFrameOverlaps = createConformanceTest('FrameOverlaps', 'MSE Media');
+var testFrameOverlaps = createConformanceTest('H264 FrameOverlaps', 'Media');
 testFrameOverlaps.prototype.title = 'Test media with frame durations of ' +
     '23.976FPS but segment timing corresponding to 24FPS';
-testFrameOverlaps.prototype.filename = StreamDef.H264.FrameOverlap.src;
+testFrameOverlaps.prototype.filename = Media.H264.FrameOverlap.src;
 testFrameOverlaps.prototype.onsourceopen = frameTestOnSourceOpen;
 
 
-var testAAC51 = createConformanceTest('AAC51', 'MSE Media');
+var testAAC51 = createConformanceTest('AAC51', 'Media');
 testAAC51.prototype.title = 'Test 5.1-channel AAC';
 testAAC51.prototype.onsourceopen = function() {
   var runner = this.runner;
   var media = this.video;
-  var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
-  var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
-  var xhr = runner.XHRManager.createRequest(StreamDef.Audio51.src,
-      function(e) {
+  var audioStream = Media.AAC.Audio51;
+  var videoStream = Media.VP9.VideoNormal;
+  var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
+  var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
+  var xhr = runner.XHRManager.createRequest(audioStream.src, function(e) {
     audioSb.appendBuffer(xhr.getResponseData());
-    var xhr2 = runner.XHRManager.createRequest(StreamDef.VideoNormal.src,
-      function(e) {
+    var xhr2 = runner.XHRManager.createRequest(videoStream.src, function(e) {
         videoSb.appendBuffer(xhr2.getResponseData());
         media.play();
         media.addEventListener('timeupdate', function(e) {
@@ -1535,68 +1610,6 @@ testAAC51.prototype.onsourceopen = function() {
     xhr2.send();
   });
   xhr.send();
-};
-
-
-var testXHRUint8Array = createConformanceTest('XHRUint8Array', 'General');
-testXHRUint8Array.prototype.title = 'Ensure that XHR can send an Uint8Array';
-testXHRUint8Array.prototype.timeout = 10000;
-testXHRUint8Array.prototype.start = function(runner, video) {
-  var s = 'XHR DATA';
-  var buf = new ArrayBuffer(s.length);
-  var view = new Uint8Array(buf);
-  for (var i = 0; i < s.length; i++) {
-    view[i] = s.charCodeAt(i);
-  }
-
-  var xhr = runner.XHRManager.createPostRequest(
-    'https://drmproxy.appspot.com/echo',
-    function(e) {
-      runner.checkEq(String.fromCharCode.apply(null, xhr.getResponseData()),
-                     s, 'XHR response');
-      runner.succeed();
-    },
-    view.length);
-  xhr.send(view);
-};
-
-
-var testXHRAbort = createConformanceTest('XHRAbort', 'General');
-testXHRAbort.prototype.title = 'Ensure that XHR aborts actually abort by ' +
-    'issuing an absurd number of them and then aborting all but one.';
-testXHRAbort.prototype.start = function(runner, video) {
-  var N = 100;
-  var startTime = Date.now();
-  var lastAbortTime;
-  function startXHR(i) {
-    var xhr = runner.XHRManager.createRequest(
-        StreamDef.VideoNormal.src + '?x=' + Date.now() + '.' + i, function() {
-      if (i >= N) {
-        xhr.getResponseData();  // This will verify status internally.
-        runner.succeed();
-      }
-    });
-    if (i < N) {
-      runner.timeouts.setTimeout(xhr.abort.bind(xhr), 10);
-      runner.timeouts.setTimeout(startXHR.bind(null, i + 1), 1);
-      lastAbortTime = Date.now();
-    }
-    xhr.send();
-  };
-  startXHR(0);
-};
-
-
-var testXHROpenState = createConformanceTest('XHROpenState', 'General');
-testXHROpenState.prototype.title = 'Ensure XMLHttpRequest.open does not ' +
-    'reset XMLHttpRequest.responseType';
-testXHROpenState.prototype.start = function(runner, video) {
-  var xhr = new XMLHttpRequest;
-  // It should not be an error to set responseType before calling open
-  xhr.responseType = 'arraybuffer';
-  xhr.open('GET', 'http://google.com', true);
-  runner.checkEq(xhr.responseType, 'arraybuffer', 'XHR responseType');
-  runner.succeed();
 };
 
 

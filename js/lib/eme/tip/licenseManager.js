@@ -20,7 +20,7 @@ var LicenseManager = function(video, mediaStreams, flavor) {
   // LincenseManager does not handle mixed streams with VP9 video and aac audio.
   this.mediaStreams = mediaStreams instanceof Array ?
       mediaStreams : [mediaStreams];
-  this.mime = this.mediaStreams[0].type;
+  this.mime = this.mediaStreams[0].mimetype;
   this.flavor = flavor;
   this.keySystem = this.findCompatibleKeySystem_();
   // This doesn't handle situtations with multiple licenses.
