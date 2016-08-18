@@ -32,6 +32,62 @@ h3 {
   margin: 10px 0 0 0;
 }
 
+.test-table .index { width: 30px; text-align: right; }
+.test-table .status {
+  width: 20px;
+  color: #fff;
+  text-align: right;
+}
+
+.test-table .status_current {
+  width: 20px;
+  text-align: right;
+}
+
+.test-table .desc { width: 200px; }
+.test-table .state { width: 30px; text-align: center; }
+.test-table .failstate { width: 30px; text-align: center; }
+
+.test-table {
+  table-layout: fixed;
+  font-family: Sans-Serif;
+  width: 380px;
+  border-collapse: collapse;
+  text-align: left;
+  margin: 0px;
+  display: inline-block;
+  white-space:nowrap;
+}
+
+.test-table th {
+  font-size: 120%;
+  font-weight: bolder;
+  color: #039;
+  border-bottom: 2px solid #6678b1;
+  padding: 10px 8px 4px;
+}
+
+.test-table td {
+  font-size: 90%;
+  color: #669;
+  border-bottom: 1px solid #e6e8f1;
+  padding: 9px 8px 0;
+}
+
+.test-table td.failstate {
+  font-size: 90%;
+  color: #f00;
+  border-bottom: 1px solid #e6e8f1;
+  padding: 9px 8px 0;
+}
+
+.test-table td.small {
+  font-size: 60%;
+  color: #0a0;
+  border-bottom: 1px solid #e6e8f1;
+  padding: 9px 8px 0;
+}
+
 .compact-list .cell-category {
   font-weight: bold;
   color: #039;
@@ -114,15 +170,14 @@ div.container_hidden {
 
 .box-left {
   width:740px;
-  display:inline-block;
+  float:left;
+  border-collapse:collapse;
 }
 
 .box-right {
   width:420px;
-}
-
-#testarea {
-  display:inline-block;
+  margin-top:2cm;
+  border-collapse:collapse;
 }
 
 .desc-expl-popup {

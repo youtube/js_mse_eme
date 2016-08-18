@@ -84,7 +84,11 @@ function TestView(testSuiteVer) {
   this.generate = function() {
     var heading = '[' + this.testSuiteVer + '] ' +
         testSuiteDescriptions[harnessConfig.testType].heading + ' (v REVISION)';
-    document.title = testSuiteDescriptions[harnessConfig.testType].title;
+    try {
+      document.title = testSuiteDescriptions[harnessConfig.testType].title;
+    } catch (e) {
+      // Use default html title if UA can't control document.title.
+    }
     document.body.appendChild(createElement('h3', 'title', null, heading));
     document.body.appendChild(createElement('h4', 'info'));
     document.body.appendChild(createElement('h4', 'usage'));

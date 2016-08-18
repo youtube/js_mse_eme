@@ -119,7 +119,7 @@ var createLogger = function() {
 window.globalRunner = null;
 
 var createRunner = function(testSuite, testSuiteVer, testsMask) {
-  var runner = new TestRunner(testSuite, testsMask, testSuiteVer);
+  var runner = new TestExecutor(testSuite, testsMask, testSuiteVer);
 
   // Expose the runner so outside/injected scripts can read it.
   window.globalRunner = runner;

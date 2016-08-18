@@ -104,7 +104,7 @@ window.createMSTest = function(name) {
   return t;
 };
 
-var TestRunner = function(testSuite, testsMask, testSuiteVer) {
+var TestExecutor = function(testSuite, testsMask, testSuiteVer) {
   this.testView = null;
   this.currentTest = null;
   this.currentTestIdx = 0;
@@ -129,13 +129,13 @@ var TestRunner = function(testSuite, testsMask, testSuiteVer) {
   this.viewType = testSuite.viewType;
 };
 
-TestRunner.prototype.log = function() {
+TestExecutor.prototype.log = function() {
   var args = Array.prototype.slice.call(arguments, 0);
-  args.splice(0, 0, 'TestRunner: ');
+  args.splice(0, 0, 'TestExecutor: ');
   LOG.apply(this, args);
 };
 
-TestRunner.prototype.assert = function(cond, msg) {
+TestExecutor.prototype.assert = function(cond, msg) {
   if (!cond) {
     ++this.testList[this.currentTestIdx].prototype.failures;
     this.updateStatus();
@@ -143,7 +143,7 @@ TestRunner.prototype.assert = function(cond, msg) {
   }
 };
 
-TestRunner.prototype.checkException = function(testFunc, exceptionCode) {
+TestExecutor.prototype.checkException = function(testFunc, exceptionCode) {
   try {
     testFunc();
     this.fail('Expect exception ' + exceptionCode);
@@ -152,21 +152,21 @@ TestRunner.prototype.checkException = function(testFunc, exceptionCode) {
   }
 };
 
-TestRunner.prototype.check = function(condition, passMsg, failMsg) {
+TestExecutor.prototype.check = function(condition, passMsg, failMsg) {
   if (condition)
     this.log(passMsg);
   else
     this.assert(false, failMsg);
 };
 
-TestRunner.prototype.checkType = function(x, y, name) {
+TestExecutor.prototype.checkType = function(x, y, name) {
   var t = typeof(x);
   var result = t === y;
   this.check(result, 'checkType passed: type of ' + name + ' is (' + t + ').',
              'Type of ' + name + ' is (' + t + ') which should be (' + y + ')');
 };
 
-TestRunner.prototype.checkEq = function(x, y, name) {
+TestExecutor.prototype.checkEq = function(x, y, name) {
   var result = (x == y) ||
       (typeof(x) === 'number' && typeof(y) === 'number' &&
        isNaN(x) && isNaN(y));
@@ -174,7 +174,7 @@ TestRunner.prototype.checkEq = function(x, y, name) {
              name + ' is (' + x + ') which should be (' + y + ')');
 };
 
-TestRunner.prototype.checkNE = function(x, y, name) {
+TestExecutor.prototype.checkNE = function(x, y, name) {
   var result = (x != y) &&
       !(typeof(x) === 'number' && typeof(y) === 'number' &&
         isNaN(x) && isNaN(y));
@@ -182,7 +182,7 @@ TestRunner.prototype.checkNE = function(x, y, name) {
              name + ' is (' + x + ') which shouldn\'t.');
 };
 
-TestRunner.prototype.checkApproxEq = function(x, y, name, eps) {
+TestExecutor.prototype.checkApproxEq = function(x, y, name, eps) {
   eps = eps || 0.5;
   var equal = (x == y) ||
       (typeof(x) === 'number' && typeof(y) === 'number' &&
@@ -199,44 +199,44 @@ TestRunner.prototype.checkApproxEq = function(x, y, name, eps) {
                 (y - eps) + ', ' + (y + eps) + ']');
 };
 
-TestRunner.prototype.checkGr = function(x, y, name) {
+TestExecutor.prototype.checkGr = function(x, y, name) {
   this.check(x > y, 'checkGr passed: ' + name + ' is (' + x + ').',
              name + ' is (' + x +
                  ') which should be greater than (' + y + ')');
 };
 
-TestRunner.prototype.checkGE = function(x, y, name) {
+TestExecutor.prototype.checkGE = function(x, y, name) {
   this.check(x >= y, 'checkGE passed: ' + name + ' is (' + x + ').',
              name + ' is (' + x +
                  ') which should be greater than or equal to (' + y + ')');
 };
 
-TestRunner.prototype.checkLE = function(x, y, name) {
+TestExecutor.prototype.checkLE = function(x, y, name) {
   this.check(x <= y, 'checkLE passed: ' + name + ' is (' + x + ').',
              name + ' is (' + x +
                  ') which should be less than or equal to (' + y + ')');
 };
 
-TestRunner.prototype.getControlContainer = function() {
+TestExecutor.prototype.getControlContainer = function() {
   // Override this function to anchor one to the DOM.
   return document.createElement('div');
 };
 
-TestRunner.prototype.getNewVideoTag = function() {
+TestExecutor.prototype.getNewVideoTag = function() {
   // Override this function to anchor one to the DOM.
   return document.createElement('video');
 };
 
-TestRunner.prototype.getOutputArea = function() {
+TestExecutor.prototype.getOutputArea = function() {
   // Override this function to anchor one to the DOM.
   return document.createElement('textarea');
 };
 
-TestRunner.prototype.updateStatus = function() {
+TestExecutor.prototype.updateStatus = function() {
   this.testView.getTest(this.currentTestIdx).updateStatus();
 };
 
-TestRunner.prototype.initialize = function() {
+TestExecutor.prototype.initialize = function() {
   var self = this;
   if (this.viewType === 'extra compact')
     this.testView = compactTestView.create(this.testSuiteVer, this.fields,
@@ -265,7 +265,7 @@ TestRunner.prototype.initialize = function() {
   this.longestTest = null;
 };
 
-TestRunner.prototype.onfinished = function() {
+TestExecutor.prototype.onfinished = function() {
   if (this.longestTest && this.longestTimeRatio > 0) {
     this.log('Longest test is ' + this.longestTest + ', it takes ' +
              this.longestTimeRatio + ' of its timeout.');
@@ -296,7 +296,7 @@ TestRunner.prototype.onfinished = function() {
   }
 };
 
-TestRunner.prototype.sendTestReport = function(results) {
+TestExecutor.prototype.sendTestReport = function(results) {
   var resultsURL = 'https://qual-e.appspot.com/api?command=save_result';
   resultsURL += '&source=mse_eme_conformance';
   resultsURL += '&testid=' + (harnessConfig.testid ? harnessConfig.testid :
@@ -307,7 +307,7 @@ TestRunner.prototype.sendTestReport = function(results) {
   xhr.send(JSON.stringify(results));
 };
 
-TestRunner.prototype.startTest = function(startIndex, numOfTestToRun) {
+TestExecutor.prototype.startTest = function(startIndex, numOfTestToRun) {
   if (!this.currentTest) {
     this.startIndex = startIndex;
     this.numOfTestToRun = numOfTestToRun;
@@ -318,7 +318,7 @@ TestRunner.prototype.startTest = function(startIndex, numOfTestToRun) {
   }
 };
 
-TestRunner.prototype.startNextTest = function() {
+TestExecutor.prototype.startNextTest = function() {
   UpdateStreamDef(Number(harnessConfig.enablewebm));
   if (this.numOfTestToRun != 1) {
     while (this.testToRun > 0 &&
@@ -366,7 +366,7 @@ TestRunner.prototype.startNextTest = function() {
   this.currentTest.start(this, this.currentTest.video);
 };
 
-TestRunner.prototype.succeed = function() {
+TestExecutor.prototype.succeed = function() {
   this.lastResult = 'pass';
   ++this.testList[this.currentTestIdx].prototype.passes;
   this.updateStatus();
@@ -374,7 +374,7 @@ TestRunner.prototype.succeed = function() {
   this.teardownCurrentTest(false);
 };
 
-TestRunner.prototype.error = function(msg, isTimeout) {
+TestExecutor.prototype.error = function(msg, isTimeout) {
   this.lastResult = isTimeout ? 'timeout' : 'failure';
   var test = this.currentTest;
 
@@ -406,13 +406,13 @@ TestRunner.prototype.error = function(msg, isTimeout) {
   if (this.assertThrowsError) throw msg;
 };
 
-TestRunner.prototype.fail = function(msg) {
+TestExecutor.prototype.fail = function(msg) {
   ++this.testList[this.currentTestIdx].prototype.failures;
   this.updateStatus();
   this.error('Test ' + this.currentTest.desc + ' FAILED: ' + msg, false);
 };
 
-TestRunner.prototype.timeout = function() {
+TestExecutor.prototype.timeout = function() {
   var isTestTimedOut = false;
   var currentTime = new Date().getTime();
   var testTime = currentTime - this.startTime;
@@ -447,7 +447,7 @@ TestRunner.prototype.timeout = function() {
   }
 };
 
-TestRunner.prototype.teardownCurrentTest = function(isTimeout) {
+TestExecutor.prototype.teardownCurrentTest = function(isTimeout) {
   if (!isTimeout) {
     var time = Date.now() - this.startTime;
     var ratio = time / this.currentTest.timeout;
@@ -482,7 +482,7 @@ TestRunner.prototype.teardownCurrentTest = function(isTimeout) {
 };
 
 window.TestBase = TestBase;
-window.TestRunner = TestRunner;
+window.TestExecutor = TestExecutor;
 
 window.getTestResults = function(testStartId, testEndId) {
   testStartId = testStartId || 0;

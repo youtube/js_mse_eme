@@ -17,6 +17,7 @@ limitations under the License.
 
 var Media = (function() {
   var AAC = {
+    streamtype: 'AAC',
     mimetype: 'audio/mp4; codecs="mp4a.40.2"',
     mediatype: 'audio',
     streams : {
@@ -39,6 +40,7 @@ var Media = (function() {
   };
 
   var H264 = {
+    streamtype: 'H264',
     mimetype: 'video/mp4; codecs="avc1.640028"',
     mediatype: 'video',
     streams: {
@@ -71,6 +73,7 @@ var Media = (function() {
   };
 
   var VP9 = {
+    streamtype: 'VP9',
     mimetype: 'video/webm; codecs="vp9"',
     mediatype: 'video',
     streams: {
@@ -102,7 +105,7 @@ var Media = (function() {
     },
   };
 
-  var streamTypes = {AAC, H264, VP9};
+  var streamTypes = [AAC, H264, VP9];
 
   var createStreamDefFunc = function(codec, mediaType, mimeType) {
     return function(src, size, duration, customMap) {
@@ -116,14 +119,15 @@ var Media = (function() {
   };
 
   var mediaStreams = {};
-  for (var streamType in streamTypes) {
-    var mimeType = streamTypes[streamType].mimetype;
-    var mediaType = streamTypes[streamType].mediatype;
+  for (var i in streamTypes) {
+    var mimeType = streamTypes[i].mimetype;
+    var mediaType = streamTypes[i].mediatype;
+    var streamType = streamTypes[i].streamtype;
     mediaStreams[streamType] = {};
     mediaStreams[streamType].mimetype = mimeType;
     var createStreamDef = createStreamDefFunc(streamType, mediaType, mimeType);
 
-    var streams = streamTypes[streamType].streams;
+    var streams = streamTypes[i].streams;
     for (var streamName in streams) {
       if (streams.hasOwnProperty(streamName)) {
         mediaStreams[streamType][streamName] = createStreamDef.apply(null, streams[streamName]);

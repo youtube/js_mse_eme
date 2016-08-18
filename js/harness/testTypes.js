@@ -20,7 +20,7 @@ limitations under the License.
 window.testSuiteDescriptions = {
   'conformance-test': {
     name: 'MSE Conformance Tests',
-    title: 'Media Source and Encrypted Media Conformance Tests',
+    title: 'Media Source and Media Conformance Tests',
     heading: 'MSE Conformance Tests'
   },
   'encryptedmedia-test': { 
