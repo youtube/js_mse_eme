@@ -114,15 +114,18 @@ div.container_hidden {
 
 .box-left {
   width:740px;
+  height:210px;
   display:inline-block;
 }
 
 .box-right {
   width:420px;
+  height:210px;
 }
 
 #testarea {
   display:inline-block;
+  height:210px;
 }
 
 .desc-expl-popup {
