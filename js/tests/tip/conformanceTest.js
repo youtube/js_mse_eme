@@ -1065,10 +1065,11 @@ var createAppendMultipleInitTest = function(stream) {
 };
 
 
-var createAppendOutOfOrderTest = function(stream) {
+var createAppendOutOfOrderTest = function(stream, optional) {
+  optional = !optional;
   var test = createConformanceTest(
       'Append' + stream.codec + util.MakeCapitalName(stream.mediatype) + 'OutOfOrder',
-      'MSE (' + stream.codec + ')');
+      'MSE (' + stream.codec + ')', optional);
   test.prototype.title = 'Test appending segments out of order.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
@@ -1547,7 +1548,7 @@ createPlaybackStateTest(Media.H264.VideoNormal);
 createPlayPartialSegmentTest(Media.H264.VideoTiny);
 createAppendVideoOffsetTest(Media.H264.VideoNormal,  Media.H264.VideoTiny);
 createAppendMultipleInitTest(Media.H264.Video1MB);
-createAppendOutOfOrderTest(Media.H264.VideoNormal);
+createAppendOutOfOrderTest(Media.H264.VideoNormal, true);
 createBufferedRangeTest(Media.H264.VideoNormal);
 createMediaSourceDurationTest(Media.H264.VideoNormal);
 createOverlapTest(Media.H264.VideoNormal);
