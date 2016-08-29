@@ -230,8 +230,7 @@ testPlayReadyH264Video.prototype.start = function(runner, video) {
 };
 
 
-var testPlayReadyAacAudio = createEmeTest('PlayReadyAacAudio', 'PlayReady',
-                                          true);
+var testPlayReadyAacAudio = createEmeTest('PlayReadyAacAudio', 'PlayReady');
 testPlayReadyAacAudio.prototype.title =
     'Test if we can play video encrypted with PlayReady encryption.';
 testPlayReadyAacAudio.prototype.start = function(runner, video) {
@@ -253,6 +252,26 @@ testPlayReadyAacAudio.prototype.start = function(runner, video) {
     }
   });
   video.play();
+};
+
+
+var testCanPlayType = createEmeTest('canPlayType', 'General EME');
+testCanPlayType.prototype.title =
+    'Test canPlayType is using the EME Final Rec.';
+testCanPlayType.prototype.start = function(runner, video) {
+  runner.assert(video.canPlayType(Media.AAC.mimetype) === 'probably',
+      'Missing support for AAC');
+  runner.assert(video.canPlayType(Media.H264.mimetype) === 'probably',
+      'Missing support for H264');
+  runner.assert(video.canPlayType(Media.VP9.mimetype) === 'probably',
+      'Missing support for VP9');
+  runner.assert(video.canPlayType(Media.AAC.mimetype, 'Something')
+      === 'probably', 'canPlayType is not using EME final rec.');
+  runner.assert(video.canPlayType(Media.H264.mimetype, 'Something1')
+      === 'probably', 'canPlayType is not using EME final rec.');
+  runner.assert(video.canPlayType(Media.VP9.mimetype, 'Something2')
+      === 'probably', 'canPlayType is not using EME final rec.');
+  runner.succeed();
 };
 
 
