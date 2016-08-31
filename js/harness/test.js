@@ -113,6 +113,7 @@ var TestExecutor = function(testSuite, testsMask, testSuiteVer) {
   this.timeouts = createTimeoutManager(createLogger(this.log.bind(this)));
   this.lastResult = 'pass';
   this.testSuiteVer = testSuiteVer;
+  this.runCount = 0;
 
   if (testsMask) {
     this.testList = [];
@@ -271,8 +272,9 @@ TestExecutor.prototype.onfinished = function() {
              this.longestTimeRatio + ' of its timeout.');
   }
 
+  ++this.runCount;
   var keepRunning = (!harnessConfig.stoponfailure ||
-      this.lastResult === 'pass') && harnessConfig.loop &&
+      this.lastResult === 'pass') && (this.runCount < harnessConfig.loop) &&
       (this.testView.anySelected() || this.numOfTestToRun === 1);
   if (keepRunning) {
     this.testToRun = this.numOfTestToRun;
