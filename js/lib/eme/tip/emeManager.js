@@ -21,7 +21,7 @@ EMEHandler.prototype.init = function(video, licenseManager) {
   this.video = video;
   this.licenseManager = licenseManager;
   this.keySystem = licenseManager.keySystem;
-  this.keyAddedCount = 0;
+  this.keyUnusable = false;
 
   video.addEventListener('encrypted', this.onEncrypted.bind(this));
 
@@ -97,5 +97,10 @@ EMEHandler.prototype.onMessage = function(event) {
  */
 EMEHandler.prototype.onKeyStatusesChange = function(event) {
   dlog(2, 'onKeyStatusesChange()');
-  this.keyAddedCount++;
+  this.keyUnusable = false;
+  event.target.keyStatuses.forEach(function(status, kid) {
+    if  (status != 'usable') {
+      this.keyUnusable = true;
+    }
+  });
 };

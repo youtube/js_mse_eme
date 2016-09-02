@@ -145,7 +145,7 @@ testWidevineH264Video.prototype.start = function(runner, video) {
   }
   video.addEventListener('timeupdate', function onTimeUpdate(e) {
     if (!video.paused && video.currentTime >= 15 &&
-        testEmeHandler.keyAddedCount == 1) {
+        !testEmeHandler.keyUnusable) {
       video.removeEventListener('timeupdate', onTimeUpdate);
       runner.checkGE(video.currentTime, 15, 'currentTime');
       runner.succeed();
@@ -170,7 +170,7 @@ testWidevineAacAudio.prototype.start = function(runner, video) {
   }
   video.addEventListener('timeupdate', function onTimeUpdate(e) {
     if (!video.paused && video.currentTime >= 15 &&
-        testEmeHandler.keyAddedCount == 1) {
+        !testEmeHandler.keyUnusable) {
       video.removeEventListener('timeupdate', onTimeUpdate);
       runner.checkGE(video.currentTime, 15, 'currentTime');
       runner.succeed();
@@ -195,7 +195,7 @@ testWidevineVP9Video.prototype.start = function(runner, video) {
   }
   video.addEventListener('timeupdate', function onTimeUpdate(e) {
     if (!video.paused && video.currentTime >= 15 &&
-        testEmeHandler.keyAddedCount == 1) {
+        !testEmeHandler.keyUnusable) {
       video.removeEventListener('timeupdate', onTimeUpdate);
       runner.checkGE(video.currentTime, 15, 'currentTime');
       runner.succeed();
@@ -220,7 +220,7 @@ testPlayReadyH264Video.prototype.start = function(runner, video) {
   }
   video.addEventListener('timeupdate', function onTimeUpdate(e) {
     if (!video.paused && video.currentTime >= 15 &&
-        testEmeHandler.keyAddedCount == 1) {
+        !testEmeHandler.keyUnusable) {
       video.removeEventListener('timeupdate', onTimeUpdate);
       runner.checkGE(video.currentTime, 15, 'currentTime');
       runner.succeed();
@@ -245,7 +245,7 @@ testPlayReadyAacAudio.prototype.start = function(runner, video) {
   }
   video.addEventListener('timeupdate', function onTimeUpdate(e) {
     if (!video.paused && video.currentTime >= 15 &&
-        testEmeHandler.keyAddedCount == 1) {
+        !testEmeHandler.keyUnusable) {
       video.removeEventListener('timeupdate', onTimeUpdate);
       runner.checkGE(video.currentTime, 15, 'currentTime');
       runner.succeed();
