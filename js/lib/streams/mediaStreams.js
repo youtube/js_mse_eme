@@ -23,7 +23,6 @@ var Media = (function() {
     streams : {
       AudioTiny: ['media/car-20120827-8b.mp4', 717502, 181.62],
       AudioNormal: ['media/car-20120827-8c.mp4', 2884572, 181.58, {200000: 12.42}],
-      AudioNormalAdv: ['media/car-20120827-8c.mp4', 2884572, 181.58, {200000: 12.42}],
       AudioHuge: ['media/car-20120827-8d.mp4', 5789853, 181.58, {'appendAudioOffset': 17.42}],
       Audio51: ['media/sintel-trunc.mp4', 813119, 20.05],
       Audio1MB: ['media/car-audio-1MB-trunc.mp4', 1048576, 65.875],
@@ -44,6 +43,9 @@ var Media = (function() {
     mimetype: 'audio/webm; codecs="opus"',
     mediatype: 'audio',
     streams: {
+      CarLow: ['media/car_opus_low.webm', 1205174, 181.48],
+      CarMed: ['media/car_opus_med.webm', 1657817, 181.48],
+      CarHigh: ['media/car_opus_high.webm', 3280103, 181.48],
       SintelEncrypted: ['media/sintel_opus_enc.webm', 14956771, 888.04, {
           'video_id': '31e1685307acf271',
           'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],

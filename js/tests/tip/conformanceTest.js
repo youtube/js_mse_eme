@@ -177,7 +177,7 @@ testAddSourceBuffer.prototype.title =
     'Test if we can add source buffer';
 testAddSourceBuffer.prototype.onsourceopen = function() {
   this.runner.checkEq(this.ms.sourceBuffers.length, 0, 'Source buffer number');
-  this.ms.addSourceBuffer(Media.AAC.mimetype);
+  this.ms.addSourceBuffer(Media.Opus.mimetype);
   this.runner.checkEq(this.ms.sourceBuffers.length, 1, 'Source buffer number');
   this.ms.addSourceBuffer(Media.VP9.mimetype);
   this.runner.checkEq(this.ms.sourceBuffers.length, 2, 'Source buffer number');
@@ -514,6 +514,7 @@ var createSupportTest = function(mimetype, desc) {
 createSupportTest(Media.AAC.mimetype, 'AAC');
 createSupportTest(Media.H264.mimetype, 'H264');
 createSupportTest(Media.VP9.mimetype, 'VP9');
+createSupportTest(Media.Opus.mimetype, 'Opus');
 
 
 var createAppendTest = function(stream) {
@@ -1498,14 +1499,31 @@ var createDelayedTest = function(delayed, nonDelayed) {
 };
 
 
+// Opus Specific tests.
+createAppendTest(Media.Opus.CarLow);
+createAbortTest(Media.Opus.CarLow);
+createTimestampOffsetTest(Media.Opus.CarLow);
+createDurationAfterAppendTest(Media.Opus.CarLow);
+createPausedTest(Media.Opus.CarLow);
+//createIncrementalAudioTest(Media.Opus.CarMed);
+//createAppendAudioOffsetTest(Media.Opus.CarMed, Media.Opus.CarHigh);
+createAppendMultipleInitTest(Media.Opus.CarLow);
+createAppendOutOfOrderTest(Media.Opus.CarMed);
+createBufferedRangeTest(Media.Opus.CarMed);
+createOverlapTest(Media.Opus.CarMed);
+createSmallGapTest(Media.Opus.CarMed);
+createLargeGapTest(Media.Opus.CarMed);
+createDelayedTest(Media.Opus.CarMed, Media.VP9.VideoNormal);
+
+
 // AAC Specific tests.
 createAppendTest(Media.AAC.Audio1MB);
 createAbortTest(Media.AAC.Audio1MB);
 createTimestampOffsetTest(Media.AAC.Audio1MB);
 createDurationAfterAppendTest(Media.AAC.Audio1MB);
 createPausedTest(Media.AAC.Audio1MB);
-createIncrementalAudioTest(Media.AAC.AudioNormalAdv);
-createAppendAudioOffsetTest(Media.AAC.AudioNormalAdv, Media.AAC.AudioHuge);
+createIncrementalAudioTest(Media.AAC.AudioNormal);
+createAppendAudioOffsetTest(Media.AAC.AudioNormal, Media.AAC.AudioHuge);
 createAppendMultipleInitTest(Media.AAC.Audio1MB);
 createAppendOutOfOrderTest(Media.AAC.AudioNormal);
 createBufferedRangeTest(Media.AAC.AudioNormal);
@@ -1575,14 +1593,14 @@ var frameTestOnSourceOpen = function() {
 };
 
 
-var testFrameGaps = createConformanceTest('H264 FrameGaps', 'Media');
+var testFrameGaps = createConformanceTest('H264FrameGaps', 'Media');
 testFrameGaps.prototype.title = 'Test media with frame durations of 24FPS ' +
     'but segment timing corresponding to 23.976FPS';
 testFrameGaps.prototype.filename = Media.H264.FrameGap.src;
 testFrameGaps.prototype.onsourceopen = frameTestOnSourceOpen;
 
 
-var testFrameOverlaps = createConformanceTest('H264 FrameOverlaps', 'Media');
+var testFrameOverlaps = createConformanceTest('H264FrameOverlaps', 'Media');
 testFrameOverlaps.prototype.title = 'Test media with frame durations of ' +
     '23.976FPS but segment timing corresponding to 24FPS';
 testFrameOverlaps.prototype.filename = Media.H264.FrameOverlap.src;
