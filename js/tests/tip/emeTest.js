@@ -86,7 +86,7 @@ function setupBaseEmeTest(video, runner, videoStream, audioStream) {
     fetchStream(stream, function() {
       if (stream.codec == 'H264' || stream.codec == 'AAC') {
         parsedData = parseMp4(this.getResponseData());
-      } else if(stream.codec == 'VP9') {
+      } else if(stream.codec == 'VP9' || stream.codec == 'Opus') {
         parsedData = parseWebM(this.getResponseData().buffer);
       } else {
         runner.fail('Unsupported codec in appendLoop.');
@@ -157,9 +157,34 @@ testWidevineH264Video.prototype.start = function(runner, video) {
 
 var testWidevineAacAudio = createEmeTest('WidevineAacAudio', 'Widevine');
 testWidevineAacAudio.prototype.title =
-    'Test if we can play video encrypted with Widevine encryption.';
+    'Test if we can play aac audio encrypted with Widevine encryption.';
 testWidevineAacAudio.prototype.start = function(runner, video) {
   var audioStream = Media.AAC.AudioSmallCenc;
+  try {
+    var testEmeHandler = setupBaseEmeTest(video, runner, null, audioStream);
+    var licenseManager = new LicenseManager(video, audioStream,
+                                            LicenseManager.WIDEVINE);
+    testEmeHandler.init(video, licenseManager);
+  } catch(err) {
+    runner.fail(err);
+  }
+  video.addEventListener('timeupdate', function onTimeUpdate(e) {
+    if (!video.paused && video.currentTime >= 15 &&
+        !testEmeHandler.keyUnusable) {
+      video.removeEventListener('timeupdate', onTimeUpdate);
+      runner.checkGE(video.currentTime, 15, 'currentTime');
+      runner.succeed();
+    }
+  });
+  video.play();
+};
+
+
+var testWidevineOpusAudio = createEmeTest('WidevineOpusAudio', 'Widevine');
+testWidevineOpusAudio.prototype.title =
+    'Test if we can play opus audio encrypted with Widevine encryption.';
+testWidevineOpusAudio.prototype.start = function(runner, video) {
+  var audioStream = Media.Opus.SintelEncrypted;
   try {
     var testEmeHandler = setupBaseEmeTest(video, runner, null, audioStream);
     var licenseManager = new LicenseManager(video, audioStream,

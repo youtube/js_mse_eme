@@ -39,6 +39,17 @@ var Media = (function() {
     },
   };
 
+  var Opus = {
+    streamtype: 'Opus',
+    mimetype: 'audio/webm; codecs="opus"',
+    mediatype: 'audio',
+    streams: {
+      SintelEncrypted: ['media/sintel_opus_enc.webm', 14956771, 888.04, {
+          'video_id': '31e1685307acf271',
+          'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],
+    },
+  };
+
   var H264 = {
     streamtype: 'H264',
     mimetype: 'video/mp4; codecs="avc1.640028"',
@@ -105,7 +116,7 @@ var Media = (function() {
     },
   };
 
-  var streamTypes = [AAC, H264, VP9];
+  var streamTypes = [AAC, Opus, H264, VP9];
 
   var createStreamDefFunc = function(codec, mediaType, mimeType) {
     return function(src, size, duration, customMap) {
