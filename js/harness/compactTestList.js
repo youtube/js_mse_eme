@@ -17,7 +17,7 @@ limitations under the License.
 
 (function() {
 
-var ITEM_IN_COLUMN = 25;  // Test item count in a column
+var ITEM_IN_COLUMN = 23;  // Test item count in a column
 var CATEGORY_SPACE = 1;  // Row between the end of the last category and the
                          // beginning of the next category
 var MIN_ROW_AT_THE_BOTTOM = 2;  // If at the bottom of the table and the row

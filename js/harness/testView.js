@@ -97,19 +97,21 @@ function TestView(testSuiteVer) {
     var div = document.getElementById(this.divId);
     div.innerHTML = '';
     div.appendChild(createElement('div', 'testsuites', 'container'));
-    div.appendChild(createElement('div', 'switches', 'container'));
     div.appendChild(createElement('div', 'controls', 'container'));
+    div.appendChild(createElement('div', 'switches', 'container'));
 
     var testContainer = createElement('div', null, 'container');
     testContainer.appendChild(createElement('div', 'testlist', 'box-left'));
-    testContainer.appendChild(createElement('div', 'testarea'));
     div.appendChild(testContainer);
 
     var outputArea = createElement('div', 'outputarea');
     var textArea = createElement('textarea', 'output');
     textArea.rows = 10;
     textArea.cols = 80;
-    outputArea.appendChild(textArea);
+    var textAreaContainer = createElement('div', 'outputcontainer');
+    textAreaContainer.appendChild(textArea);
+    outputArea.appendChild(textAreaContainer);
+    outputArea.appendChild(createElement('div', 'testarea'));
     div.appendChild(outputArea);
 
     var switchDiv = document.getElementById('switches');
