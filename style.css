@@ -18,23 +18,29 @@ body {
   font-family: Sans-Serif;
   background: #fff;
   font-size: 10px;
-  margin: 30px;
-  width: 1280px;
+  margin: 10px 20px 0 20px;
+  width: 1240px;
+  height: 710px;
 }
 
 textarea { color: #369; }
 
 h2 {
-  margin: 10px 0 0 0;
+  margin: 0 0 0 0;
 }
 
 h3 {
-  margin: 10px 0 0 0;
+  margin: 0 0 0 0;
+}
+
+h4 {
+  margin: 5px 0 0 0;
 }
 
 .compact-list .cell-category {
   font-weight: bold;
   color: #039;
+  padding: 0px;
   border-bottom: 2px solid #6678b1;
 }
 
@@ -99,10 +105,10 @@ ul {
 }
 
 div.container {
-  width:100%;
-  margin:5px 0 5px 0;
-  padding:5px 0 5px 0;
-  overflow:hidden;
+  width: 100%;
+  margin: 0 0 0 0;
+  padding: 5px 0 5px 0;
+  overflow: hidden;
 }
 
 div.container_hidden {
@@ -113,19 +119,37 @@ div.container_hidden {
 }
 
 .box-left {
-  width:740px;
-  height:420px;
-  display:inline-block;
+  height: 370px;
+  display: inline-block;
 }
 
 .box-right {
-  width:420px;
-  height:210px;
+  width: 420px;
+  height: 210px;
 }
 
 #testarea {
-  display:inline-block;
-  height:210px;
+  display: inline-block;
+  height: 210px;
+}
+
+#outputcontainer {
+  display: inline-block;
+  height: 210px;
+}
+
+#output {
+  height: 210px;
+}
+
+#switches {
+  display: inline-block;
+  width: 300px;
+}
+
+#controls {
+  display: inline-block;
+  width: 300px;
 }
 
 .desc-expl-popup {
