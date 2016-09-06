@@ -17,7 +17,7 @@ limitations under the License.
 
 var EncryptedmediaTest = function() {
 
-var emeVersion = 'Current Editor\'s Draft';
+var emeVersion = '04 February 2016';
 var webkitPrefix = MediaSource.prototype.version.indexOf('webkit') >= 0;
 var tests = [];
 var info = 'No MSE Support!';

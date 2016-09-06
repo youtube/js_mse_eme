@@ -82,6 +82,18 @@ window.testSuiteVersions = {
       'controlMediaFormatSelection': true
     }
   },
+  '2017' : {
+    'testSuites' : [
+      'conformance-test',
+      'encryptedmedia-test',
+      'progressive-test'
+    ],
+    'config' : {
+      'defaultTestSuite': 'conformance-test',
+      'enablewebm': true,
+      'controlMediaFormatSelection': false
+    }
+  },
   'tip' : {
     'testSuites' : [
       'conformance-test',

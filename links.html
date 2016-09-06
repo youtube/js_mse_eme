@@ -71,23 +71,8 @@ limitations under the License.
           http://goo.gl/zvxplb</a>
       </li>
     </ul>
-    <h2>EME Demo Quick Links:</h2>
-    <ul>
-      <li>
-          <a class='title_link' href="http://dash-mse-test.appspot.com/append-all.html?keysystem=playready">
-            EME with PlayReady</a>:
-          <a href="http://goo.gl/0vdok">
-            http://goo.gl/0vdok</a>
-      </li>
-      <li>
-          <a class='title_link' href="http://dash-mse-test.appspot.com/append-all.html?keysystem=clearkey">
-            EME with ClearKey</a>:
-          <a href="http://goo.gl/tW9WX">
-            http://goo.gl/tW9WX</a>
-      </li>
-    </ul>
     <h2>Test Shortcuts:</h2>
-    <dl><dd><strong>MSE = MSE Conformance, EME = EME Conformance</strong></dl>
+    <dl><dd><strong>MSE = MSE Conformance, EME = EME Conformance</strong></dd></dl>
     <script type="text/javascript">
       var url;
       var w = document.write.bind(document);
@@ -131,6 +116,13 @@ limitations under the License.
 
         w('</tr>');
       };
+
+      generateTable('2017 Tests', function() {
+        for (var i = 0; i < 4; ++i)
+          generateRow(
+            'http://yt-dash-mse-test.commondatastorage.googleapis.com/unit-tests/2017.html?',
+            Math.floor(i / 2), i % 2);
+      });
 
       generateTable('2016 Tests', function() {
         for (var i = 0; i < 4; ++i)
