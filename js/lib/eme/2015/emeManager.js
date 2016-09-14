@@ -84,7 +84,7 @@ window.EMEHandler = EMEHandler;
 EMEHandler.kFlavorToSystem = {
   'clearkey': ['org.w3.clearkey', 'webkit-org.w3.clearkey'],
   'widevine': ['com.widevine.alpha'],
-  'playready': ['com.youtube.playready', 'com.microsoft.playready']
+  'playready': ['com.youtube.playready']
 };
 
 /**

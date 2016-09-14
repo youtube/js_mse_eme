@@ -72,7 +72,7 @@ EMEHandler.kMime = 'video/mp4; codecs="avc1.640028"';
 EMEHandler.kFlavorToSystem = {
   'clearkey': ['org.w3.clearkey', 'webkit-org.w3.clearkey'],
   'widevine': ['com.widevine.alpha'],
-  'playready': ['com.youtube.playready', 'com.microsoft.playready']
+  'playready': ['com.youtube.playready']
 };
 
 /**
