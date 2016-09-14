@@ -177,7 +177,7 @@ testAddSourceBuffer.prototype.title =
     'Test if we can add source buffer';
 testAddSourceBuffer.prototype.onsourceopen = function() {
   this.runner.checkEq(this.ms.sourceBuffers.length, 0, 'Source buffer number');
-  this.ms.addSourceBuffer(Media.Opus.mimetype);
+  this.ms.addSourceBuffer(Media.AAC.mimetype);
   this.runner.checkEq(this.ms.sourceBuffers.length, 1, 'Source buffer number');
   this.ms.addSourceBuffer(Media.VP9.mimetype);
   this.runner.checkEq(this.ms.sourceBuffers.length, 2, 'Source buffer number');
@@ -496,8 +496,9 @@ testSeekTimeUpdate.prototype.onsourceopen = function() {
 };
 
 
-var createSupportTest = function(mimetype, desc) {
-  var test = createConformanceTest(desc + 'Support', 'MSE Formats');
+var createSupportTest = function(mimetype, desc, optional) {
+  optional = !optional;
+  var test = createConformanceTest(desc + 'Support', 'MSE Formats', optional);
   test.prototype.title =
       'Test if we support ' + desc + ' with mimetype: ' + mimetype;
   test.prototype.onsourceopen = function() {
@@ -514,13 +515,14 @@ var createSupportTest = function(mimetype, desc) {
 createSupportTest(Media.AAC.mimetype, 'AAC');
 createSupportTest(Media.H264.mimetype, 'H264');
 createSupportTest(Media.VP9.mimetype, 'VP9');
-createSupportTest(Media.Opus.mimetype, 'Opus');
+createSupportTest(Media.Opus.mimetype, 'Opus', true);
 
 
-var createAppendTest = function(stream) {
+var createAppendTest = function(stream, optional) {
+  optional = !optional;
   var test = createConformanceTest(
       'Append' + stream.codec + util.MakeCapitalName(stream.mediatype),
-      'MSE (' + stream.codec + ')');
+      'MSE (' + stream.codec + ')', optional);
   test.prototype.title = 'Test if we can append a whole ' + 
       stream.mediatype + ' file whose size is 1MB.';
   test.prototype.onsourceopen = function() {
@@ -567,10 +569,11 @@ var createAppendTest = function(stream) {
 };
 
 
-var createAbortTest = function(stream) {
+var createAbortTest = function(stream, optional) {
+  optional = !optional;
   var test = createConformanceTest(
       'Abort' + stream.codec + util.MakeCapitalName(stream.mediatype),
-      'MSE (' + stream.codec + ')');
+      'MSE (' + stream.codec + ')', optional);
   test.prototype.title = 'Test if we can abort the current segment.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
@@ -600,10 +603,11 @@ var createAbortTest = function(stream) {
 };
 
 
-var createTimestampOffsetTest = function(stream) {
+var createTimestampOffsetTest = function(stream, optional) {
+  optional = !optional;
   var test = createConformanceTest(
       'TimestampOffset' + stream.codec + util.MakeCapitalName(stream.mediatype),
-      'MSE (' + stream.codec + ')');
+      'MSE (' + stream.codec + ')', optional);
   test.prototype.title = 'Test if we can set timestamp offset.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
@@ -692,10 +696,11 @@ var createDASHLatencyTest = function(stream) {
 };
 
 
-var createDurationAfterAppendTest = function(stream) {
+var createDurationAfterAppendTest = function(stream, optional) {
+  optional = !optional;
   var test = createConformanceTest(
       'DurationAfterAppend' + stream.codec + util.MakeCapitalName(stream.mediatype),
-      'MSE (' + stream.codec + ')');
+      'MSE (' + stream.codec + ')', optional);
   test.prototype.title = 'Test if the duration expands after appending data.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
@@ -759,10 +764,11 @@ var createDurationAfterAppendTest = function(stream) {
 };
 
 
-var createPausedTest = function(stream) {
+var createPausedTest = function(stream, optional) {
+  optional = !optional;
   var test = createConformanceTest(
       'PausedStateWith' + stream.codec + util.MakeCapitalName(stream.mediatype),
-      'MSE (' + stream.codec + ')');
+      'MSE (' + stream.codec + ')', optional);
   test.prototype.title = 'Test if the paused state is correct before or ' +
       ' after appending data.';
   test.prototype.onsourceopen = function() {
@@ -906,9 +912,10 @@ var createPlayPartialSegmentTest = function(stream) {
 };
 
 
-var createIncrementalAudioTest = function(stream) {
+var createIncrementalAudioTest = function(stream, optional) {
+  optional = !optional;
   var test = createConformanceTest('Incremental' + stream.codec + 'Audio',
-      'MSE (' + stream.codec + ')');
+      'MSE (' + stream.codec + ')', optional);
   test.prototype.title =
       'Test if we can play a partially appended audio segment.';
   test.prototype.onsourceopen = function() {
@@ -928,9 +935,10 @@ var createIncrementalAudioTest = function(stream) {
 };
 
 
-var createAppendAudioOffsetTest = function(stream1, stream2) {
+var createAppendAudioOffsetTest = function(stream1, stream2, optional) {
+  optional = !optional;
   var test = createConformanceTest('Append' + stream1.codec + 'AudioOffset',
-      'MSE (' + stream1.codec + ')');
+      'MSE (' + stream1.codec + ')', optional);
   test.prototype.title =
       'Test if we can append audio data with an explicit offset.';
   test.prototype.onsourceopen = function() {
@@ -1010,10 +1018,11 @@ var createAppendVideoOffsetTest = function(stream1, stream2) {
 };
 
 
-var createAppendMultipleInitTest = function(stream) {
+var createAppendMultipleInitTest = function(stream, optional) {
+  optional = !optional;
   var test = createConformanceTest(
       'AppendMultipleInit' + stream.codec + util.MakeCapitalName(stream.mediatype),
-      'MSE (' + stream.codec + ')');
+      'MSE (' + stream.codec + ')', optional);
   test.prototype.title = 'Test if we can append multiple init segments.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
@@ -1123,10 +1132,11 @@ var createAppendOutOfOrderTest = function(stream, optional) {
 };
 
 
-var createBufferedRangeTest = function(stream) {
+var createBufferedRangeTest = function(stream, optional) {
+  optional = !optional;
   var test = createConformanceTest(
       'BufferedRange' + stream.codec + util.MakeCapitalName(stream.mediatype),
-      'MSE (' + stream.codec + ')');
+      'MSE (' + stream.codec + ')', optional);
   test.prototype.title =
       'Test SourceBuffer.buffered get updated correctly after feeding data.';
   test.prototype.onsourceopen = function() {
@@ -1213,10 +1223,11 @@ var createMediaSourceDurationTest = function(videoStream) {
 };
 
 
-var createOverlapTest = function(stream) {
+var createOverlapTest = function(stream, optional) {
+  optional = !optional;
   var test = createConformanceTest(
       stream.codec + util.MakeCapitalName(stream.mediatype) + 'WithOverlap',
-      'MSE (' + stream.codec + ')');
+      'MSE (' + stream.codec + ')', optional);
   test.prototype.title =
       'Test if media data with overlap will be merged into one range.';
   test.prototype.onsourceopen = function() {
@@ -1258,10 +1269,11 @@ var createOverlapTest = function(stream) {
 };
 
 
-var createSmallGapTest = function(stream) {
+var createSmallGapTest = function(stream, optional) {
+  optional = !optional;
   var test = createConformanceTest(
       stream.codec + util.MakeCapitalName(stream.mediatype) + 'WithSmallGap',
-      'MSE (' + stream.codec + ')');
+      'MSE (' + stream.codec + ')', optional);
   test.prototype.title =
       'Test if media data with a gap smaller than an media frame size ' +
       'will be merged into one buffered range.';
@@ -1304,10 +1316,11 @@ var createSmallGapTest = function(stream) {
 };
 
 
-var createLargeGapTest = function(stream) {
+var createLargeGapTest = function(stream, optional) {
+  optional = !optional;
   var test = createConformanceTest(
       stream.codec + util.MakeCapitalName(stream.mediatype) + 'WithLargeGap',
-      'MSE (' + stream.codec + ')');
+      'MSE (' + stream.codec + ')', optional);
   test.prototype.title =
       'Test if media data with a gap larger than an media frame size ' +
       'will not be merged into one buffered range.';
@@ -1445,10 +1458,11 @@ var createBufUnbufSeekTest = function(videoStream) {
 };
 
 
-var createDelayedTest = function(delayed, nonDelayed) {
+var createDelayedTest = function(delayed, nonDelayed, optional) {
+  optional = !optional;
   var test = createConformanceTest(
       'Delayed' + delayed.codec + util.MakeCapitalName(delayed.mediatype),
-      'MSE (' + delayed.codec + ')');
+      'MSE (' + delayed.codec + ')', optional);
   test.prototype.title = 'Test if we can play properly when there' +
     ' is not enough ' + delayed.mediatype + ' data. The play should resume once ' +
     delayed.mediatype + ' data is appended.';
@@ -1497,23 +1511,6 @@ var createDelayedTest = function(delayed, nonDelayed) {
     });
   };
 };
-
-
-// Opus Specific tests.
-createAppendTest(Media.Opus.CarLow);
-createAbortTest(Media.Opus.CarLow);
-createTimestampOffsetTest(Media.Opus.CarLow);
-createDurationAfterAppendTest(Media.Opus.CarLow);
-createPausedTest(Media.Opus.CarLow);
-createIncrementalAudioTest(Media.Opus.CarMed);
-createAppendAudioOffsetTest(Media.Opus.CarMed, Media.Opus.CarHigh);
-createAppendMultipleInitTest(Media.Opus.CarLow);
-createAppendOutOfOrderTest(Media.Opus.CarMed);
-createBufferedRangeTest(Media.Opus.CarMed);
-createOverlapTest(Media.Opus.CarMed);
-createSmallGapTest(Media.Opus.CarMed);
-createLargeGapTest(Media.Opus.CarMed);
-createDelayedTest(Media.Opus.CarMed, Media.VP9.VideoNormal);
 
 
 // AAC Specific tests.
@@ -1630,6 +1627,23 @@ testAAC51.prototype.onsourceopen = function() {
   });
   xhr.send();
 };
+
+
+// Opus Specific tests.
+createAppendTest(Media.Opus.CarLow, true);
+createAbortTest(Media.Opus.CarLow, true);
+createTimestampOffsetTest(Media.Opus.CarLow, true);
+createDurationAfterAppendTest(Media.Opus.CarLow, true);
+createPausedTest(Media.Opus.CarLow, true);
+createIncrementalAudioTest(Media.Opus.CarMed, true);
+createAppendAudioOffsetTest(Media.Opus.CarMed, Media.Opus.CarHigh, true);
+createAppendMultipleInitTest(Media.Opus.CarLow, true);
+createAppendOutOfOrderTest(Media.Opus.CarMed, true);
+createBufferedRangeTest(Media.Opus.CarMed, true);
+createOverlapTest(Media.Opus.CarMed, true);
+createSmallGapTest(Media.Opus.CarMed, true);
+createLargeGapTest(Media.Opus.CarMed, true);
+createDelayedTest(Media.Opus.CarMed, Media.VP9.VideoNormal, true);
 
 
 return {tests: tests, info: info, fields: fields, viewType: 'extra compact'};

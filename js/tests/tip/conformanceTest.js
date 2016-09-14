@@ -1566,7 +1566,7 @@ createPlaybackStateTest(Media.H264.VideoNormal);
 createPlayPartialSegmentTest(Media.H264.VideoTiny);
 createAppendVideoOffsetTest(Media.H264.VideoNormal,  Media.H264.VideoTiny);
 createAppendMultipleInitTest(Media.H264.Video1MB);
-createAppendOutOfOrderTest(Media.H264.VideoNormal, true);
+createAppendOutOfOrderTest(Media.H264.VideoNormal);
 createBufferedRangeTest(Media.H264.VideoNormal);
 createMediaSourceDurationTest(Media.H264.VideoNormal);
 createOverlapTest(Media.H264.VideoNormal);
