@@ -80,40 +80,55 @@ function setupBaseEmeTest(video, runner, videoStream, audioStream, cbSpies) {
     }
   }
 
-  function fetchStream(stream, cb) {
-    var xhr = runner.XHRManager.createRequest(stream.src, cb);
+  function fetchStream(stream, cb, start, end) {
+    var xhr = runner.XHRManager.createRequest(stream.src, cb, start, end);
     xhr.send();
+  }
+
+  function appendLoop(stream, sb) {
+    var parsedData;
+    var segmentIdx = 0;
+    var maxSegments = 4
+    fetchStream(stream, function() {
+      if (stream.type.indexOf('mp4') != -1) {
+        parsedData = parseMp4(this.getResponseData());
+      } else if(stream.type.indexOf('webm') != -1) {
+        parsedData = parseWebM(this.getResponseData().buffer);
+      } else {
+        runner.fail('Unsupported container format in appendLoop.');
+      }
+      if (parsedData.length <= 1) {
+        fetchStream(stream, function() {
+          sb.appendBuffer(this.getResponseData());
+        });
+        return;
+      }
+      fetchStream(stream, function() {
+        sb.addEventListener('updateend', function append() {
+          if (maxSegments - segmentIdx <= 0) {
+            sb.removeEventListener('updateend', append);
+            return;
+          }
+          fetchStream(stream, function() {
+            sb.appendBuffer(this.getResponseData());
+            segmentIdx += 1
+          }, parsedData[segmentIdx].offset, parsedData[segmentIdx].size);
+        });
+        sb.appendBuffer(this.getResponseData());
+        segmentIdx += 1
+      }, 0, parsedData[0].size + parsedData[0].offset);
+    }, 0, 32 * 1024);
   }
 
   function onSourceOpen(e) {
     if (audioStream != null) {
       audioSb = ms.addSourceBuffer(audioStream.type);
-      fetchStream(audioStream, function() {
-        var maxNumAudioSegments = 4
-        var parsedData = parseMp4(this.getResponseData());
-        var videoBytes = this.getResponseData();
-        var slicedVideoBytes = [videoBytes.subarray(0, parsedData[0].offset)];
-        for (var index = 0; index < parsedData.length; index++) {
-          slicedVideoBytes.push(videoBytes.subarray(parsedData[index].offset,
-              parsedData[index].offset + parsedData[index].size));
-        }
-        var totalSegments = slicedVideoBytes.length;
-        audioSb.addEventListener('updateend', function appendAudio() {
-          if (slicedVideoBytes.length <= totalSegments - maxNumAudioSegments) {
-            audioSb.removeEventListener('updateend', appendAudio);
-            return;
-          }
-          audioSb.appendBuffer(slicedVideoBytes.shift());
-        });
-        audioSb.appendBuffer(slicedVideoBytes.shift());
-      });
+      appendLoop(audioStream, audioSb);
     }
 
     if (videoStream != null) {
       videoSb = ms.addSourceBuffer(videoStream.type);
-      fetchStream(videoStream, function() {
-        videoSb.appendBuffer(this.getResponseData());
-      });
+      appendLoop(videoStream, videoSb);
     }
   }
 
