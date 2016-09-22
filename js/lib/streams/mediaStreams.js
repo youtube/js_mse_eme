@@ -61,6 +61,7 @@ var Media = (function() {
           'videoChangeRate': 11.47}],
       VideoNormal: ['media/car-20120827-86.mp4', 15593225, 181.44, {
           'mediaSourceDuration': Infinity}],
+      CarMedium: ['media/car09222016-med-134.mp4', 10150205, 181.47],
       VideoHuge: ['media/car-20120827-89.mp4', 95286345, 181.44],
       Video1MB: ['media/test-video-1MB.mp4', 1053406, 1.04],
       VideoNormalClearKey: ['media/car_cenc-20120827-86.mp4', 15795193, 181.44, {
