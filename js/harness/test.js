@@ -336,8 +336,8 @@ TestExecutor.prototype.startNextTest = function() {
 
   this.currentTest = new this.testList[this.currentTestIdx];
 
-  this.log('Starting test ' + (this.currentTest.index + 1) + ':' +
-           this.currentTest.desc + ' with timeout ' +
+  this.log('Test ' + (this.currentTest.index + 1) + ':' +
+           this.currentTest.desc + ' STARTED with timeout ' +
            this.currentTest.timeout);
   this.timeouts.setTimeout(this.timeout.bind(this), this.currentTest.timeout);
 
@@ -370,7 +370,8 @@ TestExecutor.prototype.succeed = function() {
   this.lastResult = 'pass';
   ++this.testList[this.currentTestIdx].prototype.passes;
   this.updateStatus();
-  this.log('Test ' + this.currentTest.desc + ' succeeded.');
+  this.log('Test ' + (this.currentTest.index + 1) + ':' +
+      this.currentTest.desc + ' PASSED.');
   this.teardownCurrentTest(false);
 };
 
@@ -383,9 +384,9 @@ TestExecutor.prototype.error = function(msg, isTimeout) {
   } catch (e) {
   }
 
-  this.log(msg);
-  this.log((this.currentTestIdx + 1) + ':'
-      + this.testList[this.currentTestIdx].prototype.desc + ' has failed.');
+  this.log('Test ' + (this.currentTestIdx + 1) + ':' +
+      this.testList[this.currentTestIdx].prototype.desc +
+      ' errored with: ' + msg);
   var stack = '';
 
   try {
@@ -409,7 +410,9 @@ TestExecutor.prototype.error = function(msg, isTimeout) {
 TestExecutor.prototype.fail = function(msg) {
   ++this.testList[this.currentTestIdx].prototype.failures;
   this.updateStatus();
-  this.error('Test ' + this.currentTest.desc + ' FAILED: ' + msg, false);
+  this.log('Test ' + (this.currentTest.index + 1) + ':' +
+      this.currentTest.desc + ' FAILED');
+  this.error(msg, false);
 };
 
 TestExecutor.prototype.timeout = function() {
@@ -443,7 +446,8 @@ TestExecutor.prototype.timeout = function() {
   if (isTestTimedOut) {
     ++this.testList[this.currentTestIdx].prototype.timeouts;
     this.updateStatus();
-    this.error('Test ' + this.currentTest.desc + ' TIMED OUT!', true);
+    this.error('Test ' + (this.currentTest.index + 1) + ':' +
+        this.currentTest.desc + ' TIMED OUT!', true);
   }
 };
 

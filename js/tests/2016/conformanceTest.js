@@ -93,11 +93,15 @@ var testAddSourceBuffer = createConformanceTest('addSourceBuffer', 'MSE');
 testAddSourceBuffer.prototype.title =
     'Test if we can add source buffer';
 testAddSourceBuffer.prototype.onsourceopen = function() {
-  this.runner.checkEq(this.ms.sourceBuffers.length, 0, 'Source buffer number');
-  this.ms.addSourceBuffer(StreamDef.AudioType);
-  this.runner.checkEq(this.ms.sourceBuffers.length, 1, 'Source buffer number');
-  this.ms.addSourceBuffer(StreamDef.VideoType);
-  this.runner.checkEq(this.ms.sourceBuffers.length, 2, 'Source buffer number');
+  try {
+    this.runner.checkEq(this.ms.sourceBuffers.length, 0, 'Source buffer number');
+    this.ms.addSourceBuffer(StreamDef.AudioType);
+    this.runner.checkEq(this.ms.sourceBuffers.length, 1, 'Source buffer number');
+    this.ms.addSourceBuffer(StreamDef.VideoType);
+    this.runner.checkEq(this.ms.sourceBuffers.length, 2, 'Source buffer number');
+  } catch (e) {
+    this.runner.fail(e);
+  }
   this.runner.succeed();
 };
 

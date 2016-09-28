@@ -175,11 +175,15 @@ var testAddSourceBuffer = createConformanceTest('AddSourceBuffer', 'MSE Core');
 testAddSourceBuffer.prototype.title =
     'Test if we can add source buffer';
 testAddSourceBuffer.prototype.onsourceopen = function() {
-  this.runner.checkEq(this.ms.sourceBuffers.length, 0, 'Source buffer number');
-  this.ms.addSourceBuffer(Media.AAC.mimetype);
-  this.runner.checkEq(this.ms.sourceBuffers.length, 1, 'Source buffer number');
-  this.ms.addSourceBuffer(Media.VP9.mimetype);
-  this.runner.checkEq(this.ms.sourceBuffers.length, 2, 'Source buffer number');
+  try {
+    this.runner.checkEq(this.ms.sourceBuffers.length, 0, 'Source buffer number');
+    this.ms.addSourceBuffer(Media.AAC.mimetype);
+    this.runner.checkEq(this.ms.sourceBuffers.length, 1, 'Source buffer number');
+    this.ms.addSourceBuffer(Media.VP9.mimetype);
+    this.runner.checkEq(this.ms.sourceBuffers.length, 2, 'Source buffer number');
+  } catch (e) {
+    this.runner.fail(e);
+  }
   this.runner.succeed();
 };
 
