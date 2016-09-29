@@ -1166,8 +1166,8 @@ var createDelayedTest = function(delayed, nonDelayed) {
   var test = createConformanceTest('Delayed' +
                                    util.MakeCapitalName(delayed.name), 'MSE');
   test.prototype.title = 'Test if we can play properly when there' +
-    ' is not enough ' + name + ' data. The play should resume once ' +
-    name + ' data is appended.';
+    ' is not enough ' + delayed.name + ' data. The play should resume once ' +
+    delayed.name + ' data is appended.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
     var media = this.video;
