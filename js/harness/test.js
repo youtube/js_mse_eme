@@ -137,9 +137,7 @@ TestExecutor.prototype.log = function() {
 
 TestExecutor.prototype.assert = function(cond, msg) {
   if (!cond) {
-    ++this.testList[this.currentTestIdx].prototype.failures;
-    this.updateStatus();
-    this.error('Assert failed: ' + msg, false);
+    this.fail('Assert failed: ' + msg);
   }
 };
 
@@ -386,7 +384,7 @@ TestExecutor.prototype.error = function(msg, isTimeout) {
 
   this.log('Test ' + (this.currentTestIdx + 1) + ':' +
       this.testList[this.currentTestIdx].prototype.desc +
-      ' errored with: ' + msg);
+      ' threw an error: ' + msg);
   var stack = '';
 
   try {
