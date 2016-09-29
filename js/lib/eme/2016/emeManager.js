@@ -15,7 +15,7 @@ limitations under the License.
 */
 'use strict';
 
-function EMEHandler() {}
+var EMEHandler = function() {};
 
 EMEHandler.prototype.init = function(video, licenseManager, keyErrorCb) {
   this.video = video;
@@ -70,11 +70,6 @@ EMEHandler.prototype.init = function(video, licenseManager, keyErrorCb) {
 
   return this;
 };
-
-/**
- * Register EMEHandler.
- */
-window.EMEHandler = EMEHandler;
 
 /**
  * Default callback for onNeedKey event from EME system.

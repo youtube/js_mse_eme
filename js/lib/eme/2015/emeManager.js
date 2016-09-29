@@ -15,7 +15,7 @@ limitations under the License.
 */
 'use strict';
 
-function EMEHandler() {}
+var EMEHandler = function() {};
 
 EMEHandler.prototype.init = function(video, mime, kids, keys, flavor, keyErrorCb) {
   this.video = video;
@@ -72,11 +72,6 @@ EMEHandler.prototype.init = function(video, mime, kids, keys, flavor, keyErrorCb
 
   return this;
 };
-
-/**
- * Register EMEHandler.
- */
-window.EMEHandler = EMEHandler;
 
 /**
  * Mapping between DRM flavors to the accepted keysystem strings.

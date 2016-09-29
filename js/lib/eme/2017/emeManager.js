@@ -15,7 +15,7 @@ limitations under the License.
 */
 'use strict';
 
-function EMEHandler() {}
+var EMEHandler = function() {};
 
 EMEHandler.prototype.init = function(video, licenseManager) {
   this.video = video;
@@ -27,11 +27,6 @@ EMEHandler.prototype.init = function(video, licenseManager) {
 
   return this;
 };
-
-/**
- * Register EMEHandler.
- */
-window.EMEHandler = EMEHandler;
 
 /**
  * Default callback for onEncrypted event from EME system.

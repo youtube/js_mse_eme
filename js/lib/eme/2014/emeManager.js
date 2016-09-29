@@ -15,8 +15,7 @@ limitations under the License.
 */
 'use strict';
 
-// Lifted out of dash-eme.js from the DASH EME tests.
-function EMEHandler() {}
+var EMEHandler = function() {};
 
 /**
  * Main initialization function.
@@ -54,11 +53,6 @@ EMEHandler.prototype.init = function(video) {
 
   return this;
 };
-
-/**
- * Register EMEHandler.
- */
-window.EMEHandler = EMEHandler;
 
 /**
  * The default mime type to use. We only use BMFF for this demo player (soon to
