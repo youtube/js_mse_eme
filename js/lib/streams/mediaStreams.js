@@ -115,6 +115,9 @@ var Media = (function() {
       VideoHighEnc: ['media/sintel_enc-20160621-273.webm', 68919485, 887.958, {
           'video_id': '31e1685307acf271',
           'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],
+      VideoHighSubSampleEnc: ['media/sintel_enc_subsample-20161014-318.webm', 80844835, 887.958, {
+          'video_id': '31e1685307acf271',
+          'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],
       ProgressiveLow: ['media/feelings_vp9-20130806-243.webm', 7902885, 135.46],
     },
   };

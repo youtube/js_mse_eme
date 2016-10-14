@@ -205,29 +205,34 @@ testWidevineOpusAudio.prototype.start = function(runner, video) {
 };
 
 
-var testWidevineVP9Video = createEmeTest('WidevineVP9Video', 'Widevine');
-testWidevineVP9Video.prototype.title =
-    'Test if we can play video encrypted with Widevine encryption.';
-testWidevineVP9Video.prototype.start = function(runner, video) {
-  var videoStream = Media.VP9.VideoHighEnc;
-  try {
-    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream, null);
-    var licenseManager = new LicenseManager(video, videoStream,
-                                            LicenseManager.WIDEVINE);
-    testEmeHandler.init(video, licenseManager);
-  } catch(err) {
-    runner.fail(err);
-  }
-  video.addEventListener('timeupdate', function onTimeUpdate(e) {
-    if (!video.paused && video.currentTime >= 15 &&
-        !testEmeHandler.keyUnusable) {
-      video.removeEventListener('timeupdate', onTimeUpdate);
-      runner.checkGE(video.currentTime, 15, 'currentTime');
-      runner.succeed();
+var createWidevineVP9VideoTest = function(videoStream, desc) {
+  var test = createEmeTest('WidevineVP9' + desc + 'Video', 'Widevine');
+  test.prototype.title =
+      'Test if we can play VP9 video with Widevine key system.';
+  test.prototype.start = function(runner, video) {
+    try {
+      var testEmeHandler = setupBaseEmeTest(video, runner, videoStream, null);
+      var licenseManager = new LicenseManager(video, videoStream,
+                                              LicenseManager.WIDEVINE);
+      testEmeHandler.init(video, licenseManager);
+    } catch(err) {
+      runner.fail(err);
     }
-  });
-  video.play();
+    video.addEventListener('timeupdate', function onTimeUpdate(e) {
+      if (!video.paused && video.currentTime >= 15 &&
+          !testEmeHandler.keyUnusable) {
+        video.removeEventListener('timeupdate', onTimeUpdate);
+        runner.checkGE(video.currentTime, 15, 'currentTime');
+        runner.succeed();
+      }
+    });
+    video.play();
+  };
 };
+
+
+createWidevineVP9VideoTest(Media.VP9.VideoHighEnc, '');
+createWidevineVP9VideoTest(Media.VP9.VideoHighSubSampleEnc, 'Subsample');
 
 
 var testPlayReadyH264Video = createEmeTest('PlayReadyH264Video', 'PlayReady');
