@@ -82,8 +82,10 @@ EMEHandler.prototype.onNeedKey = function(e) {
     throw 'Not initialized! Bad manifest parse?';
   }
 
+  var isClearKey = this.keySystem.toLowerCase() == "org.w3.clearkey";
+
   // Add clear key id to initData for gecko based browsers.
-  if (this.licenseManager.mime.indexOf('mp4') > -1 &&
+  if (isClearKey && this.licenseManager.mime.indexOf('mp4') > -1 &&
       !extractBMFFClearKeyID(e.initData)) {
     initData = addBMFFClearKeyID(e.initData, this.licenseManager.kids[0]);
   }
