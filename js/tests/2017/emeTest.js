@@ -43,11 +43,17 @@ var createEmeTest = function(name, category, mandatory) {
   return t;
 };
 
-function setupBaseEmeTest(video, runner, videoStream, audioStream) {
+function setupBaseEmeTest(video, runner, videoStream, audioStream, cbSpies) {
   var ms = new MediaSource();
   var testEmeHandler = new EMEHandler();
   var videoSb = null;
   var audioSb = null;
+  if (cbSpies) {
+    for (var spy in cbSpies) {
+      testEmeHandler['_' + spy] = testEmeHandler[spy];
+      testEmeHandler[spy] = cbSpies[spy];
+    }
+  }
 
   function onError(e) {
     switch (e.target.error.code) {
@@ -285,7 +291,7 @@ testPlayReadyAacAudio.prototype.start = function(runner, video) {
 };
 
 
-var testCanPlayType = createEmeTest('canPlayType', 'General EME');
+var testCanPlayType = createEmeTest('canPlayType', 'General');
 testCanPlayType.prototype.title =
     'Test canPlayType is using the EME Final Rec.';
 testCanPlayType.prototype.start = function(runner, video) {
@@ -302,6 +308,31 @@ testCanPlayType.prototype.start = function(runner, video) {
   runner.assert(video.canPlayType(Media.VP9.mimetype, 'Something2')
       === 'probably', 'canPlayType is not using EME final rec.');
   runner.succeed();
+};
+
+
+var testEncryptedEventData = createEmeTest('EncryptedEventData', 'General');
+testEncryptedEventData.prototype.title =
+    'Test encrypted event data contains all expected pssh atoms in the ' +
+    'initData and a null keySystem.';
+testEncryptedEventData.prototype.start = function(runner, video) {
+  var videoStream = Media.H264.VideoSmallCenc;
+  try {
+    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream, null, {
+      onEncrypted: function(e) {
+        var initData = new Uint8Array(e.initData);
+        runner.checkEq(initData.length, 856, 'Length of initData');
+        runner.checkEq(countPsshAtoms(initData), 3, 'Number of pssh atoms');
+        runner.succeed();
+      }
+    });
+    var licenseManager = new LicenseManager(video, videoStream,
+                                            LicenseManager.CLEARKEY);
+    testEmeHandler.init(video, licenseManager);
+  } catch(err) {
+    runner.fail(err);
+  }
+  video.play();
 };
 
 

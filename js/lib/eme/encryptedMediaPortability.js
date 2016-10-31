@@ -71,6 +71,35 @@ function parsePlayReadyKeyMessage(message) {
 }
 
 /**
+ * Counts pssh atoms in init data.
+ * @param {ArrayBuffer} initData Init data for the media segment.
+ * @return {Number} Returns the count of pssh atoms in initData.
+ */
+function countPsshAtoms(initData) {
+  // Accessing the Uint8Array's underlying ArrayBuffer is impossible, so we
+  // copy it to a new one for parsing.
+  var abuf = new ArrayBuffer(initData.length);
+  var view = new Uint8Array(abuf);
+  view.set(initData);
+
+  var psshCount = 0;
+  var dv = new DataView(abuf);
+  var pos = 0;
+  while (pos < abuf.byteLength) {
+    var box_size = dv.getUint32(pos, false);
+    var type = dv.getUint32(pos + 4, false);
+
+    if (type == 0x70737368) {
+      psshCount++;
+    }
+
+    pos += box_size;
+  }
+  return psshCount;
+}
+
+
+/**
  * Extracts the BMFF Key ID from the init data of the segment.
  * @param {ArrayBuffer} initData Init data for the media segment.
  * @param {boolean} clearkey Method will return clear key ID if true.

@@ -153,6 +153,31 @@ function checkDOMError(runner, e, code, name) {
 }
 
 
+var testNeedKeyEventData = createEmeTest('NeedKeyEventData', 'General');
+testNeedKeyEventData.prototype.title =
+    'Test needkey event data contains all expected pssh atoms in the ' +
+    'initData and a null keySystem.';
+testNeedKeyEventData.prototype.start = function(runner, video) {
+  var videoStream = StreamDef.H264.VideoSmallCenc;
+  try {
+    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream, null, {
+      onNeedKey: function(e) {
+        runner.checkEq(e.initData.length, 856, 'Length of initData');
+        runner.checkEq(countPsshAtoms(e.initData), 3, 'Number of pssh atoms');
+        runner.checkEq(e.keySystem, '', 'KeySystem selected');
+        runner.succeed();
+      }
+    });
+    var licenseManager = new LicenseManager(video, videoStream,
+                                            LicenseManager.CLEARKEY);
+    testEmeHandler.init(video, licenseManager);
+  } catch(err) {
+    runner.fail(err);
+  }
+  video.play();
+};
+
+
 var testClearKeySupport = createEmeTest('ClearKeySupport', 'ClearKey');
 testClearKeySupport.prototype.title =
     'Test if canPlay return is correct for clear key.';

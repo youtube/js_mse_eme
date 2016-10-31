@@ -66,7 +66,7 @@ LicenseManager.prototype.findCompatibleKeySystem_ = function() {
 };
 
 /**
- * Function to request a Widevine or PlayReday license from the license server.
+ * Function to request a Widevine or PlayReady license from the license server.
  */
 LicenseManager.prototype.requestLicense = function(message, cb) {
   var xhr = new XMLHttpRequest();
