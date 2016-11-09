@@ -164,7 +164,8 @@ testNeedKeyEventData.prototype.start = function(runner, video) {
       onNeedKey: function(e) {
         runner.checkEq(e.initData.length, 856, 'Length of initData');
         runner.checkEq(countPsshAtoms(e.initData), 3, 'Number of pssh atoms');
-        runner.checkEq(e.keySystem, '', 'KeySystem selected');
+        runner.assert(e.keySystem === '' || e.keySystem === null,
+            'KeySystem selected');
         runner.succeed();
       }
     });
