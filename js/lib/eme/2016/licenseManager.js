@@ -73,7 +73,7 @@ LicenseManager.prototype.requestLicense = function(message, cb) {
   xhr.open('POST', this.licenseServer);
   xhr.addEventListener('load', function(evt) {
     if (evt.target.status < 200 || evt.target.status > 299) {
-      dlog(2, 'License request failure.');
+      dlog(2, 'License request failure, status ' + evt.target.status + '.');
     }
     var responseString = arrayToString(
         new Uint8Array(evt.target.response)).split('\r\n').pop();
