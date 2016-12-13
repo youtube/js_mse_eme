@@ -186,7 +186,8 @@ testWidevineAacAudio.prototype.start = function(runner, video) {
 };
 
 
-var testWidevineOpusAudio = createEmeTest('WidevineOpusAudio', 'Widevine');
+var testWidevineOpusAudio = createEmeTest(
+    'WidevineOpusAudio', 'Widevine', false);
 testWidevineOpusAudio.prototype.title =
     'Test if we can play opus audio encrypted with Widevine encryption.';
 testWidevineOpusAudio.prototype.start = function(runner, video) {
