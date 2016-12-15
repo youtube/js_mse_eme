@@ -44,93 +44,14 @@ var createEmeTest = function(name, category, mandatory) {
 };
 
 function setupBaseEmeTest(video, runner, videoStream, audioStream, cbSpies) {
-  var ms = new MediaSource();
+  setupMse(video, runner, videoStream, audioStream);
   var testEmeHandler = new EMEHandler();
-  var videoSb = null;
-  var audioSb = null;
   if (cbSpies) {
     for (var spy in cbSpies) {
       testEmeHandler['_' + spy] = testEmeHandler[spy];
       testEmeHandler[spy] = cbSpies[spy];
     }
   }
-
-  function onError(e) {
-    switch (e.target.error.code) {
-      case e.target.error.MEDIA_ERR_ABORTED:
-        runner.fail('EME test failure: You aborted the video playback.');
-        break;
-      case e.target.error.MEDIA_ERR_NETWORK:
-        runner.fail('EME test failure: A network error caused the video' +
-                    ' download to fail part-way.');
-        break;
-      case e.target.error.MEDIA_ERR_DECODE:
-        runner.fail('EME test failure: The video playback was aborted due to' +
-                    ' a corruption problem or because the video used features' +
-                    ' your browser did not support.');
-        break;
-      case e.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED:
-        runner.fail('EME test failure: The video could not be loaded, either' +
-                    ' because the server or network failed or because the' +
-                    ' format is not supported.');
-        break;
-      default:
-        runner.fail('EME test failure: An unknown error occurred.');
-        break;
-    }
-  }
-
-  function fetchStream(stream, cb, start, end) {
-    var xhr = runner.XHRManager.createRequest(stream.src, cb, start, end);
-    xhr.send();
-  }
-
-  function appendLoop(stream, sb) {
-    var parsedData;
-    var segmentIdx = 0;
-    var maxSegments = 4
-    fetchStream(stream, function() {
-      if (stream.codec == 'H264' || stream.codec == 'AAC') {
-        parsedData = parseMp4(this.getResponseData());
-      } else if(stream.codec == 'VP9' || stream.codec == 'Opus') {
-        parsedData = parseWebM(this.getResponseData().buffer);
-      } else {
-        runner.fail('Unsupported codec in appendLoop.');
-      }
-      fetchStream(stream, function() {
-        sb.addEventListener('updateend', function append() {
-          if (maxSegments - segmentIdx <= 0) {
-            sb.removeEventListener('updateend', append);
-            return;
-          }
-          fetchStream(stream, function() {
-            sb.appendBuffer(this.getResponseData());
-            segmentIdx += 1
-          }, parsedData[segmentIdx].offset, parsedData[segmentIdx].size);
-        });
-        sb.appendBuffer(this.getResponseData());
-        segmentIdx += 1
-      }, 0, parsedData[0].size + parsedData[0].offset);
-    }, 0, 32 * 1024);
-  }
-
-  function onSourceOpen(e) {
-    if (audioStream != null) {
-      audioSb = ms.addSourceBuffer(audioStream.mimetype);
-      appendLoop(audioStream, audioSb);
-    }
-
-    if (videoStream != null) {
-      videoSb = ms.addSourceBuffer(videoStream.mimetype);
-      appendLoop(videoStream, videoSb);
-    }
-  }
-
-  ms.addEventListener('sourceopen', onSourceOpen);
-  ms.addEventListener('webkitsourceopen', onSourceOpen);
-  video.addEventListener('error', onError);
-  video.src = window.URL.createObjectURL(ms);
-  video.load();
 
   return testEmeHandler;
 }
