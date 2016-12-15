@@ -129,7 +129,11 @@ var Media = (function() {
       var get = function(attribute) {
         return attribute in customMap ? customMap[attribute] : null;
       };
-      return {codec: codec, mediatype: mediaType, mimetype: mimeType,
+      var mime = mimeType
+      if (!!customMap && customMap.hasOwnProperty('mimeType')) {
+        mime = customMap['mimeType'];
+      }
+      return {codec: codec, mediatype: mediaType, mimetype: mime,
           size: size, src: src, duration: duration,
           bps: Math.floor(size / duration), customMap: customMap, get: get};
     };
