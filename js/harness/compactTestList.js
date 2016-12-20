@@ -62,7 +62,6 @@ function Test(desc, style) {
   this.updateStatus = function(status) {
     var text = this.desc.status;
     var failureStatus = '';
-    if (text && text.length > 5) text = '';
     status = status ? status : document.getElementById(this.statusId);
 
     if (this.style === 'extra compact') {
@@ -83,7 +82,7 @@ function Test(desc, style) {
       failureStatus = this.desc.mandatory ? 'cell-status-fail' :
           'cell-status-normal';
       if (this.desc.running) {
-        status.innerHTML = '&nbsp;...&nbsp;';
+        status.innerHTML = text || '&nbsp;...&nbsp;';
         status.className = 'cell-status-running';
       } else if (this.desc.failures) {
         status.innerHTML = text || '&nbsp;Fail&nbsp;';

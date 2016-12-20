@@ -49,24 +49,24 @@ h4 {
 }
 
 .compact-list .cell-status-normal {
-  min-width: 30px;
+  min-width: 85px;
   text-align: center;
 }
 
 .compact-list .cell-status-running {
-  min-width: 30px;
+  min-width: 85px;
   text-align: center;
 }
 
 .compact-list .cell-status-fail {
-  min-width: 30px;
+  min-width: 85px;
   background-color: #800;
   color: #FFF;
   text-align: center;
 }
 
 .compact-list .cell-status-pass {
-  min-width: 30px;
+  min-width: 85px;
   background-color: #080;
   color: #FFF;
   text-align: center;
