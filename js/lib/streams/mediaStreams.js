@@ -83,6 +83,26 @@ var Media = (function() {
       ProgressiveLow: ['media/car_20130125_18.mp4', 15477531, 181.55],
       FrameGap: ['media/nq-frames24-tfdt23.mp4', 11883895, 242.46],
       FrameOverlap: ['media/nq-frames23-tfdt24.mp4', 11883895, 242.46],
+      Webgl144p15fps: ['media/big-buck-bunny-h264-144p-15fps.mp4', 8620045, 634.60, {
+          'mimeType': 'video/mp4; codecs="avc1.42c00c"', 'fps': 15, 'resolution': '144p'}],
+      Webgl240p30fps: ['media/big-buck-bunny-h264-240p-30fps.mp4', 19406299, 634.57, {
+          'mimeType': 'video/mp4; codecs="avc1.4d4015"', 'fps': 30, 'resolution': '240p'}],
+      Webgl360p30fps: ['media/big-buck-bunny-h264-360p-30fps.mp4', 28791964, 634.57, {
+          'mimeType': 'video/mp4; codecs="avc1.4d401e"', 'fps': 30, 'resolution': '360p'}],
+      Webgl480p30fps: ['media/big-buck-bunny-h264-480p-30fps.mp4', 56238435, 634.57, {
+          'mimeType': 'video/mp4; codecs="avc1.4d401f"', 'fps': 30, 'resolution': '480p'}],
+      Webgl720p30fps: ['media/big-buck-bunny-h264-720p-30fps.mp4', 106822776, 634.57, {
+          'mimeType': 'video/mp4; codecs="avc1.4d401f"', 'fps': 30, 'resolution': '720p'}],
+      Webgl720p60fps: ['media/big-buck-bunny-h264-720p-60fps.mp4', 181505335, 634.57, {
+          'mimeType': 'video/mp4; codecs="avc1.4d4020"', 'fps': 60, 'resolution': '720p'}],
+      Webgl1080p30fps: ['media/big-buck-bunny-h264-1080p-30fps.mp4', 189028629, 634.57, {
+          'mimeType': 'video/mp4; codecs="avc1.640028"', 'fps': 30, 'resolution': '1080p'}],
+      Webgl1080p60fps: ['media/big-buck-bunny-h264-1080p-60fps.mp4', 313230764, 634.57, {
+          'mimeType': 'video/mp4; codecs="avc1.64002a"', 'fps': 60, 'resolution': '1080p'}],
+      Webgl1440p30fps: ['media/big-buck-bunny-h264-1440p-30fps.mp4', 454390604, 634.57, {
+          'mimeType': 'video/mp4; codecs="avc1.640032"', 'fps': 30, 'resolution': '1440p'}],
+      Webgl2160p30fps: ['media/big-buck-bunny-h264-2160p-30fps.mp4', 873983617, 634.57, {
+          'mimeType': 'video/mp4; codecs="avc1.640033"', 'fps': 30, 'resolution': '2160p'}],
     },
   };
 
@@ -119,6 +139,30 @@ var Media = (function() {
           'video_id': '31e1685307acf271',
           'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],
       ProgressiveLow: ['media/feelings_vp9-20130806-243.webm', 7902885, 135.46],
+      Webgl144p30fps: ['media/big-buck-bunny-vp9-144p-30fps.webm', 7102948, 634.53, {
+          'fps': 30, 'resolution': '144p'}],
+      Webgl240p30fps: ['media/big-buck-bunny-vp9-240p-30fps.webm', 15315502, 634.53, {
+          'fps': 30, 'resolution': '240p'}],
+      Webgl360p30fps: ['media/big-buck-bunny-vp9-360p-30fps.webm', 28562771, 634.53, {
+          'fps': 30, 'resolution': '360p'}],
+      Webgl480p30fps: ['media/big-buck-bunny-vp9-480p-30fps.webm', 48362964, 634.53, {
+          'fps': 30, 'resolution': '480p'}],
+      Webgl720p30fps: ['media/big-buck-bunny-vp9-720p-30fps.webm', 91390585, 634.53, {
+          'fps': 30, 'resolution': '720p'}],
+      Webgl720p60fps: ['media/big-buck-bunny-vp9-720p-60fps.webm', 151583677, 634.53, {
+          'fps': 60, 'resolution': '720p'}],
+      Webgl1080p30fps: ['media/big-buck-bunny-vp9-1080p-30fps.webm', 168727073, 634.53, {
+          'fps': 30, 'resolution': '1080p'}],
+      Webgl1080p60fps: ['media/big-buck-bunny-vp9-1080p-60fps.webm', 252622340, 634.53, {
+          'fps': 60, 'resolution': '1080p'}],
+      Webgl1440p30fps: ['media/big-buck-bunny-vp9-1440p-30fps.webm', 460158586, 634.53, {
+          'fps': 30, 'resolution': '1440p'}],
+      Webgl1440p60fps: ['media/big-buck-bunny-vp9-1440p-60fps.webm', 661242960, 634.53, {
+          'fps': 60, 'resolution': '1440p'}],
+      Webgl2160p30fps: ['media/big-buck-bunny-vp9-2160p-30fps.webm', 1089986842, 634.53, {
+          'fps': 30, 'resolution': '2160p'}],
+      Webgl2160p60fps: ['media/big-buck-bunny-vp9-2160p-60fps.webm', 1721994529, 634.53, {
+          'fps': 60, 'resolution': '2160p'}],
     },
   };
 

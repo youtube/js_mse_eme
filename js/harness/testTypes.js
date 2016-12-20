@@ -32,6 +32,11 @@ window.testSuiteDescriptions = {
     name: 'Progressive Tests',
     title: 'HTML Media Element Conformance Tests',
     heading: 'HTML Media Element Conformance Tests'
+  },
+  'webgl-test': {
+    name: 'WebGL Performance Tests',
+    title: 'Web Graphics Library Performance Tests',
+    heading: 'WebGL Performance Tests'
   }
 };
 
@@ -98,6 +103,7 @@ window.testSuiteVersions = {
     'testSuites' : [
       'conformance-test',
       'encryptedmedia-test',
+      'webgl-test',
       'progressive-test'
     ],
     'config' : {
