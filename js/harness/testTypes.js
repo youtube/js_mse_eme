@@ -91,6 +91,7 @@ window.testSuiteVersions = {
     'testSuites' : [
       'conformance-test',
       'encryptedmedia-test',
+      'webgl-test',
       'progressive-test'
     ],
     'config' : {
