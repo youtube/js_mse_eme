@@ -72,16 +72,22 @@ var createWebglPerformanceTest = function(videoStream) {
       if (!video.paused && video.currentTime >= 15) {
         video.removeEventListener('timeupdate', onTimeUpdate);
         video.pause();
+        if (webglHandler.getVideoFrameRate() < 0 ||
+            webglHandler.getWebglFrameRate() < 0) {
+          test.prototype.status = 'Fail';
+          runner.fail('UserAgent was unable to render any frames.');
+        }
         // Screen refresh rates are capped at 60 so we shouldn't expect greater
         // than 60 fps perfomance.
-        if (videoStream.get('fps') < 55) {
+        if (videoStream.get('fps') < 56) {
+          var threshold = 0.994;
           runner.checkGE(webglHandler.getVideoFrameRate(),
-              videoStream.get('fps'), 'Video frame rate');
+              videoStream.get('fps') * threshold, 'Video frame rate');
           runner.checkGE(webglHandler.getWebglFrameRate(),
-              videoStream.get('fps'), 'WebGL frame rate');
+              videoStream.get('fps') * threshold, 'WebGL frame rate');
         } else {
-          runner.checkGE(webglHandler.getVideoFrameRate(), 55, 'Video frame rate');
-          runner.checkGE(webglHandler.getWebglFrameRate(), 55, 'WebGL frame rate');
+          runner.checkGE(webglHandler.getVideoFrameRate(), 56, 'Video frame rate');
+          runner.checkGE(webglHandler.getWebglFrameRate(), 56, 'WebGL frame rate');
         }
         runner.succeed();
       }

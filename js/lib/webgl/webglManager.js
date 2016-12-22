@@ -34,8 +34,8 @@ var WebglHandler = function(video, canvas) {
                         this.gl.CLAMP_TO_EDGE);
 
   this.decodeStarted = false;
-  this.totalCount = 0;
-  this.totalTime = 0;
+  this.totalWebglFrameCount = 0;
+  this.totalTextureUploadTime = 0;
   this.previousTime = 0; 
   this.totalFrameDelay = 0;
 };
@@ -61,8 +61,8 @@ WebglHandler.prototype.onAnimate = function() {
     this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA,
                        this.gl.UNSIGNED_BYTE, this.video);
     var time2 = new Date();
-    this.totalTime += time2 - time1;
-    this.totalCount++;
+    this.totalTextureUploadTime += time2 - time1;
+    this.totalWebglFrameCount++;
     if (this.previousTime) {
       this.totalFrameDelay += time1 - this.previousTime;
     }
@@ -85,6 +85,9 @@ WebglHandler.prototype.play = function() {
  * Returns frame rate for rendering video.
  */
 WebglHandler.prototype.getVideoFrameRate = function() {
+  if (this.totalFrameDelay == 0) {
+    return -1;
+  }
   return 1000 * (this.video['webkitDecodedFrameCount']) / this.totalFrameDelay;
 };
 
@@ -93,7 +96,10 @@ WebglHandler.prototype.getVideoFrameRate = function() {
  * Returns frame rate for rendering video in a WebGL texture.
  */
 WebglHandler.prototype.getWebglFrameRate = function() {
-  return 1000 * (this.totalCount - 1) / this.totalFrameDelay;
+  if (this.totalFrameDelay == 0) {
+    return -1;
+  }
+  return 1000 * (this.totalWebglFrameCount - 1) / this.totalFrameDelay;
 };
 
 
@@ -101,5 +107,5 @@ WebglHandler.prototype.getWebglFrameRate = function() {
  * Returns average time to render a frame in a WebGL texture.
  */
 WebglHandler.prototype.getAverageUploadTime = function() {
-  return this.totalTime / this.totalCount;
+  return this.totalTextureUploadTime / this.totalWebglFrameCount;
 };
