@@ -58,31 +58,42 @@ var Media = (function() {
     mediatype: 'video',
     streams: {
       VideoTiny: ['media/car-20120827-85.mp4', 6015001, 181.44, {
-          'videoChangeRate': 11.47}],
+          'videoChangeRate': 11.47, 'mimeType': 'video/mp4; codecs="avc1.4d4015"'}],
       VideoNormal: ['media/car-20120827-86.mp4', 15593225, 181.44, {
-          'mediaSourceDuration': Infinity}],
-      CarMedium: ['media/car09222016-med-134.mp4', 10150205, 181.47],
-      VideoHuge: ['media/car-20120827-89.mp4', 95286345, 181.44],
-      Video1MB: ['media/test-video-1MB.mp4', 1053406, 1.04],
+          'mediaSourceDuration': Infinity, 'mimeType': 'video/mp4; codecs="avc1.4d401e"'}],
+      CarMedium: ['media/car09222016-med-134.mp4', 10150205, 181.47, {
+          'mimeType': 'video/mp4; codecs="avc1.4d401e"'}],
+      VideoHuge: ['media/car-20120827-89.mp4', 95286345, 181.44, {
+          'mimeType': 'video/mp4; codecs="avc1.640028"'}],
+      Video1MB: ['media/test-video-1MB.mp4', 1053406, 1.04, {
+          'mimeType': 'video/mp4; codecs="avc1.4d401f"'}],
       VideoNormalClearKey: ['media/car_cenc-20120827-86.mp4', 15795193, 181.44, {
+          'mimeType': 'video/mp4; codecs="avc1.4d401e"',
           'key': new Uint8Array([0x1a, 0x8a, 0x20, 0x95, 0xe4, 0xde, 0xb2, 0xd2,
                                  0x9e, 0xc8, 0x16, 0xac, 0x7b, 0xae, 0x20, 0x82]),
           'kid': new Uint8Array([0x60, 0x06, 0x1e, 0x01, 0x7e, 0x47, 0x7e, 0x87,
                                  0x7e, 0x57, 0xd0, 0x0d, 0x1e, 0xd0, 0x0d, 0x1e])}],
       VideoStreamYTCenc: ['media/oops_cenc-20121114-145-no-clear-start.mp4', 39980507, 242.71, {
+          'mimeType': 'video/mp4; codecs="avc1.4d401f"',
           'key': new Uint8Array([233, 122, 210, 133, 203, 93, 59, 228,
                                  167, 150, 27, 122, 246, 145, 112, 218])}],
-      VideoTinyStreamYTCenc: ['media/oops_cenc-20121114-145-143.mp4', 7229257, 30.03],
+      VideoTinyStreamYTCenc: ['media/oops_cenc-20121114-145-143.mp4', 7229257, 30.03, {
+          'mimeType': 'video/mp4; codecs="avc1.4d401f"'}],
       VideoSmallStreamYTCenc: ['media/oops_cenc-20121114-143-no-clear-start.mp4', 12045546, 242.71, {
+          'mimeType': 'video/mp4; codecs="avc1.4d401e"',
           'key': new Uint8Array([131, 162, 92, 175, 153, 178, 172, 41,
                                  2, 167, 251, 126, 233, 215, 230, 185])}],
       VideoSmallCenc: ['media/oops_cenc-20121114-142.mp4', 8017271, 242.71, {
+          'mimeType': 'video/mp4; codecs="avc1.4d4015"',
           'video_id': '03681262dc412c06',
           'playready_signature': '448279561E2755699618BE0A2402189D4A30B03B.0CD6A27286BD2DAF00577FFA21928665DCD320C2',
           'widevine_signature': '9C4BE99E6F517B51FED1F0B3B31966D3C5DAB9D6.6A1F30BB35F3A39A4CA814B731450D4CBD198FFD'}],
-      ProgressiveLow: ['media/car_20130125_18.mp4', 15477531, 181.55],
-      FrameGap: ['media/nq-frames24-tfdt23.mp4', 11883895, 242.46],
-      FrameOverlap: ['media/nq-frames23-tfdt24.mp4', 11883895, 242.46],
+      ProgressiveLow: ['media/car_20130125_18.mp4', 15477531, 181.55, {
+          'mimeType': 'video/mp4; codecs="avc1.42c01e"'}],
+      FrameGap: ['media/nq-frames24-tfdt23.mp4', 11883895, 242.46, {
+          'mimeType': 'video/mp4; codecs="avc1.4d401e"'}],
+      FrameOverlap: ['media/nq-frames23-tfdt24.mp4', 11883895, 242.46, {
+          'mimeType': 'video/mp4; codecs="avc1.4d401e"'}],
       Webgl144p15fps: ['media/big-buck-bunny-h264-144p-15fps.mp4', 8620045, 634.60, {
           'mimeType': 'video/mp4; codecs="avc1.42c00c"', 'fps': 15, 'resolution': '144p'}],
       Webgl240p30fps: ['media/big-buck-bunny-h264-240p-30fps.mp4', 19406299, 634.57, {
