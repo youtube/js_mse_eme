@@ -649,7 +649,6 @@ var createDASHLatencyTest = function(stream) {
 	var bufferSize = loopCount * stream.size / 1048576;
 	self.log('Buffer size: ' + Math.round(bufferSize) + 'MB');
 
-	var oldWidth = video.videoWidth;
 	var DASH_MAX_LATENCY = 1;
 	var newContentStartTime = sb.buffered.start(0) + 2;
 	self.log('Source buffer updated as exceeding buffer limit');
