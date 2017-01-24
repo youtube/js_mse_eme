@@ -257,6 +257,54 @@ testEncryptedEventData.prototype.start = function(runner, video) {
 };
 
 
+var createWidevineCreateMESEMETest = function(videoStream, audioStream, desc) {
+  var test = createEmeTest(desc, 'EME MSE WAA', false);
+  test.prototype.type = 'Test if AudioContext#createMediaElementSource ' +
+      'succeeds and sends audio data for ' +
+      (videoStream ? videoStream.mimetype : audioStream.mimetype);
+  test.prototype.start = function(runner, video) {
+    var self = this;
+    var Ctor = window.AudioContext || window.webkitAudioContext;
+    var ctx = self.ctx = new Ctor();
+
+    try {
+      var testEmeHandler = setupBaseEmeTest(video, runner, videoStream, audioStream);
+      var licenseManager = new LicenseManager(video,
+                                              videoStream ? videoStream : audioStream,
+                                              LicenseManager.WIDEVINE);
+      testEmeHandler.init(video, licenseManager);
+    } catch(err) {
+      runner.fail(err);
+    }
+
+    video.addEventListener('timeupdate', function onTimeUpdate() {
+      if (!video.paused && video.currentTime >= 5 &&
+          !testEmeHandler.keyUnusable) {
+        video.removeEventListener('timeupdate', onTimeUpdate);
+        try {
+          runner.log('Creating MES');
+          var source = ctx.createMediaElementSource(video);
+          runner.succeed();
+        } catch (e) {
+          runner.fail(e);
+        }
+      }
+    });
+
+    video.play();
+  };
+  test.prototype.teardown = function() {
+    this.ctx.close();
+  }
+}
+
+createWidevineCreateMESEMETest(Media.H264.VideoSmallCenc, null, 'WidevineH264Video');
+createWidevineCreateMESEMETest(null, Media.AAC.AudioSmallCenc, 'WidevineAACAudio');
+createWidevineCreateMESEMETest(null, Media.Opus.SintelEncrypted, 'WidevineOpusAudio');
+createWidevineCreateMESEMETest(Media.VP9.VideoHighEnc, null, 'WidevineVP9Video');
+createWidevineCreateMESEMETest(Media.VP9.VideoHighSubSampleEnc, null, 'WidevineVP9VideoSubsample');
+
+
 return {tests: tests, info: info, fields: fields, viewType: 'extra compact'};
 
 };
