@@ -257,20 +257,21 @@ testEncryptedEventData.prototype.start = function(runner, video) {
 };
 
 
-var createWidevineCreateMESEMETest = function(videoStream, audioStream, desc) {
-  var test = createEmeTest(desc, 'EME MSE WAA', false);
-  test.prototype.type = 'Test if AudioContext#createMediaElementSource ' +
-      'succeeds and sends audio data for ' +
-      (videoStream ? videoStream.mimetype : audioStream.mimetype);
+var createWidevineCreateMESEMETest = function(videoStream, audioStream) {
+  var stream =  (videoStream ? videoStream : audioStream);
+  var test = createEmeTest('Widevine' + stream.codec +
+	                   util.MakeCapitalName(stream.mediatype), 'WAA');
+  test.prototype.title = 'Test if AudioContext#createMediaElementSource ' +
+      'succeeds and sends audio data for ' + stream.codec;
   test.prototype.start = function(runner, video) {
     var self = this;
     var Ctor = window.AudioContext || window.webkitAudioContext;
     var ctx = self.ctx = new Ctor();
 
     try {
-      var testEmeHandler = setupBaseEmeTest(video, runner, videoStream, audioStream);
-      var licenseManager = new LicenseManager(video,
-                                              videoStream ? videoStream : audioStream,
+      var testEmeHandler = setupBaseEmeTest(video, runner, videoStream,
+	                                    audioStream);
+      var licenseManager = new LicenseManager(video, stream,
                                               LicenseManager.WIDEVINE);
       testEmeHandler.init(video, licenseManager);
     } catch(err) {
@@ -284,6 +285,7 @@ var createWidevineCreateMESEMETest = function(videoStream, audioStream, desc) {
         try {
           runner.log('Creating MES');
           var source = ctx.createMediaElementSource(video);
+          runner.checkNE(source, null, 'MediaElementSource');
           runner.succeed();
         } catch (e) {
           runner.fail(e);
@@ -298,11 +300,10 @@ var createWidevineCreateMESEMETest = function(videoStream, audioStream, desc) {
   }
 }
 
-createWidevineCreateMESEMETest(Media.H264.VideoSmallCenc, null, 'WidevineH264Video');
-createWidevineCreateMESEMETest(null, Media.AAC.AudioSmallCenc, 'WidevineAACAudio');
-createWidevineCreateMESEMETest(null, Media.Opus.SintelEncrypted, 'WidevineOpusAudio');
-createWidevineCreateMESEMETest(Media.VP9.VideoHighEnc, null, 'WidevineVP9Video');
-createWidevineCreateMESEMETest(Media.VP9.VideoHighSubSampleEnc, null, 'WidevineVP9VideoSubsample');
+createWidevineCreateMESEMETest(Media.H264.VideoSmallCenc, null);
+createWidevineCreateMESEMETest(null, Media.AAC.AudioSmallCenc);
+createWidevineCreateMESEMETest(null, Media.Opus.SintelEncrypted);
+createWidevineCreateMESEMETest(Media.VP9.VideoHighEnc, null);
 
 
 return {tests: tests, info: info, fields: fields, viewType: 'extra compact'};
