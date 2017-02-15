@@ -441,7 +441,7 @@ var createTimeUpdateProgressingWithDurationCheck = function() {
 
 createTimeUpdateProgressingWithDurationCheck();
 
-return {tests: tests, info: info, fields: fields, viewType: 'compact'};
+return {tests: tests, info: info, fields: fields, viewType: 'extra compact'};
 
 };
 
