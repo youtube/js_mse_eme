@@ -428,8 +428,9 @@ TestExecutor.prototype.timeout = function() {
       } else {
         isTestTimedOut = true;
       }
-    } else if (this.XHRManager.totalRequestDuration > 0) {
-      var testTimeLimit = this.currentTest.timeout + this.XHRManager.totalRequestDuration;
+    } else {
+      var testTimeLimit =
+          this.currentTest.timeout + this.XHRManager.totalRequestDuration;
       if (testTime < testTimeLimit) {
         this.timeouts.setTimeout(this.timeout.bind(this),
                                  this.XHRManager.totalRequestDuration);
