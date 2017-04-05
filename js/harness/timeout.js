@@ -43,24 +43,28 @@ var TimeoutManager = function(logger) {
   this.setTimeout = function(func, timeout) {
     var timer = getUniqueItem(timers);
     timer.func = func;
-    timer.id = window.setTimeout(timeoutHandler, timeout, timer.id);
+    var uid = window.setTimeout(
+        function() { timeoutHandler(timer.id); }, timeout);
+    timer.uid = uid;
   };
 
   this.setInterval = function(func, timeout) {
     var interval = getUniqueItem(intervals);
     interval.func = func;
-    interval.id = window.setInterval(intervalHandler, timeout, interval.id);
+    var uid = window.setInterval(
+	function() { intervalHandler(interval.id); }, timeout);
+    interval.uid = uid;
   };
 
   this.clearAll = function() {
     for (var id = 0; id < timers.length; ++id)
       if (typeof(timers[id]) != 'undefined')
-        window.clearTimeout(timers[id].id);
+        window.clearTimeout(timers[id].uid);
     timers = [];
 
     for (var id = 0; id < intervals.length; ++id)
       if (typeof(intervals[id]) != 'undefined')
-        window.clearInterval(intervals[id].id);
+        window.clearInterval(intervals[id].uid);
     intervals = [];
   };
 };
