@@ -27,7 +27,7 @@ var loadTests = function(testType) {
 };
 
 var parseParam = function(param, defaultValue) {
-  var regex = new RegExp('(\\?|\\&)' + param + '=([-,\\w]+)', 'g');
+  var regex = new RegExp('(\\?|\\&)' + param + '=([-:,\\w]+)', 'g');
   var value = regex.exec(document.URL);
   return value ? value[2] : defaultValue;
 };
@@ -48,6 +48,14 @@ var parseParams = function(testSuiteConfig) {
   config.exclude = parseParam('exclude');
   config.testsMask = parseParam('tests_mask', '');
   config.testid = parseParam('testid', '');
+
+  // Overloaded run command to support browsers that have limitations on extra
+  // parameters. Example usage: command=run:1,2,3
+  if (config.command.indexOf(':') != -1) {
+    var commandSplit = config.command.split(':');
+    config.command = commandSplit[0];
+    config.tests = commandSplit[1];
+  }
   return config;
 };
 
