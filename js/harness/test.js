@@ -382,7 +382,7 @@ TestExecutor.prototype.error = function(msg, isTimeout) {
   } catch (e) {
   }
 
-  this.log('Test ' + (this.currentTestIdx + 1) + ':' +
+  this.log('Test ' + (this.currentTest.index + 1) + ':' +
       this.testList[this.currentTestIdx].prototype.desc +
       ' threw an error: ' + msg);
   var stack = '';
