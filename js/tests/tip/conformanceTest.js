@@ -353,14 +353,14 @@ testBufferSize.prototype.onsourceopen = function() {
   var runner = this.runner;
   // The test clip has a bitrate which is nearly exactly 1MB/sec, and
   // lasts 1s. We start appending it repeatedly until we get eviction.
-  var stream = Media.VP9.Video1MB;
-  var sb = this.ms.addSourceBuffer(stream.mimetype);
+  var videoStream = Media.VP9.Video1MB;
+  var sb = this.ms.addSourceBuffer(videoStream.mimetype);
   var audioStream = Media.AAC.Audio1MB;
-  var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
+  var unused_audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
   var self = this;
   var MIN_SIZE = 12 * 1024 * 1024;
   var ESTIMATED_MIN_TIME = 12;
-  var xhr = runner.XHRManager.createRequest(stream.src, function(e) {
+  var xhr = runner.XHRManager.createRequest(videoStream.src, function(e) {
     var onBufferFull = function() {
       runner.checkGE(expectedTime - sb.buffered.start(0), ESTIMATED_MIN_TIME,
                      'Estimated source buffer size');
@@ -376,8 +376,8 @@ testBufferSize.prototype.onsourceopen = function() {
         sb.removeEventListener('updateend', onUpdate);
         onBufferFull();
       } else {
-        expectedTime += stream.duration;
-        expectedSize += stream.size;
+        expectedTime += videoStream.duration;
+        expectedSize += videoStream.size;
         // Pass the test if the UA can handle 10x more than expected.
         if (expectedSize > (10 * MIN_SIZE)) {
           sb.removeEventListener('updateend', onUpdate);
