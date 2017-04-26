@@ -104,6 +104,31 @@ function findBufferedRangeEndForTime(sb, t) {
   return null;
 }
 
+// Removes segments from all 'buffers' to satisfy 'duration'. Once complete
+// 'ms.duration' is set and 'cb' is called.
+window.setDuration = function(duration, ms, buffers, cb) {
+  buffers = buffers instanceof Array ? buffers : [buffers];
+  if (buffers.length == 0) {
+    ms.duration = duration;
+    cb();
+    return;
+  }
+  var buffer = buffers.pop();
+  for (var i = 0; i < buffer.buffered.length; i++) {
+    var bufferedEnd = buffer.buffered.end(i);
+    if (bufferedEnd > duration) {
+      var buf = buffer;
+      buffer.addEventListener('update', function onDurationChange() {
+        buf.removeEventListener('update', onDurationChange);
+        setDuration(duration, ms, buffers, cb);
+      });
+      buffer.remove(duration, bufferedEnd);
+      return;
+    }
+  }
+  setDuration(duration, ms, buffers, cb);
+}
+
 // This part defines the... source, for the, erm... media. But it's not the
 // Media Source. No. No way.
 //
