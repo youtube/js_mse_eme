@@ -283,8 +283,8 @@ TestExecutor.prototype.onfinished = function() {
     for (var i = 0; i < window.globalRunner.testList.length; i++) {
       var test =  window.globalRunner.testList[i];
       if (test.prototype.failures > 0) {
-        this.log((i + 1) + ":" + test.prototype.desc + ': Failed with "'
-            + test.prototype.lastError.message + '"');
+        this.log((test.prototype.index + 1) + ':' + test.prototype.desc +
+           ': Failed with "' + test.prototype.lastError.message + '"');
       }
     }
   }
