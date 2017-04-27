@@ -276,6 +276,10 @@ mediaElementEvents.prototype.onsourceopen = function() {
     var onUpdate = function() {
       videoSb.removeEventListener('update', onUpdate);
       setDuration(1.0, ms, [videoSb, audioSb], function() {
+        if (audioSb.updating || videoSb.updating) {
+          runner.fail('Source buffers are updating on duration change.');
+          return;
+        }
         ms.endOfStream();
         media.play();
       });
@@ -1208,6 +1212,10 @@ var createMediaSourceDurationTest = function(videoStream) {
                         function() {
 	      runner.checkApproxEq(ms.duration, 10, 'ms.duration');
               setDuration(5, ms, videoSb, function() {
+                if (videoSb.updating) {
+                  runner.fail('Source buffers are updating on duration change');
+                  return;
+                }
                 var duration = videoSb.buffered.end(0);
                 ms.endOfStream();
                 runner.checkApproxEq(ms.duration, duration, 'ms.duration',

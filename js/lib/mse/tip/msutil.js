@@ -114,8 +114,8 @@ window.setDuration = function(duration, ms, buffers, cb) {
     return;
   }
   var buffer = buffers.pop();
-  for (var i = 0; i < buffer.buffered.length; i++) {
-    var bufferedEnd = buffer.buffered.end(i);
+  for (var rangeIdx = 0; rangeIdx < buffer.buffered.length; rangeIdx++) {
+    var bufferedEnd = buffer.buffered.end(rangeIdx);
     if (bufferedEnd > duration) {
       var buf = buffer;
       buffer.addEventListener('update', function onDurationChange() {
