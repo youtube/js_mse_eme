@@ -430,7 +430,7 @@ function pullBytes(elem, len, cache, cb) {
     cache = new_cache;
 
     if (cache.length <= len) {
-      cb(cache, new Uint8Array());
+      cb(cache, new Uint8Array(0));
     } else {
       buf = cache.subarray(0, len);
       cache = cache.subarray(len);
