@@ -55,12 +55,6 @@ function Test(desc, style) {
     link.setAttribute('tabindex', '0');
     link.exec = desc.onclick;
     link.onclick = desc.onclick;
-    link.onkeydown = function(e) {
-      console.log('keydown ', e.keyCode);
-      if (translateKeycode(e) == 'Enter') {
-        this.exec();
-      }
-    };
     link.title = desc.title;
     name.appendChild(link);
     this.updateStatus(status);
@@ -195,8 +189,6 @@ function TestList(style) {
       (new Category(categoryName)).setDoubleElement(elem);
     };
 
-    div.innerHTML = '';
-    div.appendChild(table);
     currentColumn = createElement('div', null, 'cell-column');
     table.appendChild(currentColumn);
     for (var i = 0; i < tests.length; ++i) {
@@ -234,6 +226,8 @@ function TestList(style) {
       totalCells++;
       totalTests++;
     }
+    div.innerHTML = '';
+    div.appendChild(table);
   };
 
   this.addTest = function(desc) {

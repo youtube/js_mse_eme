@@ -159,6 +159,7 @@ function TestView(testSuiteVer) {
     for (var i = 0; i < links.length; ++i) {
       controlsDiv.appendChild(createAnchor(links[i].text));
       controlsDiv.lastChild.setAttribute('data-href', links[i].href);
+      controlsDiv.lastChild.onclick = window.navigate;
       controlsDiv.lastChild.classList.add('focusable');
     }
 
@@ -166,6 +167,7 @@ function TestView(testSuiteVer) {
     for (var i = 0; i < testSuites.length; ++i) {
       testSuitesDiv.appendChild(createAnchor(testSuites[i].text));
       testSuitesDiv.lastChild.setAttribute('data-href', testSuites[i].href);
+      testSuitesDiv.lastChild.onclick = window.navigate;
       testSuitesDiv.lastChild.classList.add('focusable');
     }
 
