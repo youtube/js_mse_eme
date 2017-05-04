@@ -70,12 +70,14 @@ function Rect(left, top, width, height) {
 
   var rangeDist = function(start, end, startRef, endRef) {
     if (start < startRef) {
-      if (end < startRef)
+      if (end < startRef) {
         return startRef - end;
+      }
       return 0;
     }
-    if (start <= endRef)
+    if (start <= endRef) {
       return 0;
+    }
     return start - endRef;
   };
 
@@ -222,13 +224,12 @@ function createRect(element) {
     e = e.offsetParent;
   }
   return new Rect(offsetLeft, offsetTop,
-                  element.offsetWidth, element.offsetHeight);
+      element.offsetWidth, element.offsetHeight);
 };
 
-function FocusManager() {
-  var elements = [];
-  var handlers = [];
+var elements = [];
 
+function FocusManager() {
   var pickElement_ = function(currElem, dir, fudge) {
     var rect = createRect(currElem);
     var rectSide = rect.generateSideRect(dir, fudge);
@@ -256,50 +257,60 @@ function FocusManager() {
     return pickElement_(currElem, dir) ||
         pickElement_(currElem, dir, 2) ||
         pickElement_(currElem, dir, MAX_FUDGE);
+    };
+
+    var onkeydown = function(e) {
+      if (elements.indexOf(e.target) !== -1) {
+        var dir;
+        var key = translateKeycode(e);
+
+        switch (key) {
+          case 'Left': dir = LEFT; break;
+          case 'Right': dir = RIGHT; break;
+          case 'Up': dir = UP; break;
+          case 'Down': dir = DOWN; break;
+          case 'Enter': navigate(e);
+          default: return true;
+        }
+
+        var element = pickElement(e.target, dir);
+        if (element) {
+          element.focus();
+          e.stopPropagation();
+          e.preventDefault();
+        }
+      }
+
+      return true;
+    };
+
+    this.add = function(element) {
+      if (elements.indexOf(element) === -1) {
+        elements.push(element);
+        element.addEventListener('keydown', onkeydown);
+      }
+    };
   };
 
-  var onkeydown = function(e) {
-    if (elements.indexOf(e.target) !== -1) {
-      var dir;
-      if (e.keyCode === 37) {  // left
-        dir = LEFT;
-      } else if (e.keyCode === 38) {  // up
-        dir = UP;
-      } else if (e.keyCode === 39) {  // right
-        dir = RIGHT;
-      } else if (e.keyCode === 40) {  // down
-        dir = DOWN;
-      } else {
-        return true;
-      }
-      var element = pickElement(e.target, dir);
-      if (element) {
-        element.focus();
-        e.stopPropagation();
-        e.preventDefault();
-      }
+  window.navigate = function(e) {
+    var activeElement = document.activeElement;
+    if (!!activeElement.exec) {
+      activeElement.exec(e);
+      return;
     }
 
-    return true;
-  };
-
-  this.add = function(element) {
-    if (elements.indexOf(element) === -1) {
-      elements.push(element);
-      handlers.push(element.addEventListener('keydown', onkeydown));
+    var elementUrl = activeElement.getAttribute('data-href');
+    if (elementUrl != null) {
+      location.href = elementUrl;
+      return;
     }
-  };
-};
+  }
 
-window.addEventListener('load', function() {
-  var focusManager = new FocusManager;
-  var elements = document.getElementsByClassName('focusable');
-  for (var i = 0; i < elements.length; ++i)
-    focusManager.add(elements[i]);
-
-  var links = document.getElementsByTagName('A');
-  for (var i = 0; i < links.length; ++i)
-    focusManager.add(links[i]);
-});
-
+  window.addEventListener('load', function() {
+    var focusManager = new FocusManager;
+    var elements = document.getElementsByClassName('focusable');
+    elements[0].focus();
+    for (var i = 0; i < elements.length; ++i)
+      focusManager.add(elements[i]);
+  });
 })();

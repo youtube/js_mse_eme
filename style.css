@@ -15,9 +15,8 @@ limitations under the License.
 */
 
 body {
-  font-family: Sans-Serif;
   background: #fff;
-  font-size: 10px;
+  font: normal 0.64em 'Roboto',Sans-Serif;
   margin: 10px 20px 0 20px;
   width: 1240px;
   height: 710px;
@@ -29,36 +28,39 @@ h2 {
   margin: 0 0 0 0;
 }
 
-h3 {
-  margin: 0 0 0 0;
-}
-
-h4 {
-  margin: 5px 0 0 0;
-}
-
 .compact-list .cell-category {
+  display: inline-block;
   font-weight: bold;
   color: #039;
   padding: 0px;
   border-bottom: 2px solid #6678b1;
+  width: 100%;
 }
 
 .compact-list .cell-divider {
+  display: inline-block;
   width: 5px;
 }
 
+.compact-list .cell-name {
+  display: inline-block;
+  padding: 1px 0px;
+}
+
 .compact-list .cell-status-normal {
+  display: inline-block;
   min-width: 85px;
   text-align: center;
 }
 
 .compact-list .cell-status-running {
+  display: inline-block;
   min-width: 85px;
   text-align: center;
 }
 
 .compact-list .cell-status-fail {
+  display: inline-block;
   min-width: 85px;
   background-color: #800;
   color: #FFF;
@@ -66,6 +68,7 @@ h4 {
 }
 
 .compact-list .cell-status-pass {
+  display: inline-block;
   min-width: 85px;
   background-color: #080;
   color: #FFF;
@@ -73,30 +76,40 @@ h4 {
 }
 
 .compact-list .test-status-none {
-  width: 5px;
+  display: inline-block;
+  min-width: 7px;
 }
 
 .compact-list .test-status-running {
-  width: 5px;
+  display: inline-block;
+  min-width: 7px;
   background-color: #880;
 }
 
 .compact-list .test-status-fail {
-  width: 5px;
+  display: inline-block;
+  min-width: 7px;
   background-color: #800;
 }
 
 .compact-list .test-status-pass {
-  width: 5px;
+  display: inline-block;
+  min-width: 7px;
   background-color: #080;
 }
 
 .compact-list .test-status-optional-fail {
-  width: 3px;
+  display: inline-block;
+  min-width: 5px;
   border-style: solid;
   border-color: #800;
   border-width: 2px;
   padding: 0px;
+}
+
+.compact-list .cell-column {
+  display: inline-block;
+  vertical-align: top;
 }
 
 ul {
@@ -168,11 +181,8 @@ div.container_hidden {
   display: inline-block;
 }
 
-span.nowrap {
-  display: inline-block;
+span {
   white-space: nowrap;
-  margin: 0px 10px 0px 0px;
-  width: 200px;
 }
 
 span.code {
@@ -184,18 +194,25 @@ span.code {
   margin-right: 20px;
 }
 
-.rightmargin20new {
-  margin-left: 0px;
-  margin-right: 20px;
-  color: #f00;
+span:focus {
+  border: 1px solid blue !important;
+}
+
+.focusable {
+  color: #0000EE;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+#title {
+  display: block;
+  font-size: 1.17em;
   font-weight: bold;
+  margin: 0 0 0 0;
 }
 
-a:focus {
-  border-width: 1px;
-  border-style: solid;
-}
-
-a.title_link {
-  color: #000;
+.h4 {
+  display: block;
+  font-weight: bold;
+  margin: 5px 0px 0px 0px;
 }

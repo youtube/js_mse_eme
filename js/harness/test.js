@@ -255,7 +255,7 @@ TestExecutor.prototype.initialize = function() {
 
   this.testView.generate(this.testSuiteVer);
 
-  document.getElementById('info').innerText = this.info;
+  document.getElementById('info').innerHTML = this.info;
   this.log('Media Source and Encrypted Media Conformance Tests ' +
            '(version REVISION)');
 

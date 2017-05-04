@@ -20,7 +20,9 @@ var TestView = (function() {
 var createElement = util.createElement;
 
 var createAnchor = function(text, id) {
-  return util.createElement('a', id, 'rightmargin20', text);
+  var anchor = util.createElement('span', id, 'rightmargin20', text);
+  anchor.setAttribute('tabindex', '0');
+  return anchor;
 };
 
 var createOption = function(text, value) {
@@ -89,9 +91,9 @@ function TestView(testSuiteVer) {
     } catch (e) {
       // Use default html title if UA can't control document.title.
     }
-    document.body.appendChild(createElement('h3', 'title', null, heading));
-    document.body.appendChild(createElement('h4', 'info'));
-    document.body.appendChild(createElement('h4', 'usage'));
+    document.body.appendChild(createElement('span', 'title', null, heading));
+    document.body.appendChild(createElement('span', 'info', 'h4'));
+    document.body.appendChild(createElement('span', 'usage', 'h4'));
     document.body.appendChild(createElement('div', 'testview'));
 
     var div = document.getElementById(this.divId);
@@ -105,7 +107,7 @@ function TestView(testSuiteVer) {
     div.appendChild(testContainer);
 
     var outputArea = createElement('div', 'outputarea');
-    var textArea = createElement('textarea', 'output');
+    var textArea = createElement('div', 'output');
     textArea.rows = 10;
     textArea.cols = 80;
     var textAreaContainer = createElement('div', 'outputcontainer');
@@ -120,6 +122,7 @@ function TestView(testSuiteVer) {
       switchDiv.appendChild(document.createTextNode(switches[i].text));
       switchDiv.appendChild(createAnchor(harnessConfig[id] ? 'on' : 'off', id));
       switchDiv.lastChild.href = 'javascript:;';
+      switchDiv.lastChild.classList.add('focusable');
       switchDiv.lastChild.onclick = (function(id) {
         return function(e) {
           var wasOff = !util.stringToBoolean(e.target.innerHTML);
@@ -127,6 +130,7 @@ function TestView(testSuiteVer) {
           harnessConfig[id] = wasOff;
         };
       })(id);
+      switchDiv.lastChild.exec = switchDiv.lastChild.onclick;
     }
     for (var i = 0; i < selectors.length; ++i) {
       switchDiv.appendChild(document.createTextNode(selectors[i].text));
@@ -147,18 +151,22 @@ function TestView(testSuiteVer) {
       controlsDiv.appendChild(createAnchor(commands[i].text, commands[i].id));
       controlsDiv.lastChild.href = 'javascript:;';
       controlsDiv.lastChild.onclick = commands[i].onclick;
+      controlsDiv.lastChild.exec = controlsDiv.lastChild.onclick;
       controlsDiv.lastChild.title = commands[i].title;
+      controlsDiv.lastChild.classList.add('focusable');
     }
 
     for (var i = 0; i < links.length; ++i) {
       controlsDiv.appendChild(createAnchor(links[i].text));
-      controlsDiv.lastChild.href = links[i].href;
+      controlsDiv.lastChild.setAttribute('data-href', links[i].href);
+      controlsDiv.lastChild.classList.add('focusable');
     }
 
     var testSuitesDiv = document.getElementById('testsuites');
     for (var i = 0; i < testSuites.length; ++i) {
       testSuitesDiv.appendChild(createAnchor(testSuites[i].text));
-      testSuitesDiv.lastChild.href = testSuites[i].href;
+      testSuitesDiv.lastChild.setAttribute('data-href', testSuites[i].href);
+      testSuitesDiv.lastChild.classList.add('focusable');
     }
 
     this.testList.generate(document.getElementById('testlist'));

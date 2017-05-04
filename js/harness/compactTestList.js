@@ -17,7 +17,7 @@ limitations under the License.
 
 (function() {
 
-var ITEM_IN_COLUMN = 23;  // Test item count in a column
+var ITEMS_IN_COLUMN = 23;  // Test item count in a column
 var CATEGORY_SPACE = 1;  // Row between the end of the last category and the
                          // beginning of the next category
 var MIN_ROW_AT_THE_BOTTOM = 2;  // If at the bottom of the table and the row
@@ -28,13 +28,12 @@ var createElement = util.createElement;
 function Category(categoryName) {
   this.setElement = function(nameCell, statusCell) {
     nameCell.className = 'cell-category';
-    nameCell.innerText = categoryName;
+    nameCell.innerHTML = categoryName;
   };
 
   this.setDoubleElement = function(cellElem) {
     cellElem.className = 'cell-category';
-    cellElem.setAttribute('colspan', 2);
-    cellElem.innerText = categoryName;
+    cellElem.innerHTML = categoryName;
   };
 }
 
@@ -50,10 +49,18 @@ function Test(desc, style) {
   this.createElement = function(name, status) {
     name.id = this.nameId;
     status.id = this.statusId;
-    var link = createElement('a', null, null,
+    var link = createElement('span', null, null,
                              this.index + 1 + '. ' + this.desc.desc);
-    link.href = 'javascript:;';
+    link.classList.add('focusable');
+    link.setAttribute('tabindex', '0');
+    link.exec = desc.onclick;
     link.onclick = desc.onclick;
+    link.onkeydown = function(e) {
+      console.log('keydown ', e.keyCode);
+      if (translateKeycode(e) == 'Enter') {
+        this.exec();
+      }
+    };
     link.title = desc.title;
     name.appendChild(link);
     this.updateStatus(status);
@@ -126,21 +133,21 @@ function TestList(style) {
 
     for (var i = 0; i < tests.length; ++i) {
       if (lastCategory !== tests[i].desc.category) {
-        rowLeft = ITEM_IN_COLUMN - cells % ITEM_IN_COLUMN;
+        rowLeft = ITEMS_IN_COLUMN - cells % ITEMS_IN_COLUMN;
         if (rowLeft < MIN_ROW_AT_THE_BOTTOM)
           cells += rowLeft;
-        if (cells % ITEM_IN_COLUMN !== 0)
+        if (cells % ITEMS_IN_COLUMN !== 0)
           cells += CATEGORY_SPACE;
         cells++;
         lastCategory = tests[i].desc.category;
-      } else if (cells % ITEM_IN_COLUMN === 0) {
+      } else if (cells % ITEMS_IN_COLUMN === 0) {
         cells++;  // category (continued)
       }
       cells++;
     }
 
-    return [Math.min(cells, ITEM_IN_COLUMN),
-            Math.floor((cells + ITEM_IN_COLUMN - 1) / ITEM_IN_COLUMN)];
+    return [Math.min(cells, ITEMS_IN_COLUMN),
+            Math.floor((cells + ITEMS_IN_COLUMN - 1) / ITEMS_IN_COLUMN)];
   };
 
   var createExtraCompactTable = function(div, table) {
@@ -149,79 +156,84 @@ function TestList(style) {
     var totalTests = 0;
     var rowsRemaining = 0;
     var layoutColumnSpan = [];
-    var rows = [];
+    var currentColumn = null;
     var j = 0;
 
-    var createEmptyCells = function(row) {
-      if (table.childNodes.length <= row) {
-        table.appendChild(createElement('tr'));
+    var createEmptyCells = function() {
+      if (currentColumn.childNodes.length >= ITEMS_IN_COLUMN) {
+        currentColumn = createElement('div', null, 'cell-column');
+        table.appendChild(currentColumn);
       }
+      var tr = createElement('div');
+      currentColumn.appendChild(tr);
 
-      var tr = table.childNodes[row];
       var elems = [
-        createElement('td', null, 'test-status-none'),
-        createElement('td', null, 'cell-name', '&nbsp;')
+        createElement('div', null, 'test-status-none', '&nbsp;'),
+        createElement('div', null, 'cell-name', '&nbsp;')
       ];
       tr.appendChild(elems[0]);
       tr.appendChild(elems[1]);
       return elems;
     };
 
-    var createTestCells = function(testIndex, row, test) {
-      var cells = createEmptyCells(row);
+    var createTestCells = function(testIndex, test) {
+      var cells = createEmptyCells();
       tests[testIndex].createElement(cells[1], cells[0]);
     };
 
-    var createCategoryCell = function(row, categoryName) {
-      if (table.childNodes.length <= row) {
-        table.appendChild(createElement('tr'));
+    var createCategoryCell = function(categoryName) {
+      if (currentColumn.childNodes.length >= ITEMS_IN_COLUMN) {
+        currentColumn = createElement('div', null, 'cell-column');
+        table.appendChild(currentColumn);
       }
+      var tr = createElement('div');
+      currentColumn.appendChild(tr);
 
-      var tr = table.childNodes[row];
-      var elem = createElement('td', null, 'cell-name', '&nbsp;');
+      var elem = createElement('span', null, 'cell-name');
       tr.appendChild(elem);
 
       (new Category(categoryName)).setDoubleElement(elem);
     };
 
+    div.innerHTML = '';
+    div.appendChild(table);
+    currentColumn = createElement('div', null, 'cell-column');
+    table.appendChild(currentColumn);
     for (var i = 0; i < tests.length; ++i) {
       var currCategory = tests[i].desc.category;
 
       if (lastCategory !== currCategory) {
-        rowsRemaining = ITEM_IN_COLUMN - totalCells % ITEM_IN_COLUMN;
+        rowsRemaining = ITEMS_IN_COLUMN - totalCells % ITEMS_IN_COLUMN;
 
         if (rowsRemaining < MIN_ROW_AT_THE_BOTTOM) {
           // Add a row for heading.
           for (j = 0; j < rowsRemaining; ++j) {
-            createEmptyCells(totalCells % ITEM_IN_COLUMN);
+            createEmptyCells(totalCells % ITEMS_IN_COLUMN);
             totalCells += 1;
           }
         }
 
-        if (totalCells % ITEM_IN_COLUMN !== 0) {
+        if (totalCells % ITEMS_IN_COLUMN !== 0) {
           // Add a row for extra space before heading, if in middle of column.
           for (j = 0; j < CATEGORY_SPACE; ++j) {
-            createEmptyCells(totalCells % ITEM_IN_COLUMN);
+            createEmptyCells();
             totalCells += 1;
           }
         }
 
         lastCategory = currCategory;
-        createCategoryCell(totalCells % ITEM_IN_COLUMN, lastCategory);
+        createCategoryCell(lastCategory);
         totalCells++;
-      } else if (totalCells % ITEM_IN_COLUMN === 0) {
+      } else if (totalCells % ITEMS_IN_COLUMN === 0) {
         // category (continued)
-        createCategoryCell(totalCells % ITEM_IN_COLUMN, lastCategory);
+        createCategoryCell(lastCategory);
         totalCells++;
       }
 
-      createTestCells(totalTests, totalCells % ITEM_IN_COLUMN, lastCategory);
+      createTestCells(totalTests, lastCategory);
       totalCells++;
       totalTests++;
     }
-
-    div.innerHTML = '';
-    div.appendChild(table);
   };
 
   this.addTest = function(desc) {
@@ -231,7 +243,7 @@ function TestList(style) {
   };
 
   this.generate = function(div) {
-    var table = createElement('table', null, 'compact-list');
+    var table = createElement('div', null, 'compact-list');
     var tr;
     var dim = getTableDimension();
     var lastCategory = '';
@@ -242,12 +254,12 @@ function TestList(style) {
       createExtraCompactTable(div, table);
     } else {
       for (row = 0; row < dim[0]; ++row) {
-        tr = createElement('tr');
+        tr = createElement('div');
         table.appendChild(tr);
         for (column = 0; column < dim[1]; ++column) {
-          tr.appendChild(createElement('td', null, 'cell-name', '&nbsp;'));
-          tr.appendChild(createElement('td', null, 'cell-divider'));
-          tr.appendChild(createElement('td', null, 'cell-status-normal'));
+          tr.appendChild(createElement('div', null, 'cell-name', '&nbsp;'));
+          tr.appendChild(createElement('div', null, 'cell-divider'));
+          tr.appendChild(createElement('div', null, 'cell-status-normal'));
         }
       }
 
@@ -258,12 +270,12 @@ function TestList(style) {
 
       for (var i = 0; i < tests.length; ++i) {
         if (lastCategory !== tests[i].desc.category) {
-          if (ITEM_IN_COLUMN - row <= MIN_ROW_AT_THE_BOTTOM) {
+          if (ITEMS_IN_COLUMN - row <= MIN_ROW_AT_THE_BOTTOM) {
             row = 0;
             column++;
           }
 
-          if (row % ITEM_IN_COLUMN !== 0)
+          if (row % ITEMS_IN_COLUMN !== 0)
             row += CATEGORY_SPACE;
 
           lastCategory = tests[i].desc.category;
@@ -283,7 +295,7 @@ function TestList(style) {
             table.childNodes[row].childNodes[column * 3 + 2]);
         row++;
 
-        if (row === ITEM_IN_COLUMN) {
+        if (row === ITEMS_IN_COLUMN) {
           row = 0;
           column++;
         }
