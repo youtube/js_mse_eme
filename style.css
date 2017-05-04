@@ -28,7 +28,7 @@ h2 {
   margin: 0 0 0 0;
 }
 
-.compact-list .cell-category {
+.default-list .cell-category {
   display: inline-block;
   font-weight: bold;
   color: #039;
@@ -37,29 +37,34 @@ h2 {
   width: 100%;
 }
 
-.compact-list .cell-divider {
+.expanded-test-status-list .cell-category {
   display: inline-block;
-  width: 5px;
+  font-weight: bold;
+  color: #039;
+  padding: 0px;
+  border-bottom: 2px solid #6678b1;
+  width: 100%;
+  text-align: center;
 }
 
-.compact-list .cell-name {
+.cell-name {
   display: inline-block;
   padding: 1px 0px;
 }
 
-.compact-list .cell-status-normal {
+.expanded-test-status-list .test-status-normal {
   display: inline-block;
   min-width: 85px;
   text-align: center;
 }
 
-.compact-list .cell-status-running {
+.expanded-test-status-list .test-status-running {
   display: inline-block;
   min-width: 85px;
   text-align: center;
 }
 
-.compact-list .cell-status-fail {
+.expanded-test-status-list .test-status-fail {
   display: inline-block;
   min-width: 85px;
   background-color: #800;
@@ -67,7 +72,7 @@ h2 {
   text-align: center;
 }
 
-.compact-list .cell-status-pass {
+.expanded-test-status-list .test-status-pass {
   display: inline-block;
   min-width: 85px;
   background-color: #080;
@@ -75,30 +80,30 @@ h2 {
   text-align: center;
 }
 
-.compact-list .test-status-none {
+.test-status-none {
   display: inline-block;
   min-width: 7px;
 }
 
-.compact-list .test-status-running {
+.default-list .test-status-running {
   display: inline-block;
   min-width: 7px;
   background-color: #880;
 }
 
-.compact-list .test-status-fail {
+.default-list .test-status-fail {
   display: inline-block;
   min-width: 7px;
   background-color: #800;
 }
 
-.compact-list .test-status-pass {
+.default-list .test-status-pass {
   display: inline-block;
   min-width: 7px;
   background-color: #080;
 }
 
-.compact-list .test-status-optional-fail {
+.test-status-optional-fail {
   display: inline-block;
   min-width: 5px;
   border-style: solid;
@@ -107,9 +112,10 @@ h2 {
   padding: 0px;
 }
 
-.compact-list .cell-column {
+.cell-column {
   display: inline-block;
   vertical-align: top;
+  padding-right: 5px;
 }
 
 ul {
