@@ -120,6 +120,6 @@ createWebglPerformanceTest(Media.H264.Webgl1080p60fps);
 createWebglPerformanceTest(Media.H264.Webgl1440p30fps);
 createWebglPerformanceTest(Media.H264.Webgl2160p30fps);
 
-return {tests: tests, info: info, fields: fields, viewType: 'compact'};
+return {tests: tests, info: info, fields: fields, viewType: 'expanded-test-status'};
 
 };

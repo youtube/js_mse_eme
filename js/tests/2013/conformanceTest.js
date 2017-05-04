@@ -1591,6 +1591,6 @@ testDualKey.prototype.start = function(runner, video) {
 testDualKey.prototype.teardown = function() {};
 
 
-return {tests: tests, info: info, fields: fields, viewType: 'compact'};
+return {tests: tests, info: info, fields: fields, viewType: 'default'};
 
 };

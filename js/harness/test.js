@@ -236,13 +236,8 @@ TestExecutor.prototype.updateStatus = function() {
 
 TestExecutor.prototype.initialize = function() {
   var self = this;
-  if (this.viewType === 'extra compact')
-    this.testView = compactTestView.create(this.testSuiteVer, this.fields,
-                                           this.viewType);
-  else if (this.viewType === 'compact')
-    this.testView = compactTestView.create(this.testSuiteVer, this.fields);
-  else
-    this.testView = compactTestView.create(this.testSuiteVer, this.fields);
+  this.testView = compactTestView.create(this.testSuiteVer, this.fields,
+                                         this.viewType);
 
   this.testView.onrunselected = function() {
     self.startTest(0, self.testList.length);

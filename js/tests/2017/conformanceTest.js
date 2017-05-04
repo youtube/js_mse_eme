@@ -1648,6 +1648,6 @@ createLargeGapTest(Media.Opus.CarMed, true);
 createDelayedTest(Media.Opus.CarMed, Media.VP9.VideoNormal, true);
 
 
-return {tests: tests, info: info, fields: fields, viewType: 'extra compact'};
+return {tests: tests, info: info, fields: fields, viewType: 'default'};
 
 };

@@ -306,6 +306,6 @@ createWidevineCreateMESEMETest(null, Media.Opus.SintelEncrypted);
 createWidevineCreateMESEMETest(Media.VP9.VideoHighEnc, null);
 
 
-return {tests: tests, info: info, fields: fields, viewType: 'extra compact'};
+return {tests: tests, info: info, fields: fields, viewType: 'default'};
 
 };

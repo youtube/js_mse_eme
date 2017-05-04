@@ -65,7 +65,26 @@ function Test(desc, style) {
     var failureStatus = '';
     status = status ? status : document.getElementById(this.statusId);
 
-    if (this.style === 'extra compact') {
+    if (this.style === 'expanded-test-status') {
+       failureStatus = this.desc.mandatory ? 'test-status-fail' :
+          'test-status-normal';
+      if (this.desc.running) {
+        status.innerHTML = text || '...';
+        status.className = 'test-status-running';
+      } else if (this.desc.failures) {
+        status.innerHTML = text || 'Fail';
+        status.className = failureStatus;
+      } else if (this.desc.timeouts) {
+        status.innerHTML = text || 'Fail';
+        status.className = failureStatus;
+      } else if (this.desc.passes) {
+        status.innerHTML = text || 'Pass';
+        status.className = 'test-status-pass';
+      } else {
+        status.innerHTML = ' ';
+        status.className = 'test-status-normal';
+      }
+   } else {
       failureStatus = this.desc.mandatory ? 'test-status-fail' :
           'test-status-optional-fail';
       if (this.desc.running) {
@@ -79,26 +98,7 @@ function Test(desc, style) {
       } else {
         status.className = 'test-status-none';
       }
-    } else {
-      failureStatus = this.desc.mandatory ? 'cell-status-fail' :
-          'cell-status-normal';
-      if (this.desc.running) {
-        status.innerHTML = text || '&nbsp;...&nbsp;';
-        status.className = 'cell-status-running';
-      } else if (this.desc.failures) {
-        status.innerHTML = text || '&nbsp;Fail&nbsp;';
-        status.className = failureStatus;
-      } else if (this.desc.timeouts) {
-        status.innerHTML = text || '&nbsp;Fail&nbsp;';
-        status.className = failureStatus;
-      } else if (this.desc.passes) {
-        status.innerHTML = text || '&nbsp;Pass&nbsp;';
-        status.className = 'cell-status-pass';
-      } else {
-        status.innerHTML = ' ';
-        status.className = 'cell-status-normal';
-      }
-    }
+    } 
   };
 
   this.selected = function() {
@@ -144,12 +144,12 @@ function TestList(style) {
             Math.floor((cells + ITEMS_IN_COLUMN - 1) / ITEMS_IN_COLUMN)];
   };
 
-  var createExtraCompactTable = function(div, table) {
+  var createDefaultTestLayout = function(div, layoutStyle) {
+    var table = createElement('div', null, layoutStyle);
     var lastCategory = null;
     var totalCells = 0;
     var totalTests = 0;
     var rowsRemaining = 0;
-    var layoutColumnSpan = [];
     var currentColumn = null;
     var j = 0;
 
@@ -237,64 +237,13 @@ function TestList(style) {
   };
 
   this.generate = function(div) {
-    var table = createElement('div', null, 'compact-list');
-    var tr;
-    var dim = getTableDimension();
-    var lastCategory = '';
-    var row;
-    var column;
-
-    if (self.style === 'extra compact') {
-      createExtraCompactTable(div, table);
+    var layoutStyle;
+    if (self.style === 'expanded-test-status') {
+      layoutStyle = 'expanded-test-status-list';
     } else {
-      for (row = 0; row < dim[0]; ++row) {
-        tr = createElement('div');
-        table.appendChild(tr);
-        for (column = 0; column < dim[1]; ++column) {
-          tr.appendChild(createElement('div', null, 'cell-name', '&nbsp;'));
-          tr.appendChild(createElement('div', null, 'cell-divider'));
-          tr.appendChild(createElement('div', null, 'cell-status-normal'));
-        }
-      }
-
-      div.innerHTML = '';
-      div.appendChild(table);
-
-      row = column = 0;
-
-      for (var i = 0; i < tests.length; ++i) {
-        if (lastCategory !== tests[i].desc.category) {
-          if (ITEMS_IN_COLUMN - row <= MIN_ROW_AT_THE_BOTTOM) {
-            row = 0;
-            column++;
-          }
-
-          if (row % ITEMS_IN_COLUMN !== 0)
-            row += CATEGORY_SPACE;
-
-          lastCategory = tests[i].desc.category;
-          (new Category(lastCategory)).setElement(
-              table.childNodes[row].childNodes[column * 3],
-              table.childNodes[row].childNodes[column * 3 + 2]);
-          row++;
-        } else if (row === 0) {
-          (new Category(lastCategory)).setElement(
-              table.childNodes[row].childNodes[column * 3],
-              table.childNodes[row].childNodes[column * 3 + 2]);
-          row++;
-        }
-
-        tests[i].createElement(
-            table.childNodes[row].childNodes[column * 3],
-            table.childNodes[row].childNodes[column * 3 + 2]);
-        row++;
-
-        if (row === ITEMS_IN_COLUMN) {
-          row = 0;
-          column++;
-        }
-      }
+      layoutStyle = 'default-list';
     }
+    createDefaultTestLayout(div, layoutStyle);
   };
 
   this.getTest = function(index) {

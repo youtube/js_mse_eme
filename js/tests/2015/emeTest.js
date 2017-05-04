@@ -504,6 +504,6 @@ testClearKeyAddKeyAsyncEvents.prototype.start = function(runner, video) {
 };
 
 
-return {tests: tests, info: info, fields: fields, viewType: 'extra compact'};
+return {tests: tests, info: info, fields: fields, viewType: 'default'};
 
 };
