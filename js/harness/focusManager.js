@@ -86,8 +86,6 @@ function Rect(left, top, width, height) {
   };
 
   this.inside = function(x, y) {
-    // Technically speaking, this is not correct. However, this works out for
-    // our usage.
     return x >= this.left && x < this.left + this.width &&
         y >= this.top && y < this.top + this.height;
   };
@@ -215,6 +213,9 @@ function Rect(left, top, width, height) {
 };
 
 function createRect(element) {
+  if (!!element.rect) {
+    return element.rect;
+  }
   var offsetLeft = element.offsetLeft;
   var offsetTop = element.offsetTop;
   var e = element.offsetParent;
@@ -223,8 +224,9 @@ function createRect(element) {
     offsetTop += e.offsetTop;
     e = e.offsetParent;
   }
-  return new Rect(offsetLeft, offsetTop,
+  element.rect = new Rect(offsetLeft, offsetTop,
       element.offsetWidth, element.offsetHeight);
+  return element.rect;
 };
 
 var elements = [];
@@ -288,6 +290,7 @@ function FocusManager() {
       if (elements.indexOf(element) === -1) {
         elements.push(element);
         element.addEventListener('keydown', onkeydown);
+        createRect(element);
       }
     };
   };
