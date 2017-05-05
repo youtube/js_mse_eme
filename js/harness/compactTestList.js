@@ -98,7 +98,7 @@ function Test(desc, style) {
       } else {
         status.className = 'test-status-none';
       }
-    } 
+    }
   };
 
   this.selected = function() {
