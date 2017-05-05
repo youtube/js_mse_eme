@@ -66,7 +66,7 @@ function Test(desc, style) {
     status = status ? status : document.getElementById(this.statusId);
 
     if (this.style === 'expanded-test-status') {
-       failureStatus = this.desc.mandatory ? 'test-status-fail' :
+      failureStatus = this.desc.mandatory ? 'test-status-fail' :
           'test-status-normal';
       if (this.desc.running) {
         status.innerHTML = text || '...';
