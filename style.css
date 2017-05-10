@@ -22,12 +22,6 @@ body {
   height: 710px;
 }
 
-textarea { color: #369; }
-
-h2 {
-  margin: 0 0 0 0;
-}
-
 .default-list .cell-category {
   display: inline-block;
   font-weight: bold;
@@ -118,11 +112,6 @@ h2 {
   padding-right: 5px;
 }
 
-ul {
-  padding-left: 20px;
-  margin-top: 5px;
-}
-
 div.container {
   width: 100%;
   margin: 0 0 0 0;
@@ -137,6 +126,11 @@ div.container_hidden {
   display:none;
 }
 
+#outputarea {
+  padding-top: 5px;
+  height: 230px;
+}
+
 .box-left {
   height: 370px;
   display: inline-block;
@@ -148,17 +142,30 @@ div.container_hidden {
 }
 
 #testarea {
+  vertical-align: top;
   display: inline-block;
-  height: 210px;
+  height: 230px;
 }
 
 #outputcontainer {
+  vertical-align: top;
   display: inline-block;
-  height: 210px;
+  height: 230px;
+  padding-right: 5px;
 }
 
 #output {
   height: 210px;
+  width: 502px;
+  overflow: hidden;
+  color: #369;
+  border-width: 1px;
+  border-style: solid;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  font-size: 1.1em;
+  letter-spacing: 0.2px;
+  padding: 2px;
 }
 
 #switches {
