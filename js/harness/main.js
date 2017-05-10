@@ -120,7 +120,7 @@ var createLogger = function() {
       text += arguments[i].toString() + ' ';
 
     console.log(text);
-    output.value = text + '\n' + output.value;
+    output.innerHTML = text + '\n' + output.innerHTML;
   };
 };
 

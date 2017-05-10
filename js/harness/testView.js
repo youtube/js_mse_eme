@@ -103,13 +103,11 @@ function TestView(testSuiteVer) {
     div.appendChild(createElement('div', 'switches', 'container'));
 
     var testContainer = createElement('div', null, 'container');
-    testContainer.appendChild(createElement('div', 'testlist', 'box-left'));
+    testContainer.appendChild(createElement('div', 'testlist'));
     div.appendChild(testContainer);
 
     var outputArea = createElement('div', 'outputarea');
     var textArea = createElement('div', 'output');
-    textArea.rows = 10;
-    textArea.cols = 80;
     var textAreaContainer = createElement('div', 'outputcontainer');
     textAreaContainer.appendChild(textArea);
     outputArea.appendChild(textAreaContainer);
