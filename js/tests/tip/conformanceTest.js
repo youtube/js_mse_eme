@@ -647,69 +647,80 @@ var createTimestampOffsetTest = function(stream, unused_stream) {
 };
 
 
-var createDASHLatencyTest = function(stream) {
-  var test = createConformanceTest('DASHLatency' + stream.codec,
-      'MSE (' + stream.codec + ')');
+var createDASHLatencyTest = function(videoStream, audioStream) {
+  var test = createConformanceTest('DASHLatency' + videoStream.codec,
+      'MSE (' + videoStream.codec + ')');
   test.prototype.title = 'Test SourceBuffer DASH switch latency';
   test.prototype.onsourceopen = function() {
     var self = this;
     var runner = this.runner;
-    var sb = this.ms.addSourceBuffer(stream.mimetype);
+    var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
+    var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
     var video = this.video;
 
-    var xhr = runner.XHRManager.createRequest(stream.src, function(e) {
-      var videoContent = xhr.getResponseData();
+    var videoXhr = runner.XHRManager.createRequest(videoStream.src,
+        function(e) {
+      var videoContent = videoXhr.getResponseData();
       var expectedTime = 0;
       var loopCount = 0;
       var MAX_ITER = 300;
       var OVERFLOW_OFFSET = 1.0;
 
       var onBufferFull = function() {
-	var bufferSize = loopCount * stream.size / 1048576;
-	self.log('Buffer size: ' + Math.round(bufferSize) + 'MB');
+        var bufferSize = loopCount * videoStream.size / 1048576;
+        self.log('Buffer size: ' + Math.round(bufferSize) + 'MB');
 
-	var DASH_MAX_LATENCY = 1;
-	var newContentStartTime = sb.buffered.start(0) + 2;
-	self.log('Source buffer updated as exceeding buffer limit');
+        var DASH_MAX_LATENCY = 1;
+        var newContentStartTime = videoSb.buffered.start(0) + 2;
+        self.log('Source buffer updated as exceeding buffer limit');
 
-	video.addEventListener('timeupdate', function onTimeUpdate(e) {
-	  if (video.currentTime > newContentStartTime + DASH_MAX_LATENCY) {
-	    video.removeEventListener('timeupdate', onTimeUpdate);
-	    runner.succeed();
-	  }
-	});
-	video.play();
+        video.addEventListener('timeupdate', function onTimeUpdate(e) {
+          if (video.currentTime > newContentStartTime + DASH_MAX_LATENCY) {
+            video.removeEventListener('timeupdate', onTimeUpdate);
+            runner.succeed();
+          }
+        });
+        video.play();
       }
 
-      sb.addEventListener('update', function onUpdate() {
-	expectedTime += stream.duration;
-	sb.timestampOffset = expectedTime;
-	loopCount++;
+      videoSb.addEventListener('update', function onUpdate() {
+        expectedTime += videoStream.duration;
+        videoSb.timestampOffset = expectedTime;
+        loopCount++;
 
-	if (loopCount > MAX_ITER) {
-	  runner.fail('Failed to fill up source buffer.');
-	}
+        if (loopCount > MAX_ITER) {
+          videoSb.removeEventListener('update', onUpdate);
+          runner.fail('Failed to fill up source buffer.');
+          return;
+        }
 
-	// Fill up the buffer such that it overflow implementations.
-	if (expectedTime > sb.buffered.end(0) + OVERFLOW_OFFSET) {
-	  sb.removeEventListener('update', onUpdate);
-	  onBufferFull();
-	}
-	try {
-	  sb.appendBuffer(videoContent);
-	} catch (e) {
-	  sb.removeEventListener('update', onUpdate);
-	  var QUOTA_EXCEEDED_ERROR_CODE = 22;
-	  if (e.code == QUOTA_EXCEEDED_ERROR_CODE) {
-	    onBufferFull();
-	  } else {
-	    runner.fail(e);
-	  }
-	}
+        // Fill up the buffer such that it overflow implementations.
+        if (expectedTime > videoSb.buffered.end(0) + OVERFLOW_OFFSET) {
+          videoSb.removeEventListener('update', onUpdate);
+          onBufferFull();
+        }
+        try {
+          videoSb.appendBuffer(videoContent);
+        } catch (e) {
+          videoSb.removeEventListener('update', onUpdate);
+          var QUOTA_EXCEEDED_ERROR_CODE = 22;
+          if (e.code == QUOTA_EXCEEDED_ERROR_CODE) {
+            onBufferFull();
+          } else {
+            runner.fail(e);
+          }
+        }
       });
-      sb.appendBuffer(videoContent);;
+      videoSb.appendBuffer(videoContent);;
     });
-    xhr.send();
+
+    var audioXhr = runner.XHRManager.createRequest(audioStream.src,
+        function(e) {
+      var audioContent = audioXhr.getResponseData();
+      audioSb.appendBuffer(audioContent);
+      videoXhr.send();
+    });
+    audioXhr.send();
   };
 };
 
@@ -1565,7 +1576,7 @@ createDelayedTest(Media.AAC.AudioNormal, Media.VP9.VideoNormal);
 createAppendTest(Media.VP9.Video1MB, Media.Opus.CarLow);
 createAbortTest(Media.VP9.Video1MB, Media.Opus.CarLow);
 createTimestampOffsetTest(Media.VP9.Video1MB, Media.Opus.CarLow);
-createDASHLatencyTest(Media.VP9.VideoTiny);
+createDASHLatencyTest(Media.VP9.VideoTiny, Media.Opus.CarLow);
 createDurationAfterAppendTest(Media.VP9.Video1MB, Media.Opus.CarLow);
 createPausedTest(Media.VP9.Video1MB);
 createVideoDimensionTest(Media.VP9.VideoNormal);
@@ -1587,7 +1598,7 @@ createDelayedTest(Media.VP9.VideoNormal, Media.AAC.AudioNormal);
 createAppendTest(Media.H264.Video1MB, Media.AAC.Audio1MB);
 createAbortTest(Media.H264.Video1MB, Media.AAC.Audio1MB);
 createTimestampOffsetTest(Media.H264.Video1MB, Media.AAC.Audio1MB);
-createDASHLatencyTest(Media.H264.VideoTiny);
+createDASHLatencyTest(Media.H264.VideoTiny, Media.AAC.Audio1MB);
 createDurationAfterAppendTest(Media.H264.Video1MB, Media.AAC.Audio1MB);
 createPausedTest(Media.H264.Video1MB);
 createVideoDimensionTest(Media.H264.VideoNormal);
