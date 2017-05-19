@@ -1004,7 +1004,7 @@ var createAppendAudioOffsetTest = function(stream1, stream2) {
 };
 
 
-var createAppendVideoOffsetTest = function(stream1, stream2) {
+var createAppendVideoOffsetTest = function(stream1, stream2, audioStream) {
   var test = createConformanceTest('Append' + stream1.codec + 'VideoOffset',
       'MSE (' + stream1.codec + ')');
   test.prototype.title =
@@ -1014,12 +1014,13 @@ var createAppendVideoOffsetTest = function(stream1, stream2) {
     var runner = this.runner;
     var video = this.video;
     var sb = this.ms.addSourceBuffer(stream1.mimetype);
+    var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
     var xhr = runner.XHRManager.createRequest(stream1.src, function(e) {
       sb.timestampOffset = 5;
       sb.appendBuffer(this.getResponseData());
       sb.addEventListener('update', function callXhr2() {
-	sb.removeEventListener('update', callXhr2);
-	xhr2.send();
+        sb.removeEventListener('update', callXhr2);
+        xhr2.send();
       });
     }, 0, 200000);
     var xhr2 = runner.XHRManager.createRequest(stream2.src, function(e) {
@@ -1027,27 +1028,33 @@ var createAppendVideoOffsetTest = function(stream1, stream2) {
       sb.timestampOffset = 0;
       sb.appendBuffer(this.getResponseData());
       sb.addEventListener('updateend', function() {
-	runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
-	runner.checkEq(sb.buffered.start(0), 0, 'Range start');
-	runner.checkApproxEq(sb.buffered.end(0),
-	    stream2.customMap['videoChangeRate'], 'Range end');
-	callAfterLoadedMetaData(video, function() {
-	  video.currentTime = 3;
-	  video.addEventListener('seeked', function(e) {
-	    self.log('seeked called');
-	    video.addEventListener('timeupdate', function(e) {
-	      self.log('timeupdate called with ' + video.currentTime);
-	      if (!video.paused && video.currentTime >= 2) {
-		runner.succeed();
-	      }
-	    });
-	  });
-	});
+        runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
+        runner.checkEq(sb.buffered.start(0), 0, 'Range start');
+        runner.checkApproxEq(sb.buffered.end(0),
+            stream2.customMap['videoChangeRate'], 'Range end');
+        callAfterLoadedMetaData(video, function() {
+          video.addEventListener('seeked', function(e) {
+            self.log('seeked called');
+            video.addEventListener('timeupdate', function(e) {
+              self.log('timeupdate called with ' + video.currentTime);
+              if (!video.paused && video.currentTime >= 6) {
+                runner.succeed();
+              }
+            });
+          });
+          video.currentTime = 6;
+        });
       });
       video.play();
     }, 0, 400000);
     this.ms.duration = 100000000;  // Ensure that we can seek to any position.
-    xhr.send();
+    var audioXhr = runner.XHRManager.createRequest(audioStream.src,
+        function(e) {
+      var audioContent = audioXhr.getResponseData();
+      audioSb.appendBuffer(audioContent);
+      xhr.send();
+    });
+    audioXhr.send();
   };
 };
 
@@ -1590,7 +1597,8 @@ createPausedTest(Media.VP9.Video1MB);
 createVideoDimensionTest(Media.VP9.VideoNormal, Media.Opus.CarLow);
 createPlaybackStateTest(Media.VP9.VideoNormal);
 createPlayPartialSegmentTest(Media.VP9.VideoTiny);
-createAppendVideoOffsetTest(Media.VP9.VideoNormal,  Media.VP9.VideoTiny);
+createAppendVideoOffsetTest(Media.VP9.VideoNormal, Media.VP9.VideoTiny,
+                            Media.Opus.CarLow);
 createAppendMultipleInitTest(Media.VP9.Video1MB, Media.Opus.CarLow);
 createAppendOutOfOrderTest(Media.VP9.VideoNormal, Media.Opus.CarLow);
 createBufferedRangeTest(Media.VP9.VideoNormal, Media.Opus.CarLow);
@@ -1612,7 +1620,8 @@ createPausedTest(Media.H264.Video1MB);
 createVideoDimensionTest(Media.H264.VideoNormal, Media.AAC.Audio1MB);
 createPlaybackStateTest(Media.H264.VideoNormal);
 createPlayPartialSegmentTest(Media.H264.VideoTiny);
-createAppendVideoOffsetTest(Media.H264.VideoNormal,  Media.H264.VideoTiny);
+createAppendVideoOffsetTest(Media.H264.VideoNormal, Media.H264.VideoTiny,
+                            Media.AAC.Audio1MB);
 createAppendMultipleInitTest(Media.H264.Video1MB, Media.AAC.Audio1MB);
 createAppendOutOfOrderTest(Media.H264.CarMedium, Media.AAC.Audio1MB);
 createBufferedRangeTest(Media.H264.VideoNormal, Media.AAC.Audio1MB);
