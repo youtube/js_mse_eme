@@ -820,17 +820,19 @@ var createPausedTest = function(stream) {
 };
 
 
-var createVideoDimensionTest = function(stream) {
-  var test = createConformanceTest('VideoDimension' + stream.codec,
-      'MSE (' + stream.codec + ')');
+var createVideoDimensionTest = function(videoStream, audioStream) {
+  var test = createConformanceTest('VideoDimension' + videoStream.codec,
+      'MSE (' + videoStream.codec + ')');
   test.prototype.title =
       'Test if the readyState transition is correct.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
     var media = this.video;
     var videoChain = new ResetInit(new FixedAppendSize(
-	new FileSource(stream.src, runner.XHRManager, runner.timeouts), 65536));
-    var videoSb = this.ms.addSourceBuffer(stream.mimetype);
+        new FileSource(videoStream.src, runner.XHRManager, runner.timeouts),
+        65536));
+    var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
+    var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
     var self = this;
 
     runner.checkEq(media.videoWidth, 0, 'video width');
@@ -840,7 +842,7 @@ var createVideoDimensionTest = function(stream) {
     function checkSuccess() {
       totalSuccess++;
       if (totalSuccess == 2)
-	runner.succeed();
+        runner.succeed();
     }
 
     media.addEventListener('loadedmetadata', function(e) {
@@ -851,7 +853,13 @@ var createVideoDimensionTest = function(stream) {
     });
 
     runner.checkEq(media.readyState, media.HAVE_NOTHING, 'readyState');
-    appendInit(media, videoSb, videoChain, 0, checkSuccess);
+    var audioXhr = runner.XHRManager.createRequest(audioStream.src,
+        function(e) {
+      var audioContent = audioXhr.getResponseData();
+      audioSb.appendBuffer(audioContent);
+      appendInit(media, videoSb, videoChain, 0, checkSuccess);
+    });
+    audioXhr.send();
   };
 };
 
@@ -1579,7 +1587,7 @@ createTimestampOffsetTest(Media.VP9.Video1MB, Media.Opus.CarLow);
 createDASHLatencyTest(Media.VP9.VideoTiny, Media.Opus.CarLow);
 createDurationAfterAppendTest(Media.VP9.Video1MB, Media.Opus.CarLow);
 createPausedTest(Media.VP9.Video1MB);
-createVideoDimensionTest(Media.VP9.VideoNormal);
+createVideoDimensionTest(Media.VP9.VideoNormal, Media.Opus.CarLow);
 createPlaybackStateTest(Media.VP9.VideoNormal);
 createPlayPartialSegmentTest(Media.VP9.VideoTiny);
 createAppendVideoOffsetTest(Media.VP9.VideoNormal,  Media.VP9.VideoTiny);
@@ -1601,7 +1609,7 @@ createTimestampOffsetTest(Media.H264.Video1MB, Media.AAC.Audio1MB);
 createDASHLatencyTest(Media.H264.VideoTiny, Media.AAC.Audio1MB);
 createDurationAfterAppendTest(Media.H264.Video1MB, Media.AAC.Audio1MB);
 createPausedTest(Media.H264.Video1MB);
-createVideoDimensionTest(Media.H264.VideoNormal);
+createVideoDimensionTest(Media.H264.VideoNormal, Media.AAC.Audio1MB);
 createPlaybackStateTest(Media.H264.VideoNormal);
 createPlayPartialSegmentTest(Media.H264.VideoTiny);
 createAppendVideoOffsetTest(Media.H264.VideoNormal,  Media.H264.VideoTiny);
