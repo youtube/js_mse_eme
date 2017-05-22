@@ -1201,11 +1201,11 @@ var createBufferedRangeTest = function(stream, unused_stream) {
 };
 
 
-var createMediaSourceDurationTest = function(videoStream) {
+var createMediaSourceDurationTest = function(videoStream, audioStream) {
   var test = createConformanceTest('MediaSourceDuration' + videoStream.codec,
       'MSE (' + videoStream.codec + ')');
-  test.prototype.title =
-      'Test if the duration on MediaSource can be set and retrieved sucessfully.';
+  test.prototype.title = 'Test if the duration on MediaSource can be set and ' +
+      'retrieved sucessfully.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
     var media = this.video;
@@ -1213,6 +1213,7 @@ var createMediaSourceDurationTest = function(videoStream) {
     var videoChain = new ResetInit(
         new FileSource(videoStream.src, runner.XHRManager, runner.timeouts));
     var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
+    var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
     var self = this;
     var onsourceclose = function() {
       self.log('onsourceclose called');
@@ -1236,7 +1237,7 @@ var createMediaSourceDurationTest = function(videoStream) {
           appendInit(media, videoSb, videoChain, 0, function() {
             appendUntil(runner.timeouts, media, videoSb, videoChain, 10,
                         function() {
-	      runner.checkApproxEq(ms.duration, 10, 'ms.duration');
+              runner.checkApproxEq(ms.duration, 10, 'ms.duration');
               setDuration(5, ms, videoSb, function() {
                 if (videoSb.updating) {
                   runner.fail('Source buffers are updating on duration change');
@@ -1602,7 +1603,7 @@ createAppendVideoOffsetTest(Media.VP9.VideoNormal, Media.VP9.VideoTiny,
 createAppendMultipleInitTest(Media.VP9.Video1MB, Media.Opus.CarLow);
 createAppendOutOfOrderTest(Media.VP9.VideoNormal, Media.Opus.CarLow);
 createBufferedRangeTest(Media.VP9.VideoNormal, Media.Opus.CarLow);
-createMediaSourceDurationTest(Media.VP9.VideoNormal);
+createMediaSourceDurationTest(Media.VP9.VideoNormal, Media.Opus.CarLow);
 createOverlapTest(Media.VP9.VideoNormal, Media.Opus.CarLow);
 createSmallGapTest(Media.VP9.VideoNormal, Media.Opus.CarLow);
 createLargeGapTest(Media.VP9.VideoNormal, Media.Opus.CarLow);
@@ -1625,7 +1626,7 @@ createAppendVideoOffsetTest(Media.H264.VideoNormal, Media.H264.VideoTiny,
 createAppendMultipleInitTest(Media.H264.Video1MB, Media.AAC.Audio1MB);
 createAppendOutOfOrderTest(Media.H264.CarMedium, Media.AAC.Audio1MB);
 createBufferedRangeTest(Media.H264.VideoNormal, Media.AAC.Audio1MB);
-createMediaSourceDurationTest(Media.H264.VideoNormal);
+createMediaSourceDurationTest(Media.H264.VideoNormal, Media.AAC.Audio1MB);
 createOverlapTest(Media.H264.VideoNormal, Media.AAC.Audio1MB);
 createSmallGapTest(Media.H264.VideoNormal, Media.AAC.Audio1MB);
 createLargeGapTest(Media.H264.VideoNormal, Media.AAC.Audio1MB);
