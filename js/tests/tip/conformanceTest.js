@@ -178,7 +178,7 @@ testAddSourceBuffer.prototype.title =
 testAddSourceBuffer.prototype.onsourceopen = function() {
   try {
     this.runner.checkEq(this.ms.sourceBuffers.length, 0, 'Source buffer number');
-    this.ms.addSourceBuffer(Media.Opus.mimetype);
+    this.ms.addSourceBuffer(Media.AAC.mimetype);
     this.runner.checkEq(this.ms.sourceBuffers.length, 1, 'Source buffer number');
     this.ms.addSourceBuffer(Media.VP9.mimetype);
     this.runner.checkEq(this.ms.sourceBuffers.length, 2, 'Source buffer number');
