@@ -1651,12 +1651,12 @@ testWAAContext.prototype.start = function(runner, video) {
 };
 
 
-var createCreateMESTest = function(stream) {
-  var test = createConformanceTest(stream.codec + 'CreateMediaElementSource',
-                                   'MSE WAA');
+var createCreateMESTest = function(audioStream, videoStream) {
+  var test = createConformanceTest(audioStream.codec + '/' +
+    videoStream.codec + 'CreateMediaElementSource', 'MSE WAA');
   test.prototype.title = '' +
       'Test if AudioContext#createMediaElementSource supports mimetype ' +
-      stream.mimetype;
+      audioStream.mimetype + '/' + videoStream.mimetype;
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
     var video = this.video;
@@ -1666,24 +1666,34 @@ var createCreateMESTest = function(stream) {
     var ctx = self.ctx = new Ctor();
 
     try {
-      var sb = this.ms.addSourceBuffer(stream.mimetype);
+      var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
+      var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
     } catch (e) {
       runner.fail(e.message);
+      return;
     }
 
-    var xhr = runner.XHRManager.createRequest(stream.src, function(e) {
-      var data = xhr.getResponseData();
+    var audioXhr = runner.XHRManager.createRequest(audioStream.src, function(e) {
+      var data = audioXhr.getResponseData();
       function updateEnd(e) {
-        runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
-        runner.checkEq(sb.buffered.start(0), 0, 'Range start');
-        runner.checkApproxEq(sb.buffered.end(0), stream.duration, 'Range end');
-        sb.removeEventListener('updateend', updateEnd);
+        runner.checkEq(audioSb.buffered.length, 1, 'Source buffer number');
+        runner.checkEq(audioSb.buffered.start(0), 0, 'Range start');
+        runner.checkApproxEq(audioSb.buffered.end(0), audioStream.duration,
+            'Range end');
+        audioSb.removeEventListener('updateend', updateEnd);
         video.play();
       }
-      sb.addEventListener('updateend', updateEnd);
-      sb.appendBuffer(data);
+      audioSb.addEventListener('updateend', updateEnd);
+      audioSb.appendBuffer(data);
     });
-    xhr.send();
+
+    var videoXhr = runner.XHRManager.createRequest(videoStream.src,
+        function(e) {
+      var data = videoXhr.getResponseData();
+      videoSb.appendBuffer(data);
+      audioXhr.send();
+    });
+    videoXhr.send();
 
     video.addEventListener('timeupdate', function onTimeUpdate() {
       if (!video.paused && video.currentTime >= 5) {
@@ -1695,20 +1705,17 @@ var createCreateMESTest = function(stream) {
           runner.succeed();
         } catch (e) {
           runner.fail(e);
+          return;
         }
       }
     });
   }
-  test.prototype.teardown = function() {
-    this.ctx.close();
-  };
 }
 
 
-createCreateMESTest(Media.Opus.CarLow);
-createCreateMESTest(Media.AAC.Audio1MB);
-createCreateMESTest(Media.VP9.VideoNormal);
-createCreateMESTest(Media.H264.VideoNormal);
+createCreateMESTest(Media.Opus.CarLow, Media.VP9.VideoNormal);
+createCreateMESTest(Media.AAC.Audio1MB, Media.VP9.VideoNormal);
+createCreateMESTest(Media.AAC.Audio1MB, Media.H264.VideoNormal);
 
 
 var frameTestOnSourceOpen = function() {
