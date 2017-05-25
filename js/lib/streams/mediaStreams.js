@@ -60,7 +60,7 @@ var Media = (function() {
       VideoTiny: ['media/car-20120827-85.mp4', 6015001, 181.44, {
           'videoChangeRate': 11.47, 'mimeType': 'video/mp4; codecs="avc1.4d4015"'}],
       VideoNormal: ['media/car-20120827-86.mp4', 15593225, 181.44, {
-          'mediaSourceDuration': Infinity, 'mimeType': 'video/mp4; codecs="avc1.4d401e"'}],
+          'mimeType': 'video/mp4; codecs="avc1.4d401e"'}],
       CarMedium: ['media/car09222016-med-134.mp4', 10150205, 181.47, {
           'mimeType': 'video/mp4; codecs="avc1.4d401e"'}],
       VideoHuge: ['media/car-20120827-89.mp4', 95286345, 181.44, {
@@ -124,8 +124,7 @@ var Media = (function() {
     streams: {
       VideoTiny: ['media/feelings_vp9-20130806-242.webm', 4478156, 135.46, {
           'videoChangeRate': 15.35}],
-      VideoNormal: ['media/feelings_vp9-20130806-243.webm', 7902885, 135.46, {
-          'mediaSourceDuration': 135.469}],
+      VideoNormal: ['media/big-buck-bunny-vp9-360p-30fps.webm', 48362964, 634.53],
       VideoHuge: ['media/feelings_vp9-20130806-247.webm', 27757852, 135.46],
       Video1MB: ['media/vp9-video-1mb.webm', 1103716, 1.00],
       VideoNormalClearKey: ['media/vid_vp9_encrypted03.webm', 657432, 6.00, {

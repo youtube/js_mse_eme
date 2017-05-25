@@ -1185,9 +1185,6 @@ var createMediaSourceDurationTest = function(videoStream) {
     media.play();
     appendInit(media, videoSb, videoChain, 0, function() {
       appendUntil(runner.timeouts, media, videoSb, videoChain, 10, function() {
-	runner.checkApproxEq(ms.duration,
-			     videoStream.customMap.mediaSourceDuration,
-			     'ms.duration', 0.01);
 	videoSb.addEventListener('update', function onDurationChange() {
 	  videoSb.removeEventListener('update', onDurationChange);
 	  runner.checkEq(ms.duration, 5, 'ms.duration');

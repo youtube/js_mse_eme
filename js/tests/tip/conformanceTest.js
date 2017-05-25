@@ -1221,47 +1221,55 @@ var createMediaSourceDurationTest = function(videoStream, audioStream) {
       runner.succeed();
     };
 
-    runner.assert(isNaN(media.duration), 'Initial media duration not NaN');
-    media.play();
-    appendInit(media, videoSb, videoChain, 0, function() {
-      appendUntil(runner.timeouts, media, videoSb, videoChain, 10, function() {
-        runner.checkApproxEq(ms.duration,
-                             videoStream.customMap.mediaSourceDuration,
-                             'ms.duration', 0.01);
-        setDuration(5, ms, videoSb, function() {
-          runner.checkEq(ms.duration, 5, 'ms.duration');
-          runner.checkEq(media.duration, 5, 'media.duration');
-          runner.checkLE(videoSb.buffered.end(0), 5.1, 'Range end');
-          videoSb.abort();
-          videoChain.seek(0);
-          appendInit(media, videoSb, videoChain, 0, function() {
-            appendUntil(runner.timeouts, media, videoSb, videoChain, 10,
-                        function() {
-              runner.checkApproxEq(ms.duration, 10, 'ms.duration');
-              setDuration(5, ms, videoSb, function() {
-                if (videoSb.updating) {
-                  runner.fail('Source buffers are updating on duration change');
-                  return;
-                }
-                var duration = videoSb.buffered.end(0);
-                ms.endOfStream();
-                runner.checkApproxEq(ms.duration, duration, 'ms.duration',
-                                     0.01);
-                ms.addEventListener('sourceended', function() {
+    var appendVideo = function() {
+      runner.assert(isNaN(media.duration), 'Initial media duration not NaN');
+      media.play();
+      appendInit(media, videoSb, videoChain, 0, function() {
+        appendUntil(runner.timeouts, media, videoSb, videoChain, 10,
+            function() {
+          setDuration(5, ms, [videoSb, audioSb], function() {
+            runner.checkEq(ms.duration, 5, 'ms.duration');
+            runner.checkEq(media.duration, 5, 'media.duration');
+            runner.checkLE(videoSb.buffered.end(0), 5.1, 'Range end');
+            videoSb.abort();
+            videoChain.seek(0);
+            appendInit(media, videoSb, videoChain, 0, function() {
+              appendUntil(runner.timeouts, media, videoSb, videoChain, 10,
+                          function() {
+                runner.checkApproxEq(ms.duration, 10, 'ms.duration');
+                setDuration(5, ms, [videoSb, audioSb], function() {
+                  if (videoSb.updating) {
+                    runner.fail('Source buffer is updating on duration change');
+                    return;
+                  }
+                  var duration = videoSb.buffered.end(0);
+                  ms.endOfStream();
                   runner.checkApproxEq(ms.duration, duration, 'ms.duration',
                                        0.01);
-                  runner.checkEq(media.duration, duration, 'media.duration');
-                  ms.addEventListener('sourceclose', onsourceclose);
-                  media.removeAttribute('src');
-                  media.load();
+                  ms.addEventListener('sourceended', function() {
+                    runner.checkApproxEq(ms.duration, duration, 'ms.duration',
+                                         0.01);
+                    runner.checkEq(media.duration, duration, 'media.duration');
+                    ms.addEventListener('sourceclose', onsourceclose);
+                    media.removeAttribute('src');
+                    media.load();
+                  });
+                  media.play();
                 });
-                media.play();
               });
             });
           });
         });
       });
+    };
+
+    var audioXhr = runner.XHRManager.createRequest(audioStream.src,
+        function(e) {
+      var audioContent = audioXhr.getResponseData();
+      audioSb.appendBuffer(audioContent);
+      appendVideo();
     });
+    audioXhr.send();
   };
 };
 
@@ -1603,7 +1611,7 @@ createAppendVideoOffsetTest(Media.VP9.VideoNormal, Media.VP9.VideoTiny,
 createAppendMultipleInitTest(Media.VP9.Video1MB, Media.Opus.CarLow);
 createAppendOutOfOrderTest(Media.VP9.VideoNormal, Media.Opus.CarLow);
 createBufferedRangeTest(Media.VP9.VideoNormal, Media.Opus.CarLow);
-createMediaSourceDurationTest(Media.VP9.VideoNormal, Media.Opus.CarLow);
+createMediaSourceDurationTest(Media.VP9.VideoNormal, Media.AAC.Audio1MB);
 createOverlapTest(Media.VP9.VideoNormal, Media.Opus.CarLow);
 createSmallGapTest(Media.VP9.VideoNormal, Media.Opus.CarLow);
 createLargeGapTest(Media.VP9.VideoNormal, Media.Opus.CarLow);
