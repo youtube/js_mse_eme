@@ -62,8 +62,10 @@ testWidevineH264Video.prototype.title =
     'Test if we can play video encrypted with Widevine encryption.';
 testWidevineH264Video.prototype.start = function(runner, video) {
   var videoStream = Media.H264.VideoSmallCenc;
+  var audioStream = Media.AAC.AudioNormal;
   try {
-    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream, null);
+    var testEmeHandler = setupBaseEmeTest(video, runner,
+        videoStream, audioStream);
     var licenseManager = new LicenseManager(video, videoStream,
                                             LicenseManager.WIDEVINE);
     testEmeHandler.init(video, licenseManager);
@@ -87,8 +89,10 @@ testWidevineAacAudio.prototype.title =
     'Test if we can play aac audio encrypted with Widevine encryption.';
 testWidevineAacAudio.prototype.start = function(runner, video) {
   var audioStream = Media.AAC.AudioSmallCenc;
+  var videoStream = Media.H264.VideoNormal;
   try {
-    var testEmeHandler = setupBaseEmeTest(video, runner, null, audioStream);
+    var testEmeHandler = setupBaseEmeTest(video, runner,
+        videoStream, audioStream);
     var licenseManager = new LicenseManager(video, audioStream,
                                             LicenseManager.WIDEVINE);
     testEmeHandler.init(video, licenseManager);
@@ -112,8 +116,10 @@ testWidevineOpusAudio.prototype.title =
     'Test if we can play opus audio encrypted with Widevine encryption.';
 testWidevineOpusAudio.prototype.start = function(runner, video) {
   var audioStream = Media.Opus.SintelEncrypted;
+  var videoStream = Media.VP9.VideoNormal;
   try {
-    var testEmeHandler = setupBaseEmeTest(video, runner, null, audioStream);
+    var testEmeHandler = setupBaseEmeTest(video, runner,
+        videoStream, audioStream);
     var licenseManager = new LicenseManager(video, audioStream,
                                             LicenseManager.WIDEVINE);
     testEmeHandler.init(video, licenseManager);
@@ -137,8 +143,10 @@ var createWidevineVP9VideoTest = function(videoStream, desc) {
   test.prototype.title =
       'Test if we can play VP9 video with Widevine key system.';
   test.prototype.start = function(runner, video) {
+    var audioStream = Media.AAC.AudioNormal
     try {
-      var testEmeHandler = setupBaseEmeTest(video, runner, videoStream, null);
+      var testEmeHandler = setupBaseEmeTest(video, runner,
+          videoStream, audioStream);
       var licenseManager = new LicenseManager(video, videoStream,
                                               LicenseManager.WIDEVINE);
       testEmeHandler.init(video, licenseManager);
@@ -167,8 +175,10 @@ testPlayReadyH264Video.prototype.title =
     'Test if we can play video encrypted with PlayReady encryption.';
 testPlayReadyH264Video.prototype.start = function(runner, video) {
   var videoStream = Media.H264.VideoSmallCenc;
+  var audioStream = Media.AAC.AudioNormal;
   try {
-    var testEmeHandler = setupBaseEmeTest(video, runner, videoStream, null);
+    var testEmeHandler = setupBaseEmeTest(video, runner,
+        videoStream, audioStream);
     var licenseManager = new LicenseManager(video, videoStream,
                                             LicenseManager.PLAYREADY);
     testEmeHandler.init(video, licenseManager);
@@ -192,8 +202,10 @@ testPlayReadyAacAudio.prototype.title =
     'Test if we can play video encrypted with PlayReady encryption.';
 testPlayReadyAacAudio.prototype.start = function(runner, video) {
   var audioStream = Media.AAC.AudioSmallCenc;
+  var videoStream = Media.H264.VideoNormal;
   try {
-    var testEmeHandler = setupBaseEmeTest(video, runner, null, audioStream);
+    var testEmeHandler = setupBaseEmeTest(video, runner,
+        videoStream, audioStream);
     var licenseManager = new LicenseManager(video, audioStream,
                                             LicenseManager.PLAYREADY);
     testEmeHandler.init(video, licenseManager);
