@@ -178,7 +178,7 @@ testAddSourceBuffer.prototype.title =
 testAddSourceBuffer.prototype.onsourceopen = function() {
   try {
     this.runner.checkEq(this.ms.sourceBuffers.length, 0, 'Source buffer number');
-    this.ms.addSourceBuffer(Media.Opus.mimetype);
+    this.ms.addSourceBuffer(Media.AAC.mimetype);
     this.runner.checkEq(this.ms.sourceBuffers.length, 1, 'Source buffer number');
     this.ms.addSourceBuffer(Media.VP9.mimetype);
     this.runner.checkEq(this.ms.sourceBuffers.length, 2, 'Source buffer number');
@@ -1597,24 +1597,24 @@ createLargeGapTest(Media.AAC.AudioNormal, Media.H264.Video1MB);
 createDelayedTest(Media.AAC.AudioNormal, Media.VP9.VideoNormal);
 
 // VP9 Specific tests.
-createAppendTest(Media.VP9.Video1MB, Media.Opus.CarLow);
-createAbortTest(Media.VP9.Video1MB, Media.Opus.CarLow);
-createTimestampOffsetTest(Media.VP9.Video1MB, Media.Opus.CarLow);
-createDASHLatencyTest(Media.VP9.VideoTiny, Media.Opus.CarLow);
-createDurationAfterAppendTest(Media.VP9.Video1MB, Media.Opus.CarLow);
+createAppendTest(Media.VP9.Video1MB, Media.AAC.Audio1MB);
+createAbortTest(Media.VP9.Video1MB, Media.AAC.Audio1MB);
+createTimestampOffsetTest(Media.VP9.Video1MB, Media.AAC.Audio1MB);
+createDASHLatencyTest(Media.VP9.VideoTiny, Media.AAC.Audio1MB);
+createDurationAfterAppendTest(Media.VP9.Video1MB, Media.AAC.Audio1MB);
 createPausedTest(Media.VP9.Video1MB);
-createVideoDimensionTest(Media.VP9.VideoNormal, Media.Opus.CarLow);
+createVideoDimensionTest(Media.VP9.VideoNormal, Media.AAC.AudioNormal);
 createPlaybackStateTest(Media.VP9.VideoNormal);
 createPlayPartialSegmentTest(Media.VP9.VideoTiny);
 createAppendVideoOffsetTest(Media.VP9.VideoNormal, Media.VP9.VideoTiny,
-                            Media.Opus.CarLow);
-createAppendMultipleInitTest(Media.VP9.Video1MB, Media.Opus.CarLow);
-createAppendOutOfOrderTest(Media.VP9.VideoNormal, Media.Opus.CarLow);
-createBufferedRangeTest(Media.VP9.VideoNormal, Media.Opus.CarLow);
-createMediaSourceDurationTest(Media.VP9.VideoNormal, Media.AAC.Audio1MB);
-createOverlapTest(Media.VP9.VideoNormal, Media.Opus.CarLow);
-createSmallGapTest(Media.VP9.VideoNormal, Media.Opus.CarLow);
-createLargeGapTest(Media.VP9.VideoNormal, Media.Opus.CarLow);
+                            Media.AAC.AudioNormal);
+createAppendMultipleInitTest(Media.VP9.Video1MB, Media.AAC.Audio1MB);
+createAppendOutOfOrderTest(Media.VP9.VideoNormal, Media.AAC.AudioNormal);
+createBufferedRangeTest(Media.VP9.VideoNormal, Media.AAC.AudioNormal);
+createMediaSourceDurationTest(Media.VP9.VideoNormal, Media.AAC.AudioNormal);
+createOverlapTest(Media.VP9.VideoNormal, Media.AAC.AudioNormal);
+createSmallGapTest(Media.VP9.VideoNormal, Media.AAC.AudioNormal);
+createLargeGapTest(Media.VP9.VideoNormal, Media.AAC.AudioNormal);
 createSeekTest(Media.VP9.VideoNormal);
 createBufUnbufSeekTest(Media.VP9.VideoNormal);
 createDelayedTest(Media.VP9.VideoNormal, Media.AAC.AudioNormal);
