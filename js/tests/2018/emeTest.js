@@ -17,7 +17,7 @@ limitations under the License.
 
 var EncryptedmediaTest = function() {
 
-var emeVersion = 'Current Editor\'s Draft';
+var emeVersion = 'Candidate Recommendation 05 July 2016';
 var webkitPrefix = MediaSource.prototype.version.indexOf('webkit') >= 0;
 var tests = [];
 var info = 'No MSE Support!';
@@ -273,8 +273,9 @@ testEncryptedEventData.prototype.start = function(runner, video) {
 
 var createWidevineCreateMESEMETest = function(videoStream, audioStream,
     encStream) {
-  var test = createEmeTest('Widevine' + encStream.codec +
-	                   util.MakeCapitalName(encStream.mediatype), 'WAA');
+  var test = createEmeTest(
+      'Widevine' + encStream.codec + util.MakeCapitalName(encStream.mediatype),
+      'WAA (Optional)', false);
   test.prototype.title = 'Test if AudioContext#createMediaElementSource ' +
       'succeeds and sends audio data for ' + encStream.codec;
   test.prototype.start = function(runner, video) {

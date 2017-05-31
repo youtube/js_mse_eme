@@ -100,6 +100,19 @@ window.testSuiteVersions = {
       'controlMediaFormatSelection': false
     }
   },
+  '2018' : {
+    'testSuites' : [
+      'conformance-test',
+      'encryptedmedia-test',
+      'webgl-test',
+      'progressive-test'
+    ],
+    'config' : {
+      'defaultTestSuite': 'conformance-test',
+      'enablewebm': true,
+      'controlMediaFormatSelection': false
+    }
+  },
   'tip' : {
     'testSuites' : [
       'conformance-test',
