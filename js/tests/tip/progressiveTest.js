@@ -180,7 +180,7 @@ createAutoPlayTest();
 
 
 var createNetworkStateTest = function() {
-  var test = createProgressiveTest('state', 'networkState', false);
+  var test = createProgressiveTest('state', 'networkState');
 
   test.prototype.title = 'Test if the network state is correct';
   test.prototype.start = function(runner, video) {
@@ -198,26 +198,8 @@ var createNetworkStateTest = function() {
 createNetworkStateTest();
 
 
-var createOnLoadedMetadataTest = function() {
-  var test = createProgressiveTest('event', 'onloadedmetadata');
-
-  test.prototype.title = 'Test if the onloadedmetadata is called correctly';
-  test.prototype.start = function(runner, video) {
-    video.addEventListener('loadedmetadata', function() {
-      runner.succeed();
-    });
-    video.src = 'getvideo.py';
-  };
-};
-
-
-// getvideo.py is not supported by AppEngine.
-// createOnLoadedMetadataTest();
-
-
 var createPlayingWithoutDataPaused = function() {
-  var test = createProgressiveTest('play without data', 'paused',
-                                   false);
+  var test = createProgressiveTest('play without data', 'paused');
 
   test.prototype.title = 'Test if we can play without any data';
   test.prototype.start = function(runner, video) {
@@ -233,8 +215,7 @@ createPlayingWithoutDataPaused();
 
 
 var createPlayingWithoutDataWaiting = function() {
-  var test = createProgressiveTest('play without data', 'onwaiting',
-                                   false);
+  var test = createProgressiveTest('play without data', 'onwaiting');
 
   test.prototype.title = 'Test if we can play without any data';
   test.prototype.start = function(runner, video) {
@@ -251,8 +232,7 @@ createPlayingWithoutDataWaiting();
 
 
 var createTimeUpdateMaxGranularity = function(suffix, playbackRatio) {
-  var test = createProgressiveTest(
-      'timeupdate', 'max granularity' + suffix, false);
+  var test = createProgressiveTest('timeupdate', 'max granularity' + suffix);
 
   test.prototype.title = 'Test the time update granularity.';
   test.prototype.start = function(runner, video) {
@@ -288,8 +268,7 @@ createTimeUpdateMaxGranularity(' fast motion', 2.0);
 
 
 var createTimeUpdateMinGranularity = function(suffix, playbackRatio) {
-  var test = createProgressiveTest(
-      'timeupdate', 'min granularity' + suffix, false);
+  var test = createProgressiveTest('timeupdate', 'min granularity' + suffix);
 
   test.prototype.title = 'Test the time update granularity.';
   test.prototype.start = function(runner, video) {
@@ -325,7 +304,7 @@ createTimeUpdateMinGranularity(' fast motion', 2.0);
 
 
 var createTimeUpdateAccuracy = function() {
-  var test = createProgressiveTest('timeupdate', 'accuracy', false);
+  var test = createProgressiveTest('timeupdate', 'accuracy');
 
   test.prototype.title = 'Test the time update granularity.';
   test.prototype.start = function(runner, video) {
@@ -358,7 +337,7 @@ createTimeUpdateAccuracy();
 
 
 var createTimeUpdateProgressing = function() {
-  var test = createProgressiveTest('timeupdate', 'progressing', false);
+  var test = createProgressiveTest('timeupdate', 'progressing');
 
   test.prototype.title = 'Test if the time updates progress.';
   test.prototype.start = function(runner, video) {
@@ -387,8 +366,7 @@ createTimeUpdateProgressing();
 
 
 var createTimeUpdateProgressingWithInitialSeek = function() {
-  var test = createProgressiveTest(
-      'timeupdate', 'progressing after seek', false);
+  var test = createProgressiveTest('timeupdate', 'progressing after seek');
 
   test.prototype.title = 'Test if the time updates progress.';
   test.prototype.start = function(runner, video) {
@@ -422,8 +400,7 @@ createTimeUpdateProgressingWithInitialSeek();
 
 
 var createTimeUpdateProgressingWithDurationCheck = function() {
-  var test = createProgressiveTest(
-      'timeupdate', 'duration on timeupdate', true);
+  var test = createProgressiveTest('timeupdate', 'duration on timeupdate');
 
   test.prototype.title = 'Test if the duration is non-negative when time ' +
       'updates.';
