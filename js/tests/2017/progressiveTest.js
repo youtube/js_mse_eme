@@ -74,7 +74,7 @@ var createMediaStateAfterSrcAssignedTest = function(state, value, check) {
   test.prototype.title = 'Test if the state ' + state +
       ' is correct when media element is a src has been assigned';
   test.prototype.start = function(runner, video) {
-    video.src = Media.VP9.ProgressiveLow.src;
+    video.src = Media.H264.ProgressiveLow.src;
     test.prototype.status = util.formatStatus(util.getAttr(video, state));
     runner[check](util.getAttr(video, state), value, state);
     runner.succeed();
@@ -100,7 +100,7 @@ var createMediaStateInLoadStart = function(state, value, check) {
       runner[check](util.getAttr(video, state), value, state);
       runner.succeed();
     });
-    video.src = Media.VP9.ProgressiveLow.src;
+    video.src = Media.H264.ProgressiveLow.src;
   };
 };
 
@@ -115,7 +115,7 @@ var createProgressTest = function() {
   test.prototype.title = 'Test if there is progress event.';
   test.prototype.start = function(runner, video) {
     var self = this;
-    video.src = Media.VP9.ProgressiveLow.src + '?' + Date.now();
+    video.src = Media.H264.ProgressiveLow.src + '?' + Date.now();
     video.addEventListener('progress', function() {
       self.log('onprogress called');
       runner.succeed();
@@ -132,7 +132,7 @@ var createTimeUpdateTest = function() {
   test.prototype.title = 'Test if there is timeupdate event.';
   test.prototype.start = function(runner, video) {
     var self = this;
-    video.src = Media.VP9.ProgressiveLow.src;
+    video.src = Media.H264.ProgressiveLow.src;
     video.addEventListener('timeupdate', function() {
       self.log('ontimeupdate called');
       runner.succeed();
@@ -150,7 +150,7 @@ var createCanPlayTest = function() {
   test.prototype.title = 'Test if there is canplay event.';
   test.prototype.start = function(runner, video) {
     var self = this;
-    video.src = Media.VP9.ProgressiveLow.src;
+    video.src = Media.H264.ProgressiveLow.src;
     video.addEventListener('canplay', function() {
       self.log('canplay called');
       runner.succeed();
@@ -168,7 +168,7 @@ var createAutoPlayTest = function() {
   test.prototype.start = function(runner, video) {
     var self = this;
     video.autoplay = true;
-    video.src = Media.VP9.ProgressiveLow.src;
+    video.src = Media.H264.ProgressiveLow.src;
     video.addEventListener('timeupdate', function() {
       self.log('ontimeupdate called');
       runner.succeed();
@@ -278,7 +278,7 @@ var createTimeUpdateMaxGranularity = function(suffix, playbackRatio) {
         ++times;
       });
     });
-    video.src = Media.VP9.ProgressiveLow.src;
+    video.src = Media.H264.ProgressiveLow.src;
   };
 };
 
@@ -315,7 +315,7 @@ var createTimeUpdateMinGranularity = function(suffix, playbackRatio) {
         ++times;
       });
     });
-    video.src = Media.VP9.ProgressiveLow.src;
+    video.src = Media.H264.ProgressiveLow.src;
   };
 };
 
@@ -351,7 +351,7 @@ var createTimeUpdateAccuracy = function() {
         ++times;
       });
     });
-    video.src = Media.VP9.ProgressiveLow.src;
+    video.src = Media.H264.ProgressiveLow.src;
   };
 };
 createTimeUpdateAccuracy();
@@ -378,7 +378,7 @@ var createTimeUpdateProgressing = function() {
       }
       ++times;
     });
-    video.src = Media.VP9.ProgressiveLow.src;
+    video.src = Media.H264.ProgressiveLow.src;
     video.play();
   };
 };
@@ -414,7 +414,7 @@ var createTimeUpdateProgressingWithInitialSeek = function() {
         });
       }
     });
-    video.src = Media.VP9.ProgressiveLow.src;
+    video.src = Media.H264.ProgressiveLow.src;
   };
 };
 
@@ -434,7 +434,7 @@ var createTimeUpdateProgressingWithDurationCheck = function() {
         runner.succeed();
       }
     });
-    video.src = Media.VP9.ProgressiveLow.src;
+    video.src = Media.H264.ProgressiveLow.src;
     video.play();
   };
 };
