@@ -231,8 +231,9 @@ var createPlayingWithoutDataWaiting = function() {
 createPlayingWithoutDataWaiting();
 
 
-var createTimeUpdateMaxGranularity = function(suffix, playbackRatio) {
-  var test = createProgressiveTest('timeupdate', 'max granularity' + suffix);
+var createTimeUpdateMaxGranularity = function(playbackRate) {
+  var test = createProgressiveTest('timeupdate', 'maxGranularityPlaybackRate' +
+      parseFloat(playbackRate).toFixed(2));
 
   test.prototype.title = 'Test the time update granularity.';
   test.prototype.start = function(runner, video) {
@@ -240,7 +241,7 @@ var createTimeUpdateMaxGranularity = function(suffix, playbackRatio) {
     var times = 0;
     var last = 0;
     video.addEventListener('loadstart', function() {
-      video.playbackRate = playbackRatio;
+      video.playbackRate = playbackRate;
       video.play();
       video.addEventListener('timeupdate', function() {
         if (times !== 0) {
@@ -262,13 +263,17 @@ var createTimeUpdateMaxGranularity = function(suffix, playbackRatio) {
   };
 };
 
-createTimeUpdateMaxGranularity('', 1.0);
-createTimeUpdateMaxGranularity(' slow motion', 0.2);
-createTimeUpdateMaxGranularity(' fast motion', 2.0);
+createTimeUpdateMaxGranularity(0.25);
+createTimeUpdateMaxGranularity(0.50);
+createTimeUpdateMaxGranularity(1.00);
+createTimeUpdateMaxGranularity(1.25);
+createTimeUpdateMaxGranularity(1.50);
+createTimeUpdateMaxGranularity(2.0);
 
 
-var createTimeUpdateMinGranularity = function(suffix, playbackRatio) {
-  var test = createProgressiveTest('timeupdate', 'min granularity' + suffix);
+var createTimeUpdateMinGranularity = function(playbackRate) {
+  var test = createProgressiveTest('timeupdate', 'minGranularityPlaybackRate' +
+      parseFloat(playbackRate).toFixed(2));
 
   test.prototype.title = 'Test the time update granularity.';
   test.prototype.start = function(runner, video) {
@@ -276,7 +281,7 @@ var createTimeUpdateMinGranularity = function(suffix, playbackRatio) {
     var times = 0;
     var last = 0;
     video.addEventListener('loadstart', function() {
-      video.playbackRate = playbackRatio;
+      video.playbackRate = playbackRate;
       video.play();
       video.addEventListener('timeupdate', function() {
         if (times !== 0) {
@@ -298,9 +303,12 @@ var createTimeUpdateMinGranularity = function(suffix, playbackRatio) {
   };
 };
 
-createTimeUpdateMinGranularity('', 1.0);
-createTimeUpdateMinGranularity(' slow motion', 0.2);
-createTimeUpdateMinGranularity(' fast motion', 2.0);
+createTimeUpdateMinGranularity(0.25);
+createTimeUpdateMinGranularity(0.50);
+createTimeUpdateMinGranularity(1.00);
+createTimeUpdateMinGranularity(1.25);
+createTimeUpdateMinGranularity(1.50);
+createTimeUpdateMinGranularity(2.0);
 
 
 var createTimeUpdateAccuracy = function() {
