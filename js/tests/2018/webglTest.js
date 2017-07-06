@@ -21,7 +21,7 @@ var webkitPrefix = MediaSource.prototype.version.indexOf('webkit') >= 0;
 var tests = [];
 var info = 'No MSE Support!';
 if (window.MediaSource) {
-  info = ' | webkit prefix: ' + webkitPrefix.toString();
+  info = 'webkit prefix: ' + webkitPrefix.toString();
 }
 info += ' | Default Timeout: ' + TestBase.timeout + 'ms';
 
@@ -66,8 +66,8 @@ var createWebglPerformanceTest = function(videoStream) {
     var webglHandler = setupWebglTest(video, runner, videoStream);
     video.addEventListener('timeupdate', function onTimeUpdate(e) {
       test.prototype.status =
-          '(' + webglHandler.getVideoFrameRate().toFixed(3) + ', ' +
-          webglHandler.getWebglFrameRate().toFixed(3) + ')';
+          '(' + webglHandler.getVideoFrameRate().toFixed(2) + ', ' +
+          webglHandler.getWebglFrameRate().toFixed(2) + ')';
       runner.updateStatus();
       if (!video.paused && video.currentTime >= 15) {
         video.removeEventListener('timeupdate', onTimeUpdate);
