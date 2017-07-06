@@ -37,6 +37,11 @@ window.testSuiteDescriptions = {
     name: 'WebGL Performance Tests',
     title: 'Web Graphics Library Performance Tests',
     heading: 'WebGL Performance Tests'
+  },
+  'playbackperf-test': {
+    name: 'Playback Performance Tests',
+    title: 'Tests for performance of video playback and decoding',
+    heading: 'Playback Performance Tests'
   }
 };
 
@@ -105,7 +110,8 @@ window.testSuiteVersions = {
       'conformance-test',
       'encryptedmedia-test',
       'webgl-test',
-      'progressive-test'
+      'progressive-test',
+      'playbackperf-test'
     ],
     'config' : {
       'defaultTestSuite': 'conformance-test',
@@ -118,7 +124,8 @@ window.testSuiteVersions = {
       'conformance-test',
       'encryptedmedia-test',
       'webgl-test',
-      'progressive-test'
+      'progressive-test',
+      'playbackperf-test'
     ],
     'config' : {
       'defaultTestSuite': 'conformance-test',
