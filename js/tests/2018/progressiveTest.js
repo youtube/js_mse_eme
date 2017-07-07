@@ -426,6 +426,50 @@ var createTimeUpdateProgressingWithDurationCheck = function() {
 
 createTimeUpdateProgressingWithDurationCheck();
 
+
+var createPlaybackRateTest = function(playbackRate) {
+  var test = createProgressiveTest('playbackRate', 'PlaybackRate' +
+      parseFloat(playbackRate).toFixed(2));
+  test.prototype.title = 'Test playbackRate plays back at the expected rate.';
+  test.prototype.start = function(runner, video) {
+    video.addEventListener('loadstart', function() {
+      video.playbackRate = playbackRate;
+      video.play();
+      var times = 0;
+      var realTimeLast;
+      var playTimeLast;
+      video.addEventListener('timeupdate', function() {
+	if (times == 0) {
+          realTimeLast = Date.now();
+          playTimeLast = video.currentTime;
+        } else {
+          var realTimeNext = Date.now();
+          var playTimeNext = video.currentTime;
+          var realTimeDelta = (realTimeNext - realTimeLast) / 1000.0;
+          var playTimeDelta = playTimeNext - playTimeLast;
+          runner.checkApproxEq(playTimeDelta, realTimeDelta * playbackRate, 
+              'playback time delta', 0.05);
+          realTimeLast = realTimeNext;
+          playTimeLast = playTimeNext;
+        }
+        if (times === 50) {
+          runner.succeed();
+        }
+        times++;
+      });
+    });
+    video.src = Media.H264.ProgressiveLow.src;
+  };
+};
+
+createPlaybackRateTest(0.25);
+createPlaybackRateTest(0.50);
+createPlaybackRateTest(1.00);
+createPlaybackRateTest(1.25);
+createPlaybackRateTest(1.50);
+createPlaybackRateTest(2.0);
+
+
 return {tests: tests, info: info, fields: fields, viewType: 'default'};
 
 };
