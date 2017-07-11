@@ -725,7 +725,7 @@ window.setupMse = function(video, runner, videoStream, audioStream) {
   function appendLoop(stream, sb) {
     var parsedData;
     var segmentIdx = 0;
-    var maxSegments = 4
+    var maxSegments = 4;
     fetchStream(stream, function() {
       if (stream.codec == 'H264' || stream.codec == 'AAC') {
         parsedData = parseMp4(this.getResponseData());
