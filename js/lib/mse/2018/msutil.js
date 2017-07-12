@@ -687,10 +687,12 @@ window.callAfterLoadedMetaData = function(media, testFunc) {
   }
 };
 
-window.setupMse = function(video, runner, videoStream, audioStream) {
+window.setupMse = function(video, runner, videoStreams, audioStreams) {
+  videoStreams = videoStreams instanceof Array ? videoStreams : [videoStreams];
+  audioStreams = audioStreams instanceof Array ? audioStreams : [audioStreams];
   var ms = new MediaSource();
-  var videoSb = null;
-  var audioSb = null;
+  var videoSbs = [];
+  var audioSbs = [];
 
   function onError(e) {
     switch (e.target.error.code) {
@@ -752,14 +754,20 @@ window.setupMse = function(video, runner, videoStream, audioStream) {
   }
 
   function onSourceOpen(e) {
-    if (audioStream != null) {
-      audioSb = ms.addSourceBuffer(audioStream.mimetype);
-      appendLoop(audioStream, audioSb);
+    for (var audioStreamIdx in audioStreams) {
+      var audioStream = audioStreams[audioStreamIdx];
+      if (audioStream != null) {
+        audioSbs.push(ms.addSourceBuffer(audioStream.mimetype));
+        appendLoop(audioStream, audioSbs[audioSbs.length - 1]);
+      }
     }
 
-    if (videoStream != null) {
-      videoSb = ms.addSourceBuffer(videoStream.mimetype);
-      appendLoop(videoStream, videoSb);
+    for (var videoStreamIdx in videoStreams) {
+      var videoStream = videoStreams[videoStreamIdx];
+      if (videoStream != null) {
+        videoSbs.push(ms.addSourceBuffer(videoStream.mimetype));
+        appendLoop(videoStream, videoSbs[videoSbs.length - 1]);
+      }
     }
   }
 

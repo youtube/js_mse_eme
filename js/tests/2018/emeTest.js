@@ -43,8 +43,8 @@ var createEmeTest = function(name, category, mandatory) {
   return t;
 };
 
-function setupBaseEmeTest(video, runner, videoStream, audioStream, cbSpies) {
-  setupMse(video, runner, videoStream, audioStream);
+function setupBaseEmeTest(video, runner, videoStreams, audioStreams, cbSpies) {
+  setupMse(video, runner, videoStreams, audioStreams);
   var testEmeHandler = new EMEHandler();
   if (cbSpies) {
     for (var spy in cbSpies) {
@@ -168,6 +168,41 @@ var createWidevineVP9VideoTest = function(videoStream, desc) {
 
 createWidevineVP9VideoTest(Media.VP9.VideoHighEnc, '');
 createWidevineVP9VideoTest(Media.VP9.VideoHighSubSampleEnc, 'Subsample');
+
+
+var testWidevineH264MultiMediaKeySessions = createEmeTest(
+    'WidevineH264MultiMediaKeySessions', 'Widevine');
+testWidevineH264MultiMediaKeySessions.prototype.title =
+    'Test creating 8 MediaKeySession objects each with 8 keys for playing ' +
+    'encrypted with Widevine encryption.';
+testWidevineH264MultiMediaKeySessions.prototype.start = function(runner, video) {
+  var videoStream = Media.H264.VideoMultiKeyCenc;
+  var audioStream = Media.AAC.AudioNormal;
+  var videoStreams = [];
+  for (var i = 0; i < 8; i++) {
+    videoStreams.push(videoStream);
+  }
+  try {
+    var testEmeHandler = setupBaseEmeTest(video, runner,
+        videoStreams, audioStream);
+    var licenseManager = new LicenseManager(video, videoStream,
+                                            LicenseManager.WIDEVINE);
+    testEmeHandler.init(video, licenseManager);
+  } catch(err) {
+    runner.fail(err);
+  }
+  video.addEventListener('timeupdate', function onTimeUpdate(e) {
+    if (!video.paused && video.currentTime >= 15 &&
+        !testEmeHandler.keyUnusable) {
+      video.removeEventListener('timeupdate', onTimeUpdate);
+      runner.checkGE(video.currentTime, 15, 'currentTime');
+      runner.checkEq(testEmeHandler.keySessions.length, 8, 'keySessionCount');
+      runner.checkEq(testEmeHandler.keyCount, 64, 'keyCount');
+      runner.succeed();
+    }
+  });
+  video.play();
+};
 
 
 var testPlayReadyH264Video = createEmeTest('PlayReadyH264Video',

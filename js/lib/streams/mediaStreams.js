@@ -88,6 +88,9 @@ var Media = (function() {
           'video_id': '03681262dc412c06',
           'playready_signature': '448279561E2755699618BE0A2402189D4A30B03B.0CD6A27286BD2DAF00577FFA21928665DCD320C2',
           'widevine_signature': '9C4BE99E6F517B51FED1F0B3B31966D3C5DAB9D6.6A1F30BB35F3A39A4CA814B731450D4CBD198FFD'}],
+      VideoMultiKeyCenc: ['media/tears_h264_main_720p_1500.mp4', 105466539, 734.17, {
+          'mimetype': 'video/mp4; codecs="avc1.4d401f"',
+          'license_server': 'https://proxy.staging.widevine.com/proxy'}],
       ProgressiveLow: ['media/car_20130125_18.mp4', 15477531, 181.55, {
           'mimeType': 'video/mp4; codecs="avc1.42c01e"'}],
       FrameGap: ['media/nq-frames24-tfdt23.mp4', 11883895, 242.46, {

@@ -24,14 +24,18 @@ var LicenseManager = function(video, mediaStreams, flavor) {
   this.flavor = flavor;
   this.keySystem = this.findCompatibleKeySystem_();
   // This doesn't handle situtations with multiple licenses.
-  this.licenseServer = 'https://dash-mse-test.appspot.com/api/drm/' +
-                       this.flavor + '?drm_system=' + this.flavor +
-                       '&source=YOUTUBE&ip=0.0.0.0&ipbits=0&' +
-                       'expire=19000000000&key=test_key1&' +
-                       'sparams=ip,ipbits,expire,drm_system,source,video_id&' +
-                       'video_id=' + this.mediaStreams[0].get('video_id') +
-                       '&signature=' +
-                       this.mediaStreams[0].get(this.flavor + '_signature');
+  this.licenseServer = this.mediaStreams[0].get('license_server');
+  if (!this.licenseServer) {
+    this.licenseServer = 'https://dash-mse-test.appspot.com/api/drm/' +
+                         this.flavor + '?drm_system=' + this.flavor +
+                         '&source=YOUTUBE&ip=0.0.0.0&ipbits=0&' +
+                         'expire=19000000000&key=test_key1&' +
+                         'sparams=ip,ipbits,expire,drm_system,' +
+                         'source,video_id&' +
+                         'video_id=' + this.mediaStreams[0].get('video_id') +
+                         '&signature=' +
+                         this.mediaStreams[0].get(this.flavor + '_signature');
+  }
 };
 
 LicenseManager.CLEARKEY = 'clearkey';

@@ -22,6 +22,8 @@ EMEHandler.prototype.init = function(video, licenseManager) {
   this.licenseManager = licenseManager;
   this.keySystem = licenseManager.keySystem;
   this.keyUnusable = false;
+  this.keyCount = 0;
+  this.keySessions = [];
 
   video.addEventListener('encrypted', this.onEncrypted.bind(this));
 
@@ -58,13 +60,18 @@ EMEHandler.prototype.onEncrypted = function(event) {
   promise.then(function(keySystemAccess) {
     keySystemAccess.createMediaKeys().then(
       function(createdMediaKeys) {
-        video.setMediaKeys(createdMediaKeys);
-        var keySession = createdMediaKeys.createSession();
+        var mediaKeys = video.mediaKeys;
+        if (!mediaKeys) {
+          video.setMediaKeys(createdMediaKeys);
+          mediaKeys = createdMediaKeys;
+        }
+        var keySession = mediaKeys.createSession();
         keySession.addEventListener('message', self.onMessage.bind(self),
                                     false);
         keySession.addEventListener('keystatuseschange',
                                     self.onKeyStatusesChange.bind(self), false);
         keySession.generateRequest(initDataType, initData);
+	self.keySessions.push(keySession);
       }
     );
   }).catch(function(error) {
@@ -92,10 +99,11 @@ EMEHandler.prototype.onMessage = function(event) {
  */
 EMEHandler.prototype.onKeyStatusesChange = function(event) {
   dlog(2, 'onKeyStatusesChange()');
-  this.keyUnusable = false;
+  var self = this;
   event.target.keyStatuses.forEach(function(status, kid) {
-    if  (status != 'usable') {
-      this.keyUnusable = true;
+    self.keyCount++;
+    if (status != 'usable') {
+      self.keyUnusable = true;
     }
   });
 };
