@@ -173,7 +173,7 @@ createWidevineVP9VideoTest(Media.VP9.VideoHighSubSampleEnc, 'Subsample');
 var testWidevineH264MultiMediaKeySessions = createEmeTest(
     'WidevineH264MultiMediaKeySessions', 'Widevine');
 testWidevineH264MultiMediaKeySessions.prototype.title =
-    'Test creating 8 MediaKeySession objects each with 8 keys for playing ' +
+    'Test creating 8 MediaKeySession objects each with 16 keys for playing ' +
     'encrypted with Widevine encryption.';
 testWidevineH264MultiMediaKeySessions.prototype.start = function(runner, video) {
   var videoStream = Media.H264.VideoMultiKeyCenc;
@@ -197,7 +197,7 @@ testWidevineH264MultiMediaKeySessions.prototype.start = function(runner, video) 
       video.removeEventListener('timeupdate', onTimeUpdate);
       runner.checkGE(video.currentTime, 15, 'currentTime');
       runner.checkEq(testEmeHandler.keySessions.length, 8, 'keySessionCount');
-      runner.checkEq(testEmeHandler.keyCount, 64, 'keyCount');
+      runner.checkEq(testEmeHandler.keyCount, 128, 'keyCount');
       runner.succeed();
     }
   });

@@ -239,6 +239,12 @@ function base64_encode(arr) {
   return dest;
 }
 
+function base64_decode(base64Str) {
+  var binaryStr = atob(base64Str);
+  var arr = stringToArray(binaryStr);
+  return arr.buffer;
+}
+
 function b64tob64url(s) {
   var b64urlStr = removePadding(s);
   b64urlStr = b64urlStr.replace(/\+/g, "-");

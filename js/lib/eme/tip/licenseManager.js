@@ -52,6 +52,13 @@ LicenseManager.flavorToSystem = {
 };
 
 /**
+ * Gets an external PSSH atom if it is being used.
+ */
+LicenseManager.prototype.getExternalPSSH = function() {
+  return this.mediaStreams[0].get('pssh');
+};
+
+/**
  * Internal function to determine the DRM key system to use.
  */
 LicenseManager.prototype.findCompatibleKeySystem_ = function() {
