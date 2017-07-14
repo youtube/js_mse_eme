@@ -59,6 +59,28 @@ LicenseManager.prototype.getExternalPSSH = function() {
 };
 
 /**
+ * Makes configuration for KeySystem.
+ */
+LicenseManager.prototype.makeKeySystemConfig = function() {
+  var config = {
+    'initDataTypes': ['cenc', 'webm'],
+    'audioCapabilities': [],
+    'videoCapabilities': [],
+  };
+  if (this.flavor == LicenseManager.PLAYREADY) {
+    config['initDataTypes'] = ['keyids', 'cenc'];
+  }
+  var capabilities = config['videoCapabilities'];
+  if (this.mediaStreams[0].mediatype == 'audio') {
+    capabilities = config['audioCapabilities'];
+  }
+  capabilities.push({
+    'contentType': this.mediaStreams[0].mimetype,
+  });
+  return [config];
+};
+
+/**
  * Internal function to determine the DRM key system to use.
  */
 LicenseManager.prototype.findCompatibleKeySystem_ = function() {

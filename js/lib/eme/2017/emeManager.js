@@ -43,17 +43,7 @@ EMEHandler.prototype.onEncrypted = function(event) {
   var initDataType = event.initDataType
   var video = event.target;
 
-  var config = [
-    { 'initDataTypes': ['cenc', 'webm'],
-      'audioCapabilities': [
-        {'contentType': 'audio/mp4; codecs="mp4a.40.2"'}
-      ],
-      'videoCapabilities': [
-        {'contentType': 'video/mp4; codecs="avc1.640028"'},
-        {'contentType': 'video/webm; codecs="vp9"'}
-      ]
-    }
-  ];
+  var config = this.licenseManager.makeKeySystemConfig();
   var promise = navigator.requestMediaKeySystemAccess(this.keySystem, config);
   promise.then(function(keySystemAccess) {
     keySystemAccess.createMediaKeys().then(
