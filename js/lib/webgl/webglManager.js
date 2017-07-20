@@ -18,6 +18,7 @@ limitations under the License.
 var WebglHandler = function(video, canvas) {
   this.video = video;
   this.canvas = canvas;
+  this.videoPerfMetrics = new VideoPerformanceMetrics(video);
 
   this.gl = this.canvas.getContext('webgl');
   this.texture = this.gl.createTexture();
@@ -88,7 +89,8 @@ WebglHandler.prototype.getVideoFrameRate = function() {
   if (this.totalFrameDelay == 0) {
     return -1;
   }
-  return 1000 * (this.video['webkitDecodedFrameCount']) / this.totalFrameDelay;
+  return 1000 * this.videoPerfMetrics.getTotalDecodedVideoFrames() /
+      this.totalFrameDelay;
 };
 
 

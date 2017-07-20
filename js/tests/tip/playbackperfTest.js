@@ -52,17 +52,18 @@ var createPlaybackPerfTest = function(videoStream, playbackRate) {
       'Playback Performance');
   test.prototype.title = 'Playback performance test';
   test.prototype.start = function(runner, video) {
-    if (video['webkitDecodedFrameCount'] === undefined ||
-        video['webkitDroppedFrameCount'] === undefined) {
+    var videoPerfMetrics = new VideoPerformanceMetrics(video);
+    if (!videoPerfMetrics.supportsVideoPerformanceMetrics()) {
       runner.fail('UserAgent needs to support ' +
+                  '\'video.getVideoPlaybackQuality\' or the combined ' +
 	          '\'video.webkitDecodedFrameCount\'' +
                   'and video.webkitDroppedFrameCount to execute this test.');
     }
     setupMse(video, runner, videoStream, Media.AAC.AudioNormal);
     video.playbackRate = playbackRate;
     video.addEventListener('timeupdate', function onTimeUpdate(e) {
-      var totalDroppedFrames = video['webkitDroppedFrameCount'];
-      var totalDecodedFrames = video['webkitDecodedFrameCount'];
+      var totalDroppedFrames = videoPerfMetrics.getDroppedVideoFrames();
+      var totalDecodedFrames = videoPerfMetrics.getTotalDecodedVideoFrames();
       test.prototype.status = '(' + totalDroppedFrames + '/' +
           totalDecodedFrames + ')';
       runner.updateStatus();
