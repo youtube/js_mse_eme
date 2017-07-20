@@ -239,6 +239,9 @@ function base64_encode(arr) {
   return dest;
 }
 
+/**
+ * Caution: This function does not work with Cobalt browser.
+ */
 function base64_decode(base64Str) {
   var binaryStr = atob(base64Str);
   var arr = stringToArray(binaryStr);

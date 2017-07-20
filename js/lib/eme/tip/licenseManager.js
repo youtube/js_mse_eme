@@ -55,7 +55,11 @@ LicenseManager.flavorToSystem = {
  * Gets an external PSSH atom if it is being used.
  */
 LicenseManager.prototype.getExternalPSSH = function() {
-  return this.mediaStreams[0].get('pssh');
+  var externalPSSH = this.mediaStreams[0].get('pssh');
+  if (!!externalPSSH) {
+    return externalPSSH.buffer;
+  }
+  return false;
 };
 
 /**

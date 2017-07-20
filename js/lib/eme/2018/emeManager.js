@@ -41,11 +41,8 @@ EMEHandler.prototype.onEncrypted = function(event) {
 
   dlog(2, 'onEncrypted()');
   var self = this;
-  var initData;
-  var externalPSSH = this.licenseManager.getExternalPSSH();
-  if (!!externalPSSH) {
-    initData = base64_decode(externalPSSH);
-  } else {
+  var initData = this.licenseManager.getExternalPSSH();
+  if (!initData) {
     initData = event.initData;
   }
   var initDataType = event.initDataType

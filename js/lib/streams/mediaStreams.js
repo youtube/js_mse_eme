@@ -90,7 +90,15 @@ var Media = (function() {
           'widevine_signature': '9C4BE99E6F517B51FED1F0B3B31966D3C5DAB9D6.6A1F30BB35F3A39A4CA814B731450D4CBD198FFD'}],
       VideoMultiKeyCenc: ['media/tears_h264_main_720p_1500.mp4', 105466539, 734.17, {
           'mimetype': 'video/mp4; codecs="avc1.4d401f"',
-          'pssh': 'AAAARHBzc2gAAAAA7e+LqXnWSs6jyCfc1R0h7QAAACQIARIBMRoNd2lkZXZpbmVfdGVzdCIKMjAxNV90XzE2ayoCU0Q=',
+          'pssh': new Uint8Array([0, 0, 0, 68, 112, 115, 115, 104,
+                                  0, 0, 0, 0, 237, 239, 139, 169,
+                                  121, 214, 74, 206, 163, 200, 39, 220,
+                                  213, 29, 33, 237, 0, 0, 0, 36,
+                                  8, 1, 18, 1, 49, 26, 13, 119,
+                                  105, 100, 101, 118, 105, 110, 101, 95,
+                                  116, 101, 115, 116, 34, 10, 50, 48,
+                                  49, 53, 95, 116, 95, 49, 54, 107,
+                                  42, 2, 83, 68]),
           'license_server': 'https://proxy.staging.widevine.com/proxy'}],
       ProgressiveLow: ['media/car_20130125_18.mp4', 15477531, 181.55, {
           'mimeType': 'video/mp4; codecs="avc1.42c01e"'}],
