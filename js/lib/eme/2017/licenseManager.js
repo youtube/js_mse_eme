@@ -53,19 +53,19 @@ LicenseManager.flavorToSystem = {
 LicenseManager.prototype.makeKeySystemConfig = function() {
   var config = {
     'initDataTypes': ['cenc', 'webm'],
-    'audioCapabilities': [],
-    'videoCapabilities': [],
   };
   if (this.flavor == LicenseManager.PLAYREADY) {
     config['initDataTypes'] = ['keyids', 'cenc'];
   }
-  var capabilities = config['videoCapabilities'];
-  if (this.mediaStreams[0].mediatype == 'audio') {
-    capabilities = config['audioCapabilities'];
-  }
+  var capabilities = [];
   capabilities.push({
     'contentType': this.mediaStreams[0].mimetype,
   });
+  if (this.mediaStreams[0].mediatype == 'audio') {
+    config['audioCapabilities'] = capabilities;
+  } else {
+    config['videoCapabilities'] = capabilities;
+  }
   return [config];
 };
 
