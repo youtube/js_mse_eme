@@ -184,6 +184,14 @@ util.stringToBoolean = function(str) {
   }
 };
 
+util.createUint8ArrayFromJSArray = function(arr) {
+  var uint8_arr = new Uint8Array(arr.length);
+  for (var i = 0; i < arr.length; i++) {
+    uint8_arr[i] = arr[i];
+  }
+  return uint8_arr;
+};
+
 var DLOG_LEVEL = 3;
 
 // Log a debug message. Only logs if the given level is less than the current
