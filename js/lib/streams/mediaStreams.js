@@ -43,6 +43,7 @@ var Media = (function() {
     mimetype: 'audio/webm; codecs="opus"',
     mediatype: 'audio',
     streams: {
+      Audio51: ['media/opus51.webm', 15583281, 300.02],
       CarLow: ['media/car_opus_low.webm', 1205174, 181.48],
       CarMed: ['media/car_opus_med.webm', 1657817, 181.48, {200000: 28.221}],
       CarHigh: ['media/car_opus_high.webm', 3280103, 181.48,  {'appendAudioOffset': 33.221}],

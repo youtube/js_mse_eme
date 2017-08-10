@@ -1756,29 +1756,34 @@ testFrameOverlaps.prototype.filename = Media.H264.FrameOverlap.src;
 testFrameOverlaps.prototype.onsourceopen = frameTestOnSourceOpen;
 
 
-var testAAC51 = createConformanceTest('AAC51', 'Media');
-testAAC51.prototype.title = 'Test 5.1-channel AAC';
-testAAC51.prototype.onsourceopen = function() {
-  var runner = this.runner;
-  var media = this.video;
-  var audioStream = Media.AAC.Audio51;
-  var videoStream = Media.VP9.VideoNormal;
-  var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
-  var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
-  var xhr = runner.XHRManager.createRequest(audioStream.src, function(e) {
-    audioSb.appendBuffer(xhr.getResponseData());
-    var xhr2 = runner.XHRManager.createRequest(videoStream.src, function(e) {
-        videoSb.appendBuffer(xhr2.getResponseData());
-        media.play();
-        media.addEventListener('timeupdate', function(e) {
-          if (!media.paused && media.currentTime > 2)
-            runner.succeed();
-        });
-      }, 0, 3000000);
-    xhr2.send();
-  });
-  xhr.send();
-};
+var createAudio51Test = function(audioStream) {
+  var test = createConformanceTest(audioStream.codec + '5.1', 'Media');
+  test.prototype.title = 'Test 5.1-channel ' + audioStream.codec;
+  test.prototype.onsourceopen = function() {
+    var runner = this.runner;
+    var media = this.video;
+    var videoStream = Media.VP9.VideoNormal;
+    var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
+    var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
+    var xhr = runner.XHRManager.createRequest(audioStream.src, function(e) {
+      audioSb.appendBuffer(xhr.getResponseData());
+      var xhr2 = runner.XHRManager.createRequest(videoStream.src, function(e) {
+          videoSb.appendBuffer(xhr2.getResponseData());
+          media.play();
+          media.addEventListener('timeupdate', function(e) {
+            if (!media.paused && media.currentTime > 2)
+              runner.succeed();
+          });
+        }, 0, 3000000);
+      xhr2.send();
+    });
+    xhr.send();
+  }
+}
+
+
+createAudio51Test(Media.AAC.Audio51);
+createAudio51Test(Media.Opus.Audio51);
 
 
 return {tests: tests, info: info, fields: fields, viewType: 'default'};
