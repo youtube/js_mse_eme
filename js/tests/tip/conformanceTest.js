@@ -1771,8 +1771,9 @@ var createAudio51Test = function(audioStream) {
           videoSb.appendBuffer(xhr2.getResponseData());
           media.play();
           media.addEventListener('timeupdate', function(e) {
-            if (!media.paused && media.currentTime > 2)
+            if (!media.paused && media.currentTime > 2) {
               runner.succeed();
+            }
           });
         }, 0, 3000000);
       xhr2.send();
@@ -1782,8 +1783,8 @@ var createAudio51Test = function(audioStream) {
 }
 
 
-createAudio51Test(Media.AAC.Audio51);
 createAudio51Test(Media.Opus.Audio51);
+createAudio51Test(Media.AAC.Audio51);
 
 
 return {tests: tests, info: info, fields: fields, viewType: 'default'};

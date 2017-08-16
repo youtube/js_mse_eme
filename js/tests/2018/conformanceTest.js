@@ -1758,8 +1758,10 @@ testFrameOverlaps.prototype.filename = Media.H264.FrameOverlap.src;
 testFrameOverlaps.prototype.onsourceopen = frameTestOnSourceOpen;
 
 
-var createAudio51Test = function(audioStream) {
-  var test = createConformanceTest(audioStream.codec + '5.1', 'Media');
+var createAudio51Test = function(audioStream, optional) {
+  optional = !optional;
+  var test = createConformanceTest(audioStream.codec + '5.1', 'Media',
+                                   optional);
   test.prototype.title = 'Test 5.1-channel ' + audioStream.codec;
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
@@ -1773,8 +1775,9 @@ var createAudio51Test = function(audioStream) {
           videoSb.appendBuffer(xhr2.getResponseData());
           media.play();
           media.addEventListener('timeupdate', function(e) {
-            if (!media.paused && media.currentTime > 2)
+            if (!media.paused && media.currentTime > 2) {
               runner.succeed();
+            }
           });
         }, 0, 3000000);
       xhr2.send();
@@ -1784,8 +1787,8 @@ var createAudio51Test = function(audioStream) {
 }
 
 
-createAudio51Test(Media.AAC.Audio51);
 createAudio51Test(Media.Opus.Audio51);
+createAudio51Test(Media.AAC.Audio51, true);
 
 
 return {tests: tests, info: info, fields: fields, viewType: 'default'};
