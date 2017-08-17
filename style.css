@@ -78,6 +78,17 @@ body {
   font-size: 0.6em;
 }
 
+.expanded-test-status-list .test-status-optional-fail {
+  display: inline-block;
+  min-width: 56px;
+  border-style: solid;
+  border-color: #800;
+  border-width: 2px;
+  padding: 0px;
+  text-align: center;
+  font-size: 0.6em;
+}
+
 .test-status-none {
   display: inline-block;
   min-width: 7px;
@@ -101,7 +112,7 @@ body {
   background-color: #080;
 }
 
-.test-status-optional-fail {
+.default-list .test-status-optional-fail {
   display: inline-block;
   min-width: 5px;
   border-style: solid;

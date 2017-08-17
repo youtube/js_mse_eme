@@ -43,13 +43,11 @@ var createPerfTest = function(name, category, mandatory) {
 };
 
 
-var createPlaybackPerfTest = function(videoStream, playbackRate) {
-  if (!playbackRate) {
-    playbackRate = 1.0
-  }
+var createPlaybackPerfTest = function(videoStream, playbackRate, category,
+                                      optional) {
   var test = createPerfTest('PlaybackPerf' + '.' + videoStream.codec +
-      '.' + videoStream.get('resolution') + videoStream.get('fps') + '@' + playbackRate + 'X',
-      'Playback Performance');
+      '.' + videoStream.get('resolution') + videoStream.get('fps') + '@' +
+      playbackRate + 'X', category, !optional);
   test.prototype.title = 'Playback performance test';
   test.prototype.start = function(runner, video) {
     var videoPerfMetrics = new VideoPerformanceMetrics(video);
@@ -74,7 +72,7 @@ var createPlaybackPerfTest = function(videoStream, playbackRate) {
           test.prototype.status = 'Fail';
           runner.fail('UserAgent was unable to render any frames.');
         }
-        runner.checkEq(totalDroppedFrames, 0, 'Total dropped frames');
+        runner.checkLE(totalDroppedFrames, 1, 'Total dropped frames');
         runner.succeed();
       }
     });
@@ -84,36 +82,70 @@ var createPlaybackPerfTest = function(videoStream, playbackRate) {
 
 var mediaFormats = [Media.VP9.Webgl144p30fps, Media.VP9.Webgl240p30fps,
                     Media.VP9.Webgl360p30fps, Media.VP9.Webgl480p30fps,
-                    Media.VP9.Webgl720p30fps, Media.VP9.Webgl720p60fps,
-                    Media.VP9.Webgl1080p30fps, Media.VP9.Webgl1080p60fps,
-                    Media.VP9.Webgl1440p30fps, Media.VP9.Webgl1440p60fps,
-                    Media.VP9.Webgl2160p30fps, Media.VP9.Webgl2160p60fps,
+                    Media.VP9.Webgl720p30fps, Media.VP9.Webgl1080p30fps,
+                    Media.VP9.Webgl1440p30fps, Media.VP9.Webgl2160p30fps,
                     Media.H264.Webgl144p15fps, Media.H264.Webgl240p30fps,
                     Media.H264.Webgl360p30fps, Media.H264.Webgl480p30fps,
-                    Media.H264.Webgl720p30fps, Media.H264.Webgl720p60fps,
-                    Media.H264.Webgl1080p30fps, Media.H264.Webgl1080p60fps,
+                    Media.H264.Webgl720p30fps, Media.H264.Webgl1080p30fps,
                     Media.H264.Webgl1440p30fps, Media.H264.Webgl2160p30fps];
 
-for (var formatIdx in mediaFormats) {
-  createPlaybackPerfTest(mediaFormats[formatIdx]);
+var mediaFormatsHfr = [Media.VP9.Webgl720p60fps, Media.VP9.Webgl1080p60fps,
+                       Media.VP9.Webgl1440p60fps, Media.VP9.Webgl2160p60fps,
+                       Media.H264.Webgl720p60fps, Media.H264.Webgl1080p60fps];
+
+var allMediaFormats = mediaFormats.concat(mediaFormatsHfr);
+
+for (var formatIdx in allMediaFormats) {
+  createPlaybackPerfTest(allMediaFormats[formatIdx], 1.0,
+                         'Playback Performance');
 }
 
-createPlaybackPerfTest(Media.VP9.Webgl2160p60fps, 0.25);
-createPlaybackPerfTest(Media.H264.Webgl2160p30fps, 0.25);
+createPlaybackPerfTest(Media.VP9.Webgl720p60fps, 0.25,
+                       'Playback Rate Performance');
+createPlaybackPerfTest(Media.VP9.Webgl2160p60fps, 0.25,
+                       'Playback Rate Performance');
+createPlaybackPerfTest(Media.H264.Webgl720p30fps, 0.25,
+                       'Playback Rate Performance');
+createPlaybackPerfTest(Media.H264.Webgl2160p30fps, 0.25,
+                       'Playback Rate Performance');
 
-createPlaybackPerfTest(Media.VP9.Webgl2160p60fps, 0.5);
-createPlaybackPerfTest(Media.H264.Webgl2160p30fps, 0.5);
+createPlaybackPerfTest(Media.VP9.Webgl720p60fps, 0.5,
+                       'Playback Rate Performance');
+createPlaybackPerfTest(Media.VP9.Webgl2160p60fps, 0.5,
+                       'Playback Rate Performance');
+createPlaybackPerfTest(Media.H264.Webgl720p30fps, 0.5,
+                       'Playback Rate Performance');
+createPlaybackPerfTest(Media.H264.Webgl2160p30fps, 0.5,
+                       'Playback Rate Performance');
 
 for (var formatIdx in mediaFormats) {
-  createPlaybackPerfTest(mediaFormats[formatIdx], 1.25);
+  createPlaybackPerfTest(mediaFormats[formatIdx], 1.25,
+                         'Playback Rate Performance');
 }
 
 for (var formatIdx in mediaFormats) {
-  createPlaybackPerfTest(mediaFormats[formatIdx], 1.5);
+  createPlaybackPerfTest(mediaFormats[formatIdx], 1.5,
+                         'Playback Rate Performance');
 }
 
 for (var formatIdx in mediaFormats) {
-  createPlaybackPerfTest(mediaFormats[formatIdx], 2.0);
+  createPlaybackPerfTest(mediaFormats[formatIdx], 2.0,
+                         'Playback Rate Performance');
+}
+
+for (var formatIdx in mediaFormatsHfr) {
+  createPlaybackPerfTest(mediaFormatsHfr[formatIdx], 1.25,
+                         'HFR Playback Rate Performance', true);
+}
+
+for (var formatIdx in mediaFormatsHfr) {
+  createPlaybackPerfTest(mediaFormatsHfr[formatIdx], 1.5,
+                         'HFR Playback Rate Performance', true);
+}
+
+for (var formatIdx in mediaFormatsHfr) {
+  createPlaybackPerfTest(mediaFormatsHfr[formatIdx], 2.0,
+                         'HFR Playback Rate Performance', true);
 }
 
 return {tests: tests, info: info, fields: fields, viewType: 'expanded-test-status'};

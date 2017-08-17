@@ -67,7 +67,7 @@ function Test(desc, style) {
 
     if (this.style === 'expanded-test-status') {
       failureStatus = this.desc.mandatory ? 'test-status-fail' :
-          'test-status-normal';
+          'test-status-optional-fail';
       if (this.desc.running) {
         status.innerHTML = text || '...';
         status.className = 'test-status-running';
