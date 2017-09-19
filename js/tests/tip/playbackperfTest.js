@@ -43,6 +43,45 @@ var createPerfTest = function(name, category, mandatory) {
 };
 
 
+var createFrameDropValidationTest = function(videoStream) {
+  var test = createPerfTest('FrameDrop' + '.' + videoStream.codec,
+                            'Frame Drop Validation');
+  test.prototype.title = 'Frame Drop Validation';
+  test.prototype.start = function(runner, video) {
+    var videoPerfMetrics = new VideoPerformanceMetrics(video);
+    if (!videoPerfMetrics.supportsVideoPerformanceMetrics()) {
+      runner.fail('UserAgent needs to support ' +
+                  '\'video.getVideoPlaybackQuality\' or the combined ' +
+	          '\'video.webkitDecodedFrameCount\'' +
+                  'and video.webkitDroppedFrameCount to execute this test.');
+    }
+    setupMse(video, runner, videoStream, Media.AAC.AudioNormal);
+    video.playbackRate = 2.0;
+    video.addEventListener('timeupdate', function onTimeUpdate(e) {
+      var totalDroppedFrames = videoPerfMetrics.getDroppedVideoFrames();
+      var totalDecodedFrames = videoPerfMetrics.getTotalDecodedVideoFrames();
+      test.prototype.status = '(' + totalDroppedFrames + '/' +
+          totalDecodedFrames + ')';
+      runner.updateStatus();
+      if (!video.paused && video.currentTime >= 15) {
+        video.removeEventListener('timeupdate', onTimeUpdate);
+        video.pause();
+        if (totalDecodedFrames <= 0) {
+          test.prototype.status = 'Fail';
+          runner.fail('UserAgent was unable to render any frames.');
+        }
+        runner.checkGE(totalDroppedFrames, 2, 'Total dropped frames');
+        runner.succeed();
+      }
+    });
+    video.play();
+  };
+};
+
+createFrameDropValidationTest(Media.VP9.Webgl720p60fps);
+createFrameDropValidationTest(Media.H264.Webgl720p60fps);
+
+
 var createPlaybackPerfTest = function(videoStream, playbackRate, category,
                                       optional) {
   var test = createPerfTest('PlaybackPerf' + '.' + videoStream.codec +
