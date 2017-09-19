@@ -42,6 +42,9 @@ function CompactTestView(fields, style) {
     this.addLink('Instructions', 'instructions.html');
     this.addLink('Changelog', 'main.html');
     this.addLink('Download', 'download.tar.gz');
+    if (harnessConfig.novp9) {
+      this.addLink('No VP9', 'main.html');
+    }
 
     this.addTestSuites(testSuiteVersions[this.testSuiteVer].testSuites);
   };

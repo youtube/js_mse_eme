@@ -44,6 +44,7 @@ var parseParams = function(testSuiteConfig) {
       parseParam('stoponfailure', false));
   config.enablewebm = util.stringToBoolean(
       parseParam('enablewebm', testSuiteConfig.enablewebm));
+  config.novp9 = util.stringToBoolean(parseParam('novp9', false));
   config.tests = parseParam('tests');
   config.exclude = parseParam('exclude');
   config.testsMask = parseParam('tests_mask', '');
@@ -165,6 +166,10 @@ window.startMseTest = function(testSuiteVer) {
   if (!testSuiteVersion.testSuites.indexOf(harnessConfig.testType) === -1) {
     alert('Cannot find test type ' + harnessConfig.testType);
     throw 'Cannot find test type ' + harnessConfig.testType;
+  }
+  // This is a hack that will not work in all cases.
+  if (!!window.Media && harnessConfig.novp9) {
+    Media.VP9 = Media.H264;
   }
 
   configureHarness(testSuiteVersion.config);
