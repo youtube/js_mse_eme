@@ -128,7 +128,6 @@ body {
 }
 
 div.container {
-  width: 100%;
   margin: 0 0 0 0;
   padding: 5px 0 5px 0;
   overflow: hidden;
@@ -185,12 +184,10 @@ div.container_hidden {
 
 #switches {
   display: inline-block;
-  width: 400px;
 }
 
 #controls {
   display: inline-block;
-  width: 300px;
 }
 
 .desc-expl-popup {
