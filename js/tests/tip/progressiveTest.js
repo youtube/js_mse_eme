@@ -237,6 +237,7 @@ var createTimeUpdateMaxGranularity = function(playbackRate) {
 
   test.prototype.title = 'Test the time update granularity.';
   test.prototype.start = function(runner, video) {
+    var warmUpCount = 15;
     var maxGranularity = 0;
     var times = 0;
     var last = 0;
@@ -244,14 +245,13 @@ var createTimeUpdateMaxGranularity = function(playbackRate) {
       video.playbackRate = playbackRate;
       video.play();
       video.addEventListener('timeupdate', function() {
-        if (times !== 0) {
+        if (times >= warmUpCount) {
           var interval = Date.now() - last;
           if (interval > maxGranularity)
             maxGranularity = interval;
         }
-        if (times === 50) {
+        if (times === 50 + warmUpCount) {
           maxGranularity = maxGranularity / 1000.0;
-          test.prototype.status = util.Round(maxGranularity, 2);
           runner.checkLE(maxGranularity, 0.26, 'maxGranularity');
           runner.succeed();
         }
@@ -277,6 +277,7 @@ var createTimeUpdateMinGranularity = function(playbackRate) {
 
   test.prototype.title = 'Test the time update granularity.';
   test.prototype.start = function(runner, video) {
+    var warmUpCount = 15;
     var minGranularity = Infinity;
     var times = 0;
     var last = 0;
@@ -284,14 +285,13 @@ var createTimeUpdateMinGranularity = function(playbackRate) {
       video.playbackRate = playbackRate;
       video.play();
       video.addEventListener('timeupdate', function() {
-        if (times !== 0) {
+        if (times >= warmUpCount) {
           var interval = Date.now() - last;
           if (interval > 1 && interval < minGranularity)
             minGranularity = interval;
         }
-        if (times === 50) {
+        if (times === 50 + warmUpCount) {
           minGranularity = minGranularity / 1000.0;
-          test.prototype.status = util.Round(minGranularity, 2);
           runner.checkGE(minGranularity, 0.015, 'minGranularity');
           runner.succeed();
         }
@@ -435,11 +435,12 @@ var createPlaybackRateTest = function(playbackRate) {
     video.addEventListener('loadstart', function() {
       video.playbackRate = playbackRate;
       video.play();
+      var warmUpCount = 15;
       var times = 0;
       var realTimeLast;
       var playTimeLast;
       video.addEventListener('timeupdate', function() {
-	if (times == 0) {
+	if (times <= warmUpCount) {
           realTimeLast = Date.now();
           playTimeLast = video.currentTime;
         } else {
@@ -452,7 +453,7 @@ var createPlaybackRateTest = function(playbackRate) {
           realTimeLast = realTimeNext;
           playTimeLast = playTimeNext;
         }
-        if (times === 50) {
+        if (times === 50 + warmUpCount) {
           runner.succeed();
         }
         times++;
