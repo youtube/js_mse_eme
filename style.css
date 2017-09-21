@@ -62,8 +62,9 @@ body {
 
 .expanded-test-status-list .test-status-fail {
   display: inline-block;
-  min-width: 60px;
+  min-width: 58px;
   background-color: #800;
+  border: 1px solid #000;
   color: #FFF;
   text-align: center;
   font-size: 0.6em;
@@ -71,8 +72,9 @@ body {
 
 .expanded-test-status-list .test-status-pass {
   display: inline-block;
-  min-width: 60px;
-  background-color: #080;
+  min-width: 58px;
+  background-color: #b5e61d;
+  border: 1px solid #080;
   color: #FFF;
   text-align: center;
   font-size: 0.6em;
@@ -96,20 +98,23 @@ body {
 
 .default-list .test-status-running {
   display: inline-block;
-  min-width: 7px;
-  background-color: #880;
+  min-width: 5px;
+  background-color: #f0e68c;
+  border: 1px solid #880;
 }
 
 .default-list .test-status-fail {
   display: inline-block;
-  min-width: 7px;
+  min-width: 5px;
   background-color: #800;
+  border: 1px solid #000;
 }
 
 .default-list .test-status-pass {
   display: inline-block;
-  min-width: 7px;
-  background-color: #080;
+  min-width: 5px;
+  background-color: #b5e61d;
+  border: 1px solid #080;
 }
 
 .default-list .test-status-optional-fail {
