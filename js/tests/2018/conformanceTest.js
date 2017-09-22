@@ -1791,6 +1791,41 @@ createAudio51Test(Media.Opus.Audio51);
 createAudio51Test(Media.AAC.Audio51, true);
 
 
+var testHeAac = createConformanceTest('HE-AAC', 'Media')
+testHeAac.prototype.title = 'Test HE-AAC playback.';
+testHeAac.prototype.onsourceopen = function() {
+  var runner = this.runner;
+  var media = this.video;
+  var ms = this.ms;
+  var audioStream = Media.AAC.AudioLowHE;
+  var videoStream = Media.VP9.Video1MB;
+  var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
+  var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
+  var xhr = runner.XHRManager.createRequest(audioStream.src, function(e) {
+    audioSb.addEventListener('update', function() {
+      var xhr2 = runner.XHRManager.createRequest(videoStream.src, function(e) {
+        videoSb.addEventListener('update', function() {
+          ms.endOfStream();
+          media.addEventListener('ended', function(e) {
+            if (media.currentTime > audioStream.duration + 1) {
+              runner.fail();
+            } else {
+              runner.checkApproxEq(media.currentTime, audioStream.duration);
+              runner.succeed();
+            }
+          });
+          media.play();
+        });
+        videoSb.appendBuffer(xhr2.getResponseData());
+      }, 0, videoStream.size);
+      xhr2.send();
+    });
+    audioSb.appendBuffer(xhr.getResponseData());
+  }, 0, audioStream.size);
+  xhr.send();
+}
+
+
 return {tests: tests, info: info, fields: fields, viewType: 'default'};
 
 };

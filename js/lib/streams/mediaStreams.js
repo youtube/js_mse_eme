@@ -26,6 +26,7 @@ var Media = (function() {
       AudioHuge: ['media/car-20120827-8d.mp4', 5789853, 181.58, {'appendAudioOffset': 17.42}],
       Audio51: ['media/sintel-trunc.mp4', 813119, 20.05],
       Audio1MB: ['media/car-audio-1MB-trunc.mp4', 1048576, 65.875],
+      AudioLowHE: ['media/spotlight-tr-heaac.mp4', 156137, 26.10, {'mimeType': 'audio/mp4; codecs="mp4a.40.5"'}],
       AudioNormalClearKey: ['media/car_cenc-20120827-8c.mp4', 3013084, 181.58, {
           'key': util.createUint8ArrayFromJSArray([0x1a, 0x8a, 0x20, 0x95, 0xe4, 0xde, 0xb2, 0xd2,
                                                    0x9e, 0xc8, 0x16, 0xac, 0x7b, 0xae, 0x20, 0x82]),
