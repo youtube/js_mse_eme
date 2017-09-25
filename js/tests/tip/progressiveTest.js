@@ -332,7 +332,7 @@ var createTimeUpdateAccuracy = function() {
 
         if (times > 500 || video.currentTime > 10) {
           test.prototype.status = util.Round(maxTimeDiff, 2);
-          runner.checkLE(maxTimeDiff, 0.5, 'maxTimeDiff');
+          runner.checkLE(maxTimeDiff, 0.25, 'maxTimeDiff');
           runner.succeed();
         }
         ++times;
