@@ -185,9 +185,17 @@ var createNetworkStateTest = function() {
   test.prototype.title = 'Test if the network state is correct';
   test.prototype.start = function(runner, video) {
     var self = this;
+    runner.checkEq(video.networkState, HTMLMediaElement.NETWORK_EMPTY,
+                   'networkState');
     video.addEventListener('suspend', function() {
       self.log('onsuspend called');
-      runner.checkEq(video.networkState, HTMLMediaElement.NETWORK_IDLE,
+      var networkState = video.networkState;
+      if (networkState == HTMLMediaElement.NETWORK_LOADING) {
+        // Skip NETWORK_LOADING state wait until next suspend event to find
+        // NETWORK_IDLE state.
+        return;
+      }
+      runner.checkEq(networkState, HTMLMediaElement.NETWORK_IDLE,
                      'networkState');
       runner.succeed();
     });
