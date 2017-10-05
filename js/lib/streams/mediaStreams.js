@@ -105,6 +105,39 @@ var Media = (function() {
                                                     49, 53, 95, 116, 95, 49, 54, 107,
                                                     42, 2, 83, 68]),
           'license_server': 'https://proxy.staging.widevine.com/proxy'}],
+      SintelLowCenc: ['media/sintel_h264_low_cenc.mp4', 21009141, 887.96, {
+          'video_id': '31e1685307acf271',
+          'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],
+      SintelMedCenc: ['media/sintel_h264_med_cenc.mp4', 36242861, 887.96, {
+          'video_id': '31e1685307acf271',
+          'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],
+      SintelHighCenc: ['media/sintel_h264_high_cenc.mp4', 73176349, 887.96, {
+          'video_id': '31e1685307acf271',
+          'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],
+      SintelHighMqCenc: ['media/sintel_h264_highmq_cenc.mp4', 113752205, 887.96, {
+          'video_id': '31e1685307acf271',
+          'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],
+      SintelHighHqCenc: ['media/sintel_h264_highhq_cenc.mp4', 230730559, 887.96, {
+          'video_id': '31e1685307acf271',
+          'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],
+      Sintel720pCenc: ['media/sintel_h264_720p_cenc.mp4', 145423482, 887.96, {
+          'video_id': '31e1685307acf271',
+          'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],
+      Sintel720pMqCenc: ['media/sintel_h264_720pmq_cenc.mp4', 227431200, 887.96, {
+          'video_id': '31e1685307acf271',
+          'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],
+      Sintel720pHqCenc: ['media/sintel_h264_720phq_cenc.mp4', 367564579, 887.96, {
+          'video_id': '31e1685307acf271',
+          'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],
+      Sintel1080pCenc: ['media/sintel_h264_1080p_cenc.mp4', 273516348, 887.96, {
+          'video_id': '31e1685307acf271',
+          'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],
+      Sintel1080pMqCenc: ['media/sintel_h264_1080pmq_cenc.mp4', 405525381, 887.96, {
+          'video_id': '31e1685307acf271',
+          'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],
+      Sintel1080pHqCenc: ['media/sintel_h264_1080phq_cenc.mp4', 562395642, 887.96, {
+          'video_id': '31e1685307acf271',
+          'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],
       ProgressiveLow: ['media/car_20130125_18.mp4', 15477531, 181.55, {
           'mimeType': 'video/mp4; codecs="avc1.42c01e"'}],
       FrameGap: ['media/nq-frames24-tfdt23.mp4', 11883895, 242.46, {
@@ -163,6 +196,45 @@ var Media = (function() {
           'video_id': '31e1685307acf271',
           'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],
       VideoHighSubSampleEnc: ['media/sintel_enc_subsample-20161014-318.webm', 80844835, 887.958, {
+          'video_id': '31e1685307acf271',
+          'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],
+      SintelLowEnc: ['media/sintel_vp9_low_enc.webm', 14161546, 887.96, {
+          'video_id': '31e1685307acf271',
+          'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],
+      SintelMedEnc: ['media/sintel_vp9_med_enc.webm', 24174480, 887.96, {
+          'video_id': '31e1685307acf271',
+          'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],
+      SintelHighEnc: ['media/sintel_vp9_high_enc.webm', 48736011, 887.96, {
+          'video_id': '31e1685307acf271',
+          'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],
+      SintelHighMqEnc: ['media/sintel_vp9_highmq_enc.webm', 80843219, 887.96, {
+          'video_id': '31e1685307acf271',
+          'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],
+      SintelHighHqEnc: ['media/sintel_vp9_highhq_enc.webm', 202775127, 887.96, {
+          'video_id': '31e1685307acf271',
+          'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],
+      Sintel720pEnc: ['media/sintel_vp9_720p_enc.webm', 98685774, 887.96, {
+          'video_id': '31e1685307acf271',
+          'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],
+      Sintel720pMqEnc: ['media/sintel_vp9_720pmq_enc.webm', 156003788, 887.96, {
+          'video_id': '31e1685307acf271',
+          'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],
+      Sintel720pHqEnc: ['media/sintel_vp9_720phq_enc.webm', 270377177, 887.96, {
+          'video_id': '31e1685307acf271',
+          'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],
+      Sintel1080pEnc: ['media/sintel_vp9_1080p_enc.webm', 185239921, 887.96, {
+          'video_id': '31e1685307acf271',
+          'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],
+      Sintel1080pMqEnc: ['media/sintel_vp9_1080pmq_enc.webm', 288587712, 887.96, {
+          'video_id': '31e1685307acf271',
+          'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],
+      Sintel1080pHqEnc: ['media/sintel_vp9_1080phq_enc.webm', 432276105, 887.96, {
+          'video_id': '31e1685307acf271',
+          'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],
+      Sintel2kEnc: ['media/sintel_vp9_2k_enc.webm', 479857063, 887.96, {
+          'video_id': '31e1685307acf271',
+          'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],
+      Sintel4kEnc: ['media/sintel_vp9_4k_enc.webm', 1037846120, 887.96, {
           'video_id': '31e1685307acf271',
           'widevine_signature': '4511DBFEF4177B5F0DF1FAA23562D4FD7FDE0D1A.457901F5F063B3D9E8252B403D120683BEE47216'}],
       ProgressiveLow: ['media/feelings_vp9-20130806-243.webm', 7902885, 135.46],
