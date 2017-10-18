@@ -1792,7 +1792,8 @@ createAudio51Test(Media.AAC.Audio51, true);
 
 
 var createHeAacTest = function(audioStream) {
-  var test = createConformanceTest('HE-AAC/' + audioStream.get('sbrSignaling') + 'SBR', 'Media');
+  var test = createConformanceTest('HE-AAC/' +
+      audioStream.get('sbrSignaling') + 'SBR', 'Media');
   test.prototype.title = 'Test playback of HE-AAC with ' +
       audioStream.get('sbrSignaling') +  ' SBR signaling.';
   test.prototype.onsourceopen = function() {
@@ -1804,14 +1805,16 @@ var createHeAacTest = function(audioStream) {
     var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
     var xhr = runner.XHRManager.createRequest(audioStream.src, function(e) {
       audioSb.addEventListener('update', function() {
-        var xhr2 = runner.XHRManager.createRequest(videoStream.src, function(e) {
+        var xhr2 = runner.XHRManager.createRequest(videoStream.src,
+            function(e) {
           videoSb.addEventListener('update', function() {
             ms.endOfStream();
             media.addEventListener('ended', function(e) {
               if (media.currentTime > audioStream.duration + 1) {
                 runner.fail();
               } else {
-                runner.checkApproxEq(media.currentTime, audioStream.duration);
+                runner.checkApproxEq(media.currentTime, audioStream.duration,
+                    'media.currentTime');
                 runner.succeed();
               }
             });
