@@ -928,7 +928,7 @@ var createIncrementalAudioTest = function(stream, optional) {
       sb.addEventListener('updateend', function() {
 	runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
 	runner.checkEq(sb.buffered.start(0), 0, 'Range start');
-	runner.checkApproxEq(sb.buffered.end(0), stream.customMap[200000], 'Range end');
+	runner.checkApproxEq(sb.buffered.end(0), stream.get(200000), 'Range end');
 	runner.succeed();
       });
     }, 0, 200000);
@@ -963,7 +963,7 @@ var createAppendAudioOffsetTest = function(stream1, stream2, optional) {
 	runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
 	runner.checkEq(sb.buffered.start(0), 0, 'Range start');
 	runner.checkApproxEq(sb.buffered.end(0),
-	  stream2.customMap['appendAudioOffset'], 'Range end');
+	  stream2.get('appendAudioOffset'), 'Range end');
 	runner.succeed();
       });
     }, 0, 200000);
@@ -998,7 +998,7 @@ var createAppendVideoOffsetTest = function(stream1, stream2) {
 	runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
 	runner.checkEq(sb.buffered.start(0), 0, 'Range start');
 	runner.checkApproxEq(sb.buffered.end(0),
-	    stream2.customMap['videoChangeRate'], 'Range end');
+	    stream2.get('videoChangeRate'), 'Range end');
 	callAfterLoadedMetaData(video, function() {
 	  video.currentTime = 3;
 	  video.addEventListener('seeked', function(e) {

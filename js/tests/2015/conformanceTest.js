@@ -818,7 +818,7 @@ testIncrementalAudio.prototype.onsourceopen = function() {
       runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
       runner.checkEq(sb.buffered.start(0), 0, 'Range start');
       runner.checkApproxEq(sb.buffered.end(0),
-          StreamDef.AudioNormalAdv.customMap[200000], 'Range end');
+          StreamDef.AudioNormalAdv.get(200000), 'Range end');
       runner.succeed();
     });
   }, 0, 200000);
@@ -851,7 +851,7 @@ testAppendAudioOffset.prototype.onsourceopen = function() {
       runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
       runner.checkEq(sb.buffered.start(0), 0, 'Range start');
       runner.checkApproxEq(sb.buffered.end(0),
-        StreamDef.AudioHuge.customMap['appendAudioOffset'], 'Range end');
+        StreamDef.AudioHuge.get('appendAudioOffset'), 'Range end');
       runner.succeed();
     });
   }, 0, 200000);
@@ -885,7 +885,7 @@ testVideoChangeRate.prototype.onsourceopen = function() {
       runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
       runner.checkEq(sb.buffered.start(0), 0, 'Range start');
       runner.checkApproxEq(sb.buffered.end(0),
-          StreamDef.VideoTiny.customMap['videoChangeRate'], 'Range end');
+          StreamDef.VideoTiny.get('videoChangeRate'), 'Range end');
       callAfterLoadedMetaData(video, function() {
         video.currentTime = 3;
         video.addEventListener('seeked', function(e) {
@@ -1080,7 +1080,7 @@ testMediaSourceDuration.prototype.onsourceopen = function() {
   appendInit(media, videoSb, videoChain, 0, function() {
     appendUntil(runner.timeouts, media, videoSb, videoChain, 10, function() {
       runner.checkApproxEq(ms.duration,
-                           StreamDef.VideoNormal.customMap.mediaSourceDuration,
+                           StreamDef.VideoNormal.get('mediaSourceDuration'),
                            'ms.duration', 0.01);
       videoSb.addEventListener('update', function onDurationChange() {
         videoSb.removeEventListener('update', onDurationChange);
