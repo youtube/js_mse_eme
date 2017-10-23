@@ -431,8 +431,7 @@ testBufferSize.prototype.onsourceopen = function() {
   var runner = this.runner;
   var sb = this.ms.addSourceBuffer(StreamDef.VideoType);
   var self = this;
-  var xhr = runner.XHRManager.createRequest('media/test-video-1MB.mp4',
-    function(e) {
+  var xhr = runner.XHRManager.createRequest(StreamDef.Video1MB.src, function(e) {
       // The test clip has a bitrate which is nearly exactly 1MB/sec, and
       // lasts 1s. We start appending it repeatedly until we get eviction.
       var expectedTime = 0;
@@ -460,11 +459,11 @@ testSourceChain.prototype.onsourceopen = function() {
   var runner = this.runner;
   var media = this.video;
   var videoChain = new RandomAppendSize(new ResetInit(
-      new FileSource('media/car-20120827-85.mp4', runner.XHRManager,
+      new FileSource(StreamDef.VideoTiny.src, runner.XHRManager,
                      runner.timeouts)));
   var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
   var audioChain = new FixedAppendSize(new ResetInit(
-      new FileSource('media/car-20120827-8b.mp4', runner.XHRManager,
+      new FileSource(StreamDef.AudioTiny.src, runner.XHRManager,
                      runner.timeouts)));
   var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
 
@@ -490,7 +489,7 @@ testVideoDimension.prototype.onsourceopen = function() {
   var runner = this.runner;
   var media = this.video;
   var videoChain = new ResetInit(new FixedAppendSize(
-      new FileSource('media/car-20120827-86.mp4', runner.XHRManager,
+      new FileSource(StreamDef.VideoNormal.src, runner.XHRManager,
                      runner.timeouts), 65536));
   var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
   var self = this;
@@ -517,11 +516,11 @@ testPlaybackState.prototype.onsourceopen = function() {
   var runner = this.runner;
   var media = this.video;
   var videoChain = new ResetInit(new FixedAppendSize(
-      new FileSource('media/car-20120827-86.mp4', runner.XHRManager,
+      new FileSource(StreamDef.VideoNormal.src, runner.XHRManager,
                      runner.timeouts), 65536));
   var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
   var audioChain = new ResetInit(new FixedAppendSize(
-      new FileSource('media/car-20120827-8b.mp4', runner.XHRManager,
+      new FileSource(StreamDef.AudioTiny.src, runner.XHRManager,
                      runner.timeouts), 65536));
   var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
   var self = this;
@@ -562,11 +561,11 @@ testStartPlayWithoutData.prototype.onsourceopen = function() {
   var runner = this.runner;
   var media = this.video;
   var videoChain = new ResetInit(
-      new FileSource('media/car-20120827-89.mp4', runner.XHRManager,
+      new FileSource(StreamDef.VideoHuge.src, runner.XHRManager,
                      runner.timeouts));
   var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
   var audioChain = new ResetInit(
-      new FileSource('media/car-20120827-8d.mp4', runner.XHRManager,
+      new FileSource(StreamDef.AudioHuge.src, runner.XHRManager,
                      runner.timeouts));
   var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
 
@@ -593,7 +592,7 @@ testPlayPartialSegment.prototype.onsourceopen = function() {
   var video = this.video;
   var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
   var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
-  var videoXhr = runner.XHRManager.createRequest('media/car-20120827-85.mp4',
+  var videoXhr = runner.XHRManager.createRequest(StreamDef.VideoTiny.src,
     function(e) {
       videoSb.append(this.getResponseData());
       video.addEventListener('timeupdate', function(e) {
@@ -603,7 +602,7 @@ testPlayPartialSegment.prototype.onsourceopen = function() {
       });
       video.play();
     }, 0, 1500000);
-  var audioXhr = runner.XHRManager.createRequest('media/car-20120827-8b.mp4',
+  var audioXhr = runner.XHRManager.createRequest(StreamDef.AudioTiny.src,
     function(e) {
       audioSb.append(this.getResponseData());
       videoXhr.send();
@@ -618,7 +617,7 @@ testIncrementalAudio.prototype.title =
 testIncrementalAudio.prototype.onsourceopen = function() {
   var runner = this.runner;
   var sb = this.ms.addSourceBuffer(StreamDef.AudioType);
-  var xhr = runner.XHRManager.createRequest('media/car-20120827-8c.mp4',
+  var xhr = runner.XHRManager.createRequest(StreamDef.AudioNormal.src,
     function(e) {
       sb.append(xhr.getResponseData());
       runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
@@ -637,13 +636,13 @@ testAppendAudioOffset.prototype.onsourceopen = function() {
   var runner = this.runner;
   var video = this.video;
   var sb = this.ms.addSourceBuffer(StreamDef.AudioType);
-  var xhr = runner.XHRManager.createRequest('media/car-20120827-8c.mp4',
+  var xhr = runner.XHRManager.createRequest(StreamDef.AudioNormal.src,
     function(e) {
       sb.timestampOffset = 5;
       sb.append(this.getResponseData());
       xhr2.send();
     }, 0, 200000);
-  var xhr2 = runner.XHRManager.createRequest('media/car-20120827-8d.mp4',
+  var xhr2 = runner.XHRManager.createRequest(StreamDef.AudioHuge.src,
     function(e) {
       sb.abort();
       sb.timestampOffset = 0;
@@ -665,13 +664,13 @@ testVideoChangeRate.prototype.onsourceopen = function() {
   var runner = this.runner;
   var video = this.video;
   var sb = this.ms.addSourceBuffer(StreamDef.VideoType);
-  var xhr = runner.XHRManager.createRequest('media/car-20120827-86.mp4',
+  var xhr = runner.XHRManager.createRequest(StreamDef.VideoNormal.src,
     function(e) {
       sb.timestampOffset = 5;
       sb.append(this.getResponseData());
       xhr2.send();
     }, 0, 200000);
-  var xhr2 = runner.XHRManager.createRequest('media/car-20120827-85.mp4',
+  var xhr2 = runner.XHRManager.createRequest(StreamDef.VideoTiny.src,
     function(e) {
       sb.abort();
       sb.timestampOffset = 0;
@@ -737,9 +736,8 @@ testAppendOutOfOrder.prototype.title =
 testAppendOutOfOrder.prototype.onsourceopen = function() {
   var runner = this.runner;
   var media = this.video;
-  var audioChain = new FileSource('media/car-20120827-8c.mp4',
-                                   runner.XHRManager,
-                                   runner.timeouts);
+  var audioChain = new FileSource(StreamDef.AudioNormal.src, runner.XHRManager,
+                                  runner.timeouts);
   var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
   var bufs = [];
 
@@ -783,11 +781,11 @@ testBufferedRange.prototype.onsourceopen = function() {
   var runner = this.runner;
   var media = this.video;
   var videoChain = new ResetInit(
-      new FileSource('media/car-20120827-86.mp4', runner.XHRManager,
+      new FileSource(StreamDef.VideoNormal.src, runner.XHRManager,
                      runner.timeouts));
   var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
   var audioChain = new ResetInit(
-      new FileSource('media/car-20120827-8c.mp4', runner.XHRManager,
+      new FileSource(StreamDef.AudioNormal.src, runner.XHRManager,
                      runner.timeouts));
   var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
 
@@ -821,7 +819,7 @@ testMediaSourceDuration.prototype.onsourceopen = function() {
   var media = this.video;
   var ms = this.ms;
   var videoChain = new ResetInit(
-      new FileSource('media/car-20120827-86.mp4', runner.XHRManager,
+      new FileSource(StreamDef.VideoNormal.src, runner.XHRManager,
                      runner.timeouts));
   var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
   var self = this;
@@ -872,7 +870,7 @@ testAudioWithOverlap.prototype.onsourceopen = function() {
   var runner = this.runner;
   var media = this.video;
   var audioChain = new ResetInit(
-      new FileSource('media/car-20120827-8c.mp4', runner.XHRManager,
+      new FileSource(StreamDef.AudioNormal.src, runner.XHRManager,
                      runner.timeouts));
   var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
   var GAP = 0.1;
@@ -907,7 +905,7 @@ testAudioWithSmallGap.prototype.onsourceopen = function() {
   var runner = this.runner;
   var media = this.video;
   var audioChain = new ResetInit(
-      new FileSource('media/car-20120827-8c.mp4', runner.XHRManager,
+      new FileSource(StreamDef.AudioNormal.src, runner.XHRManager,
                      runner.timeouts));
   var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
   var GAP = 0.01;  // The audio frame size of this file is 0.0232
@@ -942,7 +940,7 @@ testAudioWithLargeGap.prototype.onsourceopen = function() {
   var runner = this.runner;
   var media = this.video;
   var audioChain = new ResetInit(
-      new FileSource('media/car-20120827-8c.mp4', runner.XHRManager,
+      new FileSource(StreamDef.AudioNormal.src, runner.XHRManager,
                      runner.timeouts));
   var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
   var GAP = 0.03;  // The audio frame size of this file is 0.0232
@@ -1066,11 +1064,11 @@ testClearKeyAudio.prototype.onsourceopen = function() {
   var runner = this.runner;
   var media = this.video;
   var videoChain = new ResetInit(
-      new FileSource('media/car-20120827-86.mp4', runner.XHRManager,
+      new FileSource(StreamDef.VideoNormal.src, runner.XHRManager,
                      runner.timeouts));
   var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
   var audioChain = new ResetInit(
-      new FileSource('media/car_cenc-20120827-8c.mp4', runner.XHRManager,
+      new FileSource(StreamDef.AudioNormalClearKey.src, runner.XHRManager,
                      runner.timeouts));
   var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
 
@@ -1109,11 +1107,11 @@ testClearKeyVideo.prototype.onsourceopen = function() {
   var runner = this.runner;
   var media = this.video;
   var videoChain = new ResetInit(
-      new FileSource('media/car_cenc-20120827-86.mp4', runner.XHRManager,
+      new FileSource(StreamDef.VideoNormalClearKey.src, runner.XHRManager,
                      runner.timeouts));
   var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
   var audioChain = new ResetInit(
-      new FileSource('media/car-20120827-8c.mp4', runner.XHRManager,
+      new FileSource(StreamDef.AudioNormal.src, runner.XHRManager,
                      runner.timeouts));
   var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
 
@@ -1155,10 +1153,10 @@ testSeekTimeUpdate.prototype.onsourceopen = function() {
   var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
   var lastTime = 0;
   var updateCount = 0;
-  var xhr = runner.XHRManager.createRequest('media/car-20120827-86.mp4',
+  var xhr = runner.XHRManager.createRequest(StreamDef.VideoNormal.src,
       function() {
     videoSb.append(xhr.getResponseData());
-    var xhr2 = runner.XHRManager.createRequest('media/car-20120827-8c.mp4',
+    var xhr2 = runner.XHRManager.createRequest(StreamDef.AudioNormal.src,
         function() {
       audioSb.append(xhr2.getResponseData());
       callAfterLoadedMetaData(media, function() {
@@ -1195,10 +1193,10 @@ testSourceSeek.prototype.onsourceopen = function() {
   var runner = this.runner;
   var media = this.video;
   var videoChain = new ResetInit(new FileSource(
-      'media/car-20120827-86.mp4', runner.XHRManager, runner.timeouts));
+      StreamDef.VideoNormal.src, runner.XHRManager, runner.timeouts));
   var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
   var audioChain = new ResetInit(new FileSource(
-      'media/car-20120827-8c.mp4', runner.XHRManager, runner.timeouts));
+      StreamDef.AudioNormal.src, runner.XHRManager, runner.timeouts));
   var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
   var self = this;
 
@@ -1246,10 +1244,10 @@ testBufUnbufSeek.prototype.onsourceopen = function() {
   var media = this.video;
   var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
   var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
-  var xhr = runner.XHRManager.createRequest('media/car-20120827-86.mp4',
+  var xhr = runner.XHRManager.createRequest(StreamDef.VideoNormal.src,
       function() {
     videoSb.append(xhr.getResponseData());
-    var xhr2 = runner.XHRManager.createRequest('media/car-20120827-8c.mp4',
+    var xhr2 = runner.XHRManager.createRequest(StreamDef.AudioNormal.src,
         function() {
       audioSb.append(xhr2.getResponseData());
       callAfterLoadedMetaData(media, function() {
@@ -1263,7 +1261,6 @@ testBufUnbufSeek.prototype.onsourceopen = function() {
             });
             return;
           }
-          // bored of shitty test scripts now => test scripts get shittier
           media.currentTime = (i++ % 2) * 1.0e6 + 1;
           runner.timeouts.setTimeout(loop.bind(null, i), 50);
         }
@@ -1357,8 +1354,7 @@ testXHRAbort.prototype.start = function(runner, video) {
   var lastAbortTime;
   function startXHR(i) {
     var xhr = runner.XHRManager.createRequest(
-        'media/car-20120827-85.mp4?x=' + Date.now() + '.' + i,
-        function() {
+        StreamDef.VideoTiny.src + '?x=' + Date.now() + '.' + i, function() {
       if (i >= N) {
         xhr.getResponseData();  // This will verify status internally.
         runner.succeed();
@@ -1391,7 +1387,7 @@ testXHROpenState.prototype.start = function(runner, video) {
 var testFrameGaps = createConformanceTest('FrameGaps');
 testFrameGaps.prototype.title = 'Test media with frame durations of 24FPS ' +
     'but segment timing corresponding to 23.976FPS';
-testFrameGaps.prototype.filename = 'media/nq-frames24-tfdt23.mp4';
+testFrameGaps.prototype.filename = StreamDef.FrameGap.src;
 testFrameGaps.prototype.onsourceopen = function() {
   var runner = this.runner;
   var media = this.video;
@@ -1400,7 +1396,7 @@ testFrameGaps.prototype.onsourceopen = function() {
                      runner.timeouts)));
   var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
   var audioChain = new FixedAppendSize(new ResetInit(
-      new FileSource('media/car-20120827-8c.mp4', runner.XHRManager,
+      new FileSource(StreamDef.AudioNormal.src, runner.XHRManager,
                      runner.timeouts)));
   var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
   media.play();
@@ -1412,13 +1408,13 @@ testFrameGaps.prototype.onsourceopen = function() {
 var testFrameOverlaps = createConformanceTest('FrameOverlaps');
 testFrameOverlaps.prototype.title = 'Test media with frame durations of ' +
     '23.976FPS but segment timing corresponding to 24FPS';
-testFrameOverlaps.prototype.filename = 'media/nq-frames23-tfdt24.mp4';
+testFrameOverlaps.prototype.filename = StreamDef.FrameOverlap.src;
 testFrameOverlaps.prototype.onsourceopen = testFrameGaps.prototype.onsourceopen;
 
 
 var testAAC51 = createConformanceTest('AAC51');
 testAAC51.prototype.title = 'Test 5.1-channel AAC';
-testAAC51.prototype.audioFilename = 'media/sintel-trunc.mp4';
+testAAC51.prototype.audioFilename = StreamDef.Audio51.src;
 testAAC51.prototype.onsourceopen = function() {
   var runner = this.runner;
   var media = this.video;
@@ -1427,7 +1423,7 @@ testAAC51.prototype.onsourceopen = function() {
   var xhr = runner.XHRManager.createRequest(this.audioFilename,
     function(e) {
       audioSb.append(xhr.getResponseData());
-      var xhr2 = runner.XHRManager.createRequest('media/car-20120827-86.mp4',
+      var xhr2 = runner.XHRManager.createRequest(StreamDef.VideoNormal.src,
         function(e) {
           videoSb.append(xhr2.getResponseData());
           media.play();
@@ -1453,7 +1449,7 @@ testEventTimestamp.prototype.onsourceopen = function() {
   var last = Date.now();
   runner.checkGr(last, 1360000000000, 'Date.now()');
 
-  var audioXhr = runner.XHRManager.createRequest('media/car-20120827-8b.mp4',
+  var audioXhr = runner.XHRManager.createRequest(StreamDef.AudioTiny.src,
     function(e) {
       audioSb.append(this.getResponseData());
       video.addEventListener('timeupdate', function(e) {
@@ -1466,7 +1462,7 @@ testEventTimestamp.prototype.onsourceopen = function() {
       video.play();
     }, 0, 500000);
 
-  var videoXhr = runner.XHRManager.createRequest('media/car-20120827-85.mp4',
+  var videoXhr = runner.XHRManager.createRequest(StreamDef.VideoTiny.src,
     function(e) {
       videoSb.append(this.getResponseData());
       audioXhr.send();
@@ -1526,11 +1522,11 @@ testDualKey.prototype.start = function(runner, video) {
 
   var kFlavorFiles = {
     playready: [
-      'media/oops_cenc-20121114-145-no-clear-start.mp4',
-      'media/oops_cenc-20121114-145-143.mp4'],
+      StreamDef.VideoStreamYTCenc.src,
+      StreamDef.VideoTinyStreamYTCenc.src],
     clearkey: [
-      'media/oops_cenc-20121114-145-no-clear-start.mp4',
-      'media/oops_cenc-20121114-143-no-clear-start.mp4']
+      StreamDef.VideoStreamYTCenc.src,
+      StreamDef.VideoSmallStreamYTCenc.src]
   };
 
   var keySystem = 'clearkey';

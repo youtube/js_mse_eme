@@ -1364,7 +1364,6 @@ testBufUnbufSeek.prototype.onsourceopen = function() {
             });
             return;
           }
-          // bored of shitty test scripts now => test scripts get shittier
           media.currentTime = (i++ % 2) * 1.0e6 + 1;
           runner.timeouts.setTimeout(loop.bind(null, i), 50);
         }
