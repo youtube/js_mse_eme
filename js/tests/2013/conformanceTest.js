@@ -1040,7 +1040,7 @@ testWebM.prototype.onsourceopen = function() {
                 ' thrown any exception.');
     return;
   }
-  var xhr = runner.XHRManager.createRequest('media/test.webm',
+  var xhr = runner.XHRManager.createRequest(StreamDef.VP9.ProgressiveLow.src,
     function(e) {
       try {
         webmSb.append(xhr.getResponseData());
