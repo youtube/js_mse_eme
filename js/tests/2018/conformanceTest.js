@@ -1711,12 +1711,12 @@ var createCreateMESTest = function(audioStream, videoStream) {
         try {
           runner.log('Creating MES');
           var source = ctx.createMediaElementSource(video);
-	  runner.checkNE(source, null, 'MediaElementSource');
-          runner.succeed();
         } catch (e) {
           runner.fail(e);
           return;
         }
+        runner.checkNE(source, null, 'MediaElementSource');
+        runner.succeed();
       }
     });
   }
