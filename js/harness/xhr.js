@@ -88,15 +88,6 @@ var Request = function(manager, logger, file, onload, postLength,
                   'XHR bad status: ' + this.xhr.status);
     var result = new Uint8Array(this.xhr.response);
     if (length != null) {
-      var rangeHeader = this.xhr.getResponseHeader('Content-Range');
-      var lengthHeader = this.xhr.getResponseHeader('Content-Length');
-      if (!rangeHeader && lengthHeader) {
-        logger.assert(length <= lengthHeader,
-                      'Length of response is smaller than request');
-        result = result.subarray(start, start + length);
-        logger.checkEq(result.length, length, 'XHR length', true);
-        return result;
-      }
       logger.checkEq(result.length, length, 'XHR length', true);
     }
     return result;
