@@ -23,6 +23,7 @@ var LicenseManager = function(video, mediaStreams, flavor) {
   this.mime = this.mediaStreams[0].mimetype;
   this.flavor = flavor;
   this.keySystem = this.findCompatibleKeySystem_();
+  this.failedLicenseServerRequests = 0;
   // This doesn't handle situtations with multiple licenses.
   this.licenseServer = this.mediaStreams[0].get('license_server');
   if (!this.licenseServer) {
@@ -100,11 +101,20 @@ LicenseManager.prototype.findCompatibleKeySystem_ = function() {
  * Function to request a Widevine or PlayReady license from the license server.
  */
 LicenseManager.prototype.requestLicense = function(message, cb) {
+  if (this.failedLicenseServerRequests > 2) {
+    dlog(2, 'Repeated license request failures. Retries exhausted.');
+    return;
+  }
+  self = this;
   var xhr = new XMLHttpRequest();
   xhr.open('POST', this.licenseServer);
   xhr.addEventListener('load', function(evt) {
-    if (evt.target.status < 200 || evt.target.status > 299) {
-      dlog(2, 'License request failure, status ' + evt.target.status + '.');
+    var responseStatus = evt.target.status;
+    if (responseStatus < 200 || responseStatus > 299) {
+      dlog(2, 'License request failure, status ' + responseStatus + '. Retrying...');
+      self.failedLicenseServerRequests++;
+      self.requestLicense(message, cb);
+      return;
     }
     var responseString = arrayToString(
         new Uint8Array(evt.target.response)).split('\r\n').pop();
