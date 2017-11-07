@@ -105,7 +105,7 @@ LicenseManager.prototype.requestLicense = function(message, cb) {
     dlog(2, 'Repeated license request failures. Retries exhausted.');
     return;
   }
-  self = this;
+  var self = this;
   var xhr = new XMLHttpRequest();
   xhr.open('POST', this.licenseServer);
   xhr.addEventListener('load', function(evt) {
