@@ -1446,8 +1446,7 @@ testEventTimestamp.prototype.onsourceopen = function() {
   var video = this.video;
   var videoSb = this.ms.addSourceBuffer(StreamDef.VideoType);
   var audioSb = this.ms.addSourceBuffer(StreamDef.AudioType);
-  var last = Date.now();
-  runner.checkGr(last, 1360000000000, 'Date.now()');
+  var last = new Event('last').timeStamp;
 
   var audioXhr = runner.XHRManager.createRequest(StreamDef.AudioTiny.src,
       function(e) {
