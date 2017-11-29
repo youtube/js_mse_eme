@@ -33,7 +33,7 @@ var keydb = {
   0x53:'Search',
   0xB1:'Previous',
   0xB0:'Next',
-  0xAF:'Closed Captions',
+  0x1CC:'Closed Captions',
   0x193:'Red',
   0x194:'Green',
   0x195:'Yellow',
