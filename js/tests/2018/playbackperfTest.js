@@ -43,9 +43,8 @@ var createPerfTest = function(name, category, mandatory) {
 };
 
 
-var createFrameDropValidationTest = function(videoStream) {
-  var test = createPerfTest('FrameDrop' + '.' + videoStream.codec,
-                            'Frame Drop Validation');
+var createFrameDropValidationTest = function(videoStream1, videoStream2) {
+  var test = createPerfTest('FrameDrop', 'Frame Drop Validation');
   test.prototype.title = 'Frame Drop Validation';
   test.prototype.start = function(runner, video) {
     var videoPerfMetrics = new VideoPerformanceMetrics(video);
@@ -55,31 +54,38 @@ var createFrameDropValidationTest = function(videoStream) {
 	          '\'video.webkitDecodedFrameCount\'' +
                   'and video.webkitDroppedFrameCount to execute this test.');
     }
-    setupMse(video, runner, videoStream, Media.AAC.AudioNormal);
-    video.playbackRate = 2.0;
-    video.addEventListener('timeupdate', function onTimeUpdate(e) {
-      var totalDroppedFrames = videoPerfMetrics.getDroppedVideoFrames();
-      var totalDecodedFrames = videoPerfMetrics.getTotalDecodedVideoFrames();
-      test.prototype.status = '(' + totalDroppedFrames + '/' +
-          totalDecodedFrames + ')';
-      runner.updateStatus();
-      if (!video.paused && video.currentTime >= 15) {
-        video.removeEventListener('timeupdate', onTimeUpdate);
-        video.pause();
-        if (totalDecodedFrames <= 0) {
-          test.prototype.status = 'Fail';
-          runner.fail('UserAgent was unable to render any frames.');
+    var playVideo = function(videoStream) {
+      setupMse(video, runner, videoStream, Media.AAC.AudioNormal);
+      video.playbackRate = 2.0;
+      video.addEventListener('timeupdate', function onTimeUpdate(e) {
+        var totalDroppedFrames = videoPerfMetrics.getDroppedVideoFrames();
+        var totalDecodedFrames = videoPerfMetrics.getTotalDecodedVideoFrames();
+        test.prototype.status = '(' + totalDroppedFrames + '/' +
+            totalDecodedFrames + ')';
+        runner.updateStatus();
+        if (!video.paused && video.currentTime >= 15) {
+          video.removeEventListener('timeupdate', onTimeUpdate);
+          video.pause();
+          if (totalDecodedFrames <= 0) {
+            test.prototype.status = 'Fail';
+            runner.fail('UserAgent was unable to render any frames.');
+          }
+          if (totalDroppedFrames > 2) {
+            runner.succeed();
+          } else if (videoStream2.src == videoStream.src) {
+            runner.fail('UserAgent produced ' + totalDroppedFrames + ' dropped frames.');
+          } else {
+            playVideo(videoStream2);
+          }
         }
-        runner.checkGE(totalDroppedFrames, 2, 'Total dropped frames');
-        runner.succeed();
-      }
-    });
-    video.play();
+      });
+      video.play();
+    };
+    playVideo(videoStream1);
   };
 };
 
-createFrameDropValidationTest(Media.VP9.Webgl720p60fps);
-createFrameDropValidationTest(Media.H264.Webgl720p60fps);
+createFrameDropValidationTest(Media.H264.Webgl1080p60fps, Media.VP9.Webgl2160p60fps);
 
 
 var createPlaybackPerfTest = function(videoStream, playbackRate, category,
