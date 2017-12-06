@@ -457,7 +457,7 @@ var createPlaybackRateTest = function(playbackRate) {
           var realTimeDelta = (realTimeNext - realTimeLast) / 1000.0;
           var playTimeDelta = playTimeNext - playTimeLast;
           runner.checkApproxEq(playTimeDelta, realTimeDelta * playbackRate, 
-              'playback time delta', 0.05);
+              'playback time delta', 0.25);
           realTimeLast = realTimeNext;
           playTimeLast = playTimeNext;
         }
