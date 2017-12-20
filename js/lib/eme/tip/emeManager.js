@@ -30,6 +30,13 @@ EMEHandler.prototype.init = function(video, licenseManager) {
   return this;
 };
 
+EMEHandler.prototype.addEventSpies = function(eventSpies) {
+  for (var spy in eventSpies) {
+    this['_' + spy] = this[spy];
+    this[spy] = eventSpies[spy];
+  }
+};
+
 /**
  * Default callback for onEncrypted event from EME system.
  * @param {Event} e Event passed in by the EME system.
@@ -99,4 +106,20 @@ EMEHandler.prototype.onKeyStatusesChange = function(event) {
       self.keyUnusable = true;
     }
   });
+};
+
+EMEHandler.prototype.closeAllKeySessions = function (cb) {
+  var self = this;
+  var closeAllSessions = function() {
+    if (self.keySessions.length == 0) {
+      cb();
+      return;
+    }
+
+    dlog(2, 'Closing key session');
+    var keySession = self.keySessions.pop();
+    var promise = keySession.close();
+    promise.then(closeAllSessions);
+  };
+  closeAllSessions();
 };
