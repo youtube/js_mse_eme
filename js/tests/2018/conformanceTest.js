@@ -44,14 +44,6 @@ var createConformanceTest = function(name, category, mandatory) {
 };
 
 
-function revokeVideoSrc(test) {
-  if (test.video.src) {
-    window.URL.revokeObjectURL(test.video.src);
-    test.video.src = null;
-  }
-}
-
-
 var createInitialMediaStateTest = function(state, value, check) {
   var test = createConformanceTest('InitialMedia' +
                                    util.MakeCapitalName(state), 'Media Element Core');
@@ -152,7 +144,6 @@ testPresence.prototype.start = function(runner, video) {
 
   runner.succeed();
 };
-testPresence.prototype.teardown = function() {};
 
 
 var testAttach = createConformanceTest('Attach', 'MSE Core');
@@ -166,9 +157,6 @@ testAttach.prototype.start = function(runner, video) {
   });
   video.src = window.URL.createObjectURL(this.ms);
   video.load();
-};
-testAttach.prototype.teardown = function() {
-  revokeVideoSrc(this);
 };
 
 

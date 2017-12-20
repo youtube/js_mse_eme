@@ -34,7 +34,7 @@ TestBase.start = function(runner, video) {
   this.log('Test started');
 };
 
-TestBase.teardown = function(testSuiteVer) {
+TestBase.teardown = function(testSuiteVer, cb) {
   if (this.video != null) {
     this.video.removeAllEventListeners();
     this.video.pause();
@@ -47,6 +47,7 @@ TestBase.teardown = function(testSuiteVer) {
   this.ms = null;
   this.video = null;
   this.runner = null;
+  cb();
 };
 
 TestBase.log = function() {
@@ -463,20 +464,13 @@ TestExecutor.prototype.teardownCurrentTest = function(isTimeout) {
   this.timeouts.clearAll();
   this.XHRManager.abortAll();
   this.testView.finishedOneTest();
-  this.currentTest.teardown(this.testSuiteVer);
-  if (this.currentTest.ms &&
-      !this.currentTest.ms.isWrapper &&
-      this.currentTest &&
-      this.currentTest.video &&
-      this.currentTest.video.src) {
-    if (this.testSuiteVer !== '0.5')
-      window.URL.revokeObjectURL(this.currentTest.video.src);
-    this.currentTest.video.src = '';
-  }
-  this.currentTest = null;
-  this.testToRun--;
-  this.currentTestIdx++;
-  window.setTimeout(this.startNextTest.bind(this), 1);
+  var self = this;
+  this.currentTest.teardown(this.testSuiteVer, function() {
+    self.currentTest = null;
+    self.testToRun--;
+    self.currentTestIdx++;
+    window.setTimeout(self.startNextTest.bind(self), 1);
+  });
 };
 
 window.TestBase = TestBase;

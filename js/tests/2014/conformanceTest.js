@@ -81,14 +81,6 @@ function setupBaseEmeTest(video, xhrManager, bufferSize, cbSpies) {
 }
 
 
-function revokeVideoSrc(test) {
-  if (test.video.src) {
-    window.URL.revokeObjectURL(test.video.src);
-    test.video.src = null;
-  }
-}
-
-
 var testPresence = createConformanceTest('Presence', 'MSE');
 testPresence.prototype.title = 'Test if MediaSource object is present.';
 testPresence.prototype.start = function(runner, video) {
@@ -104,7 +96,6 @@ testPresence.prototype.start = function(runner, video) {
 
   runner.succeed();
 };
-testPresence.prototype.teardown = function() {};
 
 
 var testAttach = createConformanceTest('Attach', 'MSE');
@@ -121,9 +112,6 @@ testAttach.prototype.start = function(runner, video) {
   else
     video.src = window.URL.createObjectURL(this.ms);
   video.load();
-};
-testAttach.prototype.teardown = function() {
-  revokeVideoSrc(this);
 };
 
 

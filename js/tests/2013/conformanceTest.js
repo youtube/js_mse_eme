@@ -53,7 +53,6 @@ testPresence.prototype.start = function(runner, video) {
 
   runner.succeed();
 };
-testPresence.prototype.teardown = function() {};
 
 
 var testAttach = createConformanceTest('Attach');
@@ -71,7 +70,6 @@ testAttach.prototype.start = function(runner, video) {
     video.src = window.URL.createObjectURL(this.ms);
   video.load();
 };
-testAttach.prototype.teardown = function() {};
 
 
 var testAddSourceBuffer = createConformanceTest('addSourceBuffer');
@@ -1584,7 +1582,6 @@ testDualKey.prototype.start = function(runner, video) {
   video.src = window.URL.createObjectURL(ms);
   video.load();
 };
-testDualKey.prototype.teardown = function() {};
 
 
 return {tests: tests, info: info, fields: fields, viewType: 'default'};
