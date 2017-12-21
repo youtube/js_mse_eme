@@ -109,7 +109,8 @@ var TestExecutor = function(testSuite, testsMask, testSuiteVer) {
   this.testView = null;
   this.currentTest = null;
   this.currentTestIdx = 0;
-  this.assertThrowsError = true;
+  // Prevents succeeds, errors, and other results from asynchronously executing.
+  this.blockTestResult = false;
   this.XHRManager = createXHRManager(createLogger(this.log.bind(this)));
   this.timeouts = createTimeoutManager(createLogger(this.log.bind(this)));
   this.lastResult = 'pass';
@@ -329,6 +330,7 @@ TestExecutor.prototype.startNextTest = function() {
   }
 
   this.currentTest = new this.testList[this.currentTestIdx];
+  this.blockTestResults = false;
 
   this.log('Test ' + (this.currentTest.index + 1) + ':' +
            this.currentTest.desc + ' STARTED with timeout ' +
@@ -361,6 +363,10 @@ TestExecutor.prototype.startNextTest = function() {
 };
 
 TestExecutor.prototype.succeed = function() {
+  if (this.blockTestResults) {
+    return;
+  }
+  this.blockTestResults = true;
   this.lastResult = 'pass';
   ++this.testList[this.currentTestIdx].prototype.passes;
   this.updateStatus();
@@ -370,6 +376,10 @@ TestExecutor.prototype.succeed = function() {
 };
 
 TestExecutor.prototype.error = function(msg, isTimeout) {
+  if (this.blockTestResults) {
+    return;
+  }
+  this.blockTestResults = true;
   this.lastResult = isTimeout ? 'timeout' : 'failure';
   var test = this.currentTest;
 
@@ -397,8 +407,7 @@ TestExecutor.prototype.error = function(msg, isTimeout) {
     callStack: stack
   };
 
-  this.teardownCurrentTest(isTimeout);
-  if (this.assertThrowsError) throw msg;
+  this.teardownCurrentTest(isTimeout, msg);
 };
 
 TestExecutor.prototype.fail = function(msg) {
@@ -446,7 +455,7 @@ TestExecutor.prototype.timeout = function() {
   }
 };
 
-TestExecutor.prototype.teardownCurrentTest = function(isTimeout) {
+TestExecutor.prototype.teardownCurrentTest = function(isTimeout, errorMsg) {
   if (!isTimeout) {
     var time = Date.now() - this.startTime;
     var ratio = time / this.currentTest.timeout;
@@ -463,6 +472,7 @@ TestExecutor.prototype.teardownCurrentTest = function(isTimeout) {
 
   this.timeouts.clearAll();
   this.XHRManager.abortAll();
+  this.XHRManager = createXHRManager(createLogger(this.log.bind(this)));
   this.testView.finishedOneTest();
   var self = this;
   this.currentTest.teardown(this.testSuiteVer, function() {
@@ -470,6 +480,9 @@ TestExecutor.prototype.teardownCurrentTest = function(isTimeout) {
     self.testToRun--;
     self.currentTestIdx++;
     window.setTimeout(self.startNextTest.bind(self), 1);
+    if (!!errorMsg) {
+      throw errorMsg;
+    }
   });
 };
 

@@ -109,6 +109,10 @@ EMEHandler.prototype.onKeyStatusesChange = function(event) {
 };
 
 EMEHandler.prototype.closeAllKeySessions = function (cb) {
+  if (this.keySessions === undefined) {
+    cb();
+    return;
+  }
   var self = this;
   var closeAllSessions = function() {
     if (self.keySessions.length == 0) {
