@@ -75,9 +75,15 @@ LicenseManager.prototype.requestLicense = function(message, cb) {
     if (evt.target.status < 200 || evt.target.status > 299) {
       dlog(2, 'License request failure, status ' + evt.target.status + '.');
     }
-    var responseString = arrayToString(
-        new Uint8Array(evt.target.response)).split('\r\n').pop();
-    var key = stringToArray(responseString);
+
+    var responseString = arrayToString(new Uint8Array(evt.target.response));
+    // Remove body header for responses from specific license servers.
+    if (responseString.startsWith('GLS/1.0 0 OK')) {
+      var headerMark = '\r\n\r\n';
+      var headerIdx = responseString.indexOf(headerMark) + headerMark.length;
+      responseString = responseString.slice(headerIdx);
+    }
+    var license = stringToArray(responseString);
     cb(key);
   });
   xhr.responseType = 'arraybuffer';
