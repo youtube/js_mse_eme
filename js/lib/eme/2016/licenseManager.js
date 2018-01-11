@@ -83,7 +83,7 @@ LicenseManager.prototype.requestLicense = function(message, cb) {
       var headerIdx = responseString.indexOf(headerMark) + headerMark.length;
       responseString = responseString.slice(headerIdx);
     }
-    var license = stringToArray(responseString);
+    var key = stringToArray(responseString);
     cb(key);
   });
   xhr.responseType = 'arraybuffer';
