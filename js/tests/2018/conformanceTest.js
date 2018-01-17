@@ -1253,9 +1253,12 @@ var createMediaSourceDurationTest = function(videoStream, audioStream) {
 
     var audioXhr = runner.XHRManager.createRequest(audioStream.src,
         function(e) {
+      audioSb.addEventListener('updateend', function onAudioUpdate() {
+        audioSb.removeEventListener('updateend', onAudioUpdate);
+        appendVideo();
+      });
       var audioContent = audioXhr.getResponseData();
       audioSb.appendBuffer(audioContent);
-      appendVideo();
     });
     audioXhr.send();
   };
