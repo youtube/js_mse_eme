@@ -24,6 +24,7 @@ EMEHandler.prototype.init = function(video, licenseManager) {
   this.keyUnusable = false;
   this.keyCount = 0;
   this.keySessions = [];
+  this.licenseDelay = 10; // In milliseconds.
 
   video.addEventListener('encrypted', this.onEncrypted.bind(this));
 
@@ -88,8 +89,11 @@ EMEHandler.prototype.onMessage = function(event) {
 
   var keySession = event.target;
   var message = event.message;
+  var licenseDelay = this.licenseDelay;
   this.licenseManager.acquireLicense(message, function(license) {
-    keySession.update(license);
+    setTimeout(function() {
+      keySession.update(license);
+    }, licenseDelay);
   });
 };
 

@@ -80,6 +80,8 @@ var Media = (function() {
                                                    0x7e, 0x57, 0xd0, 0x0d, 0x1e, 0xd0, 0x0d, 0x1e])}],
       VideoStreamYTCenc: ['media/oops_cenc-20121114-145-no-clear-start.mp4', 39980507, 242.71, {
           'mimeType': 'video/mp4; codecs="avc1.4d401f"',
+          'video_id': '03681262dc412c06',
+          'widevine_signature': '9C4BE99E6F517B51FED1F0B3B31966D3C5DAB9D6.6A1F30BB35F3A39A4CA814B731450D4CBD198FFD',
           'key': util.createUint8ArrayFromJSArray([233, 122, 210, 133, 203, 93, 59, 228,
                                                    167, 150, 27, 122, 246, 145, 112, 218])}],
       VideoTinyStreamYTCenc: ['media/oops_cenc-20121114-145-143.mp4', 7229257, 30.03, {
