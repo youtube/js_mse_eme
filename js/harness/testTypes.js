@@ -119,6 +119,16 @@ window.testSuiteVersions = {
       'controlMediaFormatSelection': false
     }
   },
+  '2018-operator' : {
+    'testSuites' : [
+      'conformance-test',
+    ],
+    'config' : {
+      'defaultTestSuite': 'conformance-test',
+      'enablewebm': true,
+      'controlMediaFormatSelection': false
+    }
+  },
   'tip' : {
     'testSuites' : [
       'conformance-test',
