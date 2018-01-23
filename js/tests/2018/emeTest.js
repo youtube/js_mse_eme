@@ -205,6 +205,41 @@ testWidevineH264MultiMediaKeySessions.prototype.start = function(runner, video) 
 };
 
 
+var createWidevineLicenseDelayTest = function(videoStream) {
+  var test = createEmeTest(
+      'WidevineLicenseDelay' + videoStream.codec  + 'Video', 'Widevine');
+  test.prototype.title = 'Test if we can play video encrypted with Widevine ' +
+      'encryption with no clear start and 5 seconds license delay.';
+  test.prototype.start = function(runner, video) {
+    var testEmeHandler = this.emeHandler;
+    var audioStream = Media.AAC.AudioNormal;
+    try {
+      var testEmeHandler = setupBaseEmeTest(video, runner,
+          videoStream, audioStream);
+      var licenseManager = new LicenseManager(video, videoStream,
+                                              LicenseManager.WIDEVINE);
+      testEmeHandler.init(video, licenseManager);
+      testEmeHandler.licenseDelay = 5000;
+    } catch(err) {
+      runner.fail(err);
+    }
+    video.addEventListener('timeupdate', function onTimeUpdate(e) {
+      if (!video.paused && video.currentTime >= 15 &&
+          !testEmeHandler.keyUnusable) {
+        video.removeEventListener('timeupdate', onTimeUpdate);
+        runner.checkGE(video.currentTime, 15, 'currentTime');
+        runner.succeed();
+      }
+    });
+    video.play();
+  };
+};
+
+
+createWidevineLicenseDelayTest(Media.H264.VideoStreamYTCenc);
+createWidevineLicenseDelayTest(Media.VP9.VideoHighSubSampleEnc);
+
+
 var createWidevineVideoTest = function(videoStream, desc) {
   var test = createEmeTest('Widevine' + desc + 'Video', 'Widevine Video Formats');
   test.prototype.title =
