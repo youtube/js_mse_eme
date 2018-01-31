@@ -122,7 +122,7 @@ window.testSuiteVersions = {
   '2018-operator' : {
     'testSuites' : [
       'conformance-test',
-      'progressive-test'
+      'encryptedmedia-test',
     ],
     'config' : {
       'defaultTestSuite': 'conformance-test',
