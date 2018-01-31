@@ -123,6 +123,8 @@ window.testSuiteVersions = {
     'testSuites' : [
       'conformance-test',
       'encryptedmedia-test',
+      'progressive-test',
+      'playbackperf-test'
     ],
     'config' : {
       'defaultTestSuite': 'conformance-test',
