@@ -78,7 +78,9 @@ LicenseManager.prototype.requestLicense = function(message, cb) {
 
     var responseString = arrayToString(new Uint8Array(evt.target.response));
     // Remove body header for responses from specific license servers.
-    if (responseString.startsWith('GLS/1.0 0 OK')) {
+    var licenseBodyHeaderMark = 'GLS/1.0 0 OK';
+    if (responseString.substr(0, licenseBodyHeaderMark.length) ==
+        licenseBodyHeaderMark) {
       var headerMark = '\r\n\r\n';
       var headerIdx = responseString.indexOf(headerMark) + headerMark.length;
       responseString = responseString.slice(headerIdx);
