@@ -1574,8 +1574,8 @@ var createDelayedTest = function(delayed, nonDelayed, optional) {
 
 
 // Opus Specific tests.
-createAppendTest(Media.Opus.CarLow, Media.H264.Video1MB);
-createAbortTest(Media.Opus.CarLow, Media.H264.Video1MB);
+createAppendTest(Media.Opus.SantaHigh, Media.H264.Video1MB);
+createAbortTest(Media.Opus.SantaHigh, Media.H264.Video1MB);
 createTimestampOffsetTest(Media.Opus.CarLow, Media.H264.Video1MB);
 createDurationAfterAppendTest(Media.Opus.CarLow, Media.H264.Video1MB);
 createPausedTest(Media.Opus.CarLow);

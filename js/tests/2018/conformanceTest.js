@@ -552,7 +552,7 @@ var createAppendTest = function(stream, unused_stream) {
         catch (e) {
           if (e.code === e.INVALID_STATE_ERR) {
             runner.succeed();
-	  } else {
+          } else {
             runner.fail('Invalid error on double append: ' + e);
           }
           caught = true;
@@ -563,7 +563,7 @@ var createAppendTest = function(stream, unused_stream) {
           if (sb.updating) {
             // Not a great check due to race conditions, but will have to do.
             runner.fail('Implementation did not throw INVALID_STATE_ERR.');
-	  } else {
+          } else {
             runner.succeed();
           }
         }
@@ -1555,8 +1555,8 @@ var createDelayedTest = function(delayed, nonDelayed) {
 
 
 // Opus Specific tests.
-createAppendTest(Media.Opus.CarLow, Media.VP9.Video1MB);
-createAbortTest(Media.Opus.CarLow, Media.VP9.Video1MB);
+createAppendTest(Media.Opus.SantaHigh, Media.VP9.Video1MB);
+createAbortTest(Media.Opus.SantaHigh, Media.VP9.Video1MB);
 createTimestampOffsetTest(Media.Opus.CarLow, Media.VP9.Video1MB);
 createDurationAfterAppendTest(Media.Opus.CarLow, Media.VP9.Video1MB);
 createPausedTest(Media.Opus.CarLow);
