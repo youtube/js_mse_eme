@@ -168,20 +168,20 @@ createWidevineVP9VideoTest(Media.VP9.VideoHighSubSampleEnc, 'Subsample');
 var testWidevineH264MultiMediaKeySessions = createEmeTest(
     'WidevineH264MultiMediaKeySessions', 'Widevine');
 testWidevineH264MultiMediaKeySessions.prototype.title =
-    'Test creating 8 MediaKeySession objects each with 16 keys for playing ' +
+    'Test creating 16 MediaKeySession objects each with 16 keys for playing ' +
     'encrypted with Widevine encryption.';
 testWidevineH264MultiMediaKeySessions.prototype.start = function(runner, video) {
   var testEmeHandler = this.emeHandler;
   var videoStream = Media.H264.VideoMultiKeyCenc;
   var audioStream = Media.AAC.AudioNormal;
   var videoStreams = [];
-  for (var i = 0; i < 8; i++) {
+  for (var i = 0; i < 16; i++) {
     videoStreams.push(videoStream);
   }
   try {
     setupMse(video, runner, videoStreams, audioStream);
-    var licenseManager = new LicenseManager(video, videoStream,
-                                            LicenseManager.WIDEVINE);
+    var licenseManager = new LicenseManager(
+        video, videoStream, LicenseManager.WIDEVINE);
     testEmeHandler.init(video, licenseManager);
   } catch(err) {
     runner.fail(err);
@@ -191,8 +191,8 @@ testWidevineH264MultiMediaKeySessions.prototype.start = function(runner, video) 
         !testEmeHandler.keyUnusable) {
       video.removeEventListener('timeupdate', onTimeUpdate);
       runner.checkGE(video.currentTime, 15, 'currentTime');
-      runner.checkEq(testEmeHandler.keySessions.length, 8, 'keySessionCount');
-      runner.checkEq(testEmeHandler.keyCount, 128, 'keyCount');
+      runner.checkEq(testEmeHandler.keySessions.length, 16, 'keySessionCount');
+      runner.checkEq(testEmeHandler.keyCount, 256, 'keyCount');
       runner.succeed();
     }
   });
