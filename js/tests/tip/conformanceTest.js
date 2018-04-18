@@ -374,7 +374,7 @@ testBufferSize.prototype.onsourceopen = function() {
         if (expectedSize > (10 * MIN_SIZE)) {
           sb.removeEventListener('updateend', onUpdate);
           onBufferFull();
-	  return;
+          return;
         }
         sb.timestampOffset = expectedTime;
         try {
@@ -754,7 +754,7 @@ var createDurationAfterAppendTest = function(stream, unused_stream) {
 
           halfDuration = sb.buffered.end(0) / 2;
           setDuration(halfDuration, ms, sb, function() {
-	    self.log('Remove() complete.');
+            self.log('Remove() complete.');
             runner.checkApproxEq(ms.duration, halfDuration, 'ms.duration');
             runner.checkApproxEq(sb.buffered.end(0), halfDuration,
                                  'sb.buffered.end(0)');
@@ -862,12 +862,12 @@ var createPlaybackStateTest = function(stream) {
     var videoStream = stream;
     var audioStream = Media.AAC.AudioTiny;
     var videoChain = new ResetInit(new FixedAppendSize(
-	new FileSource(videoStream.src, runner.XHRManager, runner.timeouts),
-	65536));
+        new FileSource(videoStream.src, runner.XHRManager, runner.timeouts),
+        65536));
     var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
     var audioChain = new ResetInit(new FixedAppendSize(
-	new FileSource(audioStream.src, runner.XHRManager, runner.timeouts),
-	65536));
+        new FileSource(audioStream.src, runner.XHRManager, runner.timeouts),
+        65536));
     var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
     var self = this;
 
@@ -878,26 +878,26 @@ var createPlaybackStateTest = function(stream) {
 
     appendInit(media, audioSb, audioChain, 0, function() {
       appendInit(media, videoSb, videoChain, 0, function() {
-	callAfterLoadedMetaData(media, function() {
-	  media.play();
-	  runner.checkEq(media.currentTime, 0, 'media.currentTime');
-	  media.pause();
-	  runner.checkEq(media.currentTime, 0, 'media.currentTime');
-	  media.play();
-	  appendUntil(runner.timeouts, media, audioSb, audioChain, 5, function() {
-	    appendUntil(runner.timeouts, media,
-			videoSb, videoChain, 5, function() {
-	      playThrough(runner.timeouts, media, 1, 2,
-			  audioSb, audioChain, videoSb, videoChain, function() {
-		var time = media.currentTime;
-		media.pause();
-		runner.checkApproxEq(media.currentTime, time,
-				     'media.currentTime');
-		runner.succeed();
-	      });
-	    });
-	  });
-	});
+        callAfterLoadedMetaData(media, function() {
+          media.play();
+          runner.checkEq(media.currentTime, 0, 'media.currentTime');
+          media.pause();
+          runner.checkEq(media.currentTime, 0, 'media.currentTime');
+          media.play();
+          appendUntil(
+              runner.timeouts, media, audioSb, audioChain, 5, function() {
+            appendUntil(
+                runner.timeouts, media, videoSb, videoChain, 5, function() {
+              playThrough(runner.timeouts, media, 1, 2, audioSb,
+                          audioChain, videoSb, videoChain, function() {
+                var time = media.currentTime;
+                media.pause();
+                runner.checkApproxEq(media.currentTime, time, 'media.currentTime');
+                runner.succeed();
+              });
+            });
+          });
+        });
       });
     });
   };
@@ -919,9 +919,9 @@ var createPlayPartialSegmentTest = function(stream) {
     var videoXhr = runner.XHRManager.createRequest(videoStream.src, function(e) {
       videoSb.appendBuffer(this.getResponseData());
       video.addEventListener('timeupdate', function(e) {
-	if (!video.paused && video.currentTime >= 2) {
-	  runner.succeed();
-	}
+        if (!video.paused && video.currentTime >= 2) {
+          runner.succeed();
+        }
       });
       video.play();
     }, 0, 1500000);
@@ -946,10 +946,10 @@ var createIncrementalAudioTest = function(stream) {
     var xhr = runner.XHRManager.createRequest(stream.src, function(e) {
       sb.appendBuffer(xhr.getResponseData());
       sb.addEventListener('updateend', function() {
-	runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
-	runner.checkEq(sb.buffered.start(0), 0, 'Range start');
-	runner.checkApproxEq(sb.buffered.end(0), stream.get(200000), 'Range end');
-	runner.succeed();
+        runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
+        runner.checkEq(sb.buffered.start(0), 0, 'Range start');
+        runner.checkApproxEq(sb.buffered.end(0), stream.get(200000), 'Range end');
+        runner.succeed();
       });
     }, 0, 200000);
     xhr.send();
@@ -971,8 +971,8 @@ var createAppendAudioOffsetTest = function(stream1, stream2) {
       sb.timestampOffset = 5;
       sb.appendBuffer(this.getResponseData());
       sb.addEventListener('updateend', function callXhr2() {
-	sb.removeEventListener('updateend', callXhr2);
-	xhr2.send();
+        sb.removeEventListener('updateend', callXhr2);
+        xhr2.send();
       });
     }, 0, 200000);
     var xhr2 = runner.XHRManager.createRequest(stream2.src, function(e) {
@@ -980,11 +980,11 @@ var createAppendAudioOffsetTest = function(stream1, stream2) {
       sb.timestampOffset = 0;
       sb.appendBuffer(this.getResponseData());
       sb.addEventListener('updateend', function() {
-	runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
-	runner.checkEq(sb.buffered.start(0), 0, 'Range start');
-	runner.checkApproxEq(sb.buffered.end(0),
-	  stream2.get('appendAudioOffset'), 'Range end');
-	runner.succeed();
+        runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
+        runner.checkEq(sb.buffered.start(0), 0, 'Range start');
+        runner.checkApproxEq(
+            sb.buffered.end(0), stream2.get('appendAudioOffset'), 'Range end');
+        runner.succeed();
       });
     }, 0, 200000);
     xhr.send();
@@ -1112,8 +1112,7 @@ var createAppendOutOfOrderTest = function(stream, unused_stream) {
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
     var media = this.video;
-    var chain = new FileSource(stream.src, runner.XHRManager,
-	runner.timeouts);
+    var chain = new FileSource(stream.src, runner.XHRManager, runner.timeouts);
     var sb = this.ms.addSourceBuffer(stream.mimetype);
     var unused_sb = this.ms.addSourceBuffer(unused_stream.mimetype);
     var bufs = [];
@@ -1144,17 +1143,17 @@ var createAppendOutOfOrderTest = function(stream, unused_stream) {
     chain.init(0, function(buf) {
       bufs.push(buf);
       chain.pull(function(buf) {
-	bufs.push(buf);
-	chain.pull(function(buf) {
-	  bufs.push(buf);
-	  chain.pull(function(buf) {
-	    bufs.push(buf);
-	    chain.pull(function(buf) {
-	      bufs.push(buf);
-	      sb.appendBuffer(bufs[0]);
-	    });
-	  });
-	});
+        bufs.push(buf);
+        chain.pull(function(buf) {
+          bufs.push(buf);
+          chain.pull(function(buf) {
+            bufs.push(buf);
+            chain.pull(function(buf) {
+              bufs.push(buf);
+              sb.appendBuffer(bufs[0]);
+            });
+          });
+        });
       });
     });
   };
@@ -1171,7 +1170,7 @@ var createBufferedRangeTest = function(stream, unused_stream) {
     var runner = this.runner;
     var media = this.video;
     var chain = new ResetInit(
-	new FileSource(stream.src, runner.XHRManager, runner.timeouts));
+        new FileSource(stream.src, runner.XHRManager, runner.timeouts));
     var sb = this.ms.addSourceBuffer(stream.mimetype);
     var unused_sb = this.ms.addSourceBuffer(unused_stream.mimetype);
 
@@ -1179,10 +1178,10 @@ var createBufferedRangeTest = function(stream, unused_stream) {
     appendInit(media, sb, chain, 0, function() {
       runner.checkEq(sb.buffered.length, 0, 'Source buffer number');
       appendUntil(runner.timeouts, media, sb, chain, 5, function() {
-	runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
-	runner.checkEq(sb.buffered.start(0), 0, 'Source buffer number');
-	runner.checkGE(sb.buffered.end(0), 5, 'Range end');
-	runner.succeed();
+        runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
+        runner.checkEq(sb.buffered.start(0), 0, 'Source buffer number');
+        runner.checkGE(sb.buffered.end(0), 5, 'Range end');
+        runner.succeed();
       });
     });
   };
@@ -1275,36 +1274,37 @@ var createOverlapTest = function(stream, unused_stream) {
     var runner = this.runner;
     var media = this.video;
     var chain = new ResetInit(
-	new FileSource(stream.src, runner.XHRManager, runner.timeouts));
+        new FileSource(stream.src, runner.XHRManager, runner.timeouts));
     var sb = this.ms.addSourceBuffer(stream.mimetype);
     var unused_sb = this.ms.addSourceBuffer(unused_stream.mimetype);
     var GAP = 0.1;
 
     appendInit(media, sb, chain, 0, function() {
       chain.pull(function(buf) {
-	sb.addEventListener('update', function appendOuter() {
-	  sb.removeEventListener('update', appendOuter);
-	  runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
-	  var segmentDuration = sb.buffered.end(0);
-	  sb.timestampOffset = segmentDuration - GAP;
-	  chain.seek(0);
-	  chain.pull(function(buf) {
-	    sb.addEventListener('update', function appendMiddle() {
-	      sb.removeEventListener('update', appendMiddle);
-	      chain.pull(function(buf) {
-		sb.addEventListener('update', function appendInner() {
-		  runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
-		  runner.checkApproxEq(sb.buffered.end(0),
-				       segmentDuration * 2 - GAP, 'Range end');
-		  runner.succeed();
-		});
-		runner.assert(safeAppend(sb, buf), 'safeAppend failed');
-	      });
-	    });
-	    runner.assert(safeAppend(sb, buf), 'safeAppend failed');
-	  });
-	});
-	runner.assert(safeAppend(sb, buf), 'safeAppend failed');
+        sb.addEventListener('update', function appendOuter() {
+          sb.removeEventListener('update', appendOuter);
+          runner.checkEq(sb.buffered.length, 1, 'Source buffer number');
+          var segmentDuration = sb.buffered.end(0);
+          sb.timestampOffset = segmentDuration - GAP;
+          chain.seek(0);
+          chain.pull(function(buf) {
+            sb.addEventListener('update', function appendMiddle() {
+              sb.removeEventListener('update', appendMiddle);
+              chain.pull(function(buf) {
+                sb.addEventListener('update', function appendInner() {
+                  runner.checkEq(
+                      sb.buffered.length, 1, 'Source buffer number');
+                  runner.checkApproxEq(sb.buffered.end(0),
+                                       segmentDuration * 2 - GAP, 'Range end');
+                  runner.succeed();
+                });
+                runner.assert(safeAppend(sb, buf), 'safeAppend failed');
+              });
+            });
+            runner.assert(safeAppend(sb, buf), 'safeAppend failed');
+          });
+        });
+        runner.assert(safeAppend(sb, buf), 'safeAppend failed');
       });
     });
   };
@@ -1554,8 +1554,8 @@ var createDelayedTest = function(delayed, nonDelayed) {
 
 
 // Opus Specific tests.
-createAppendTest(Media.Opus.SantaHigh,, Media.VP9.Video1MB);
-createAbortTest(Media.Opus.SantaHigh,, Media.VP9.Video1MB);
+createAppendTest(Media.Opus.SantaHigh, Media.VP9.Video1MB);
+createAbortTest(Media.Opus.SantaHigh, Media.VP9.Video1MB);
 createTimestampOffsetTest(Media.Opus.CarLow, Media.VP9.Video1MB);
 createDurationAfterAppendTest(Media.Opus.CarLow, Media.VP9.Video1MB);
 createPausedTest(Media.Opus.CarLow);
@@ -1650,8 +1650,9 @@ testWAAContext.prototype.start = function(runner, video) {
 
 
 var createCreateMESTest = function(audioStream, videoStream) {
-  var test = createConformanceTest(audioStream.codec + '/' +
-    videoStream.codec + 'CreateMediaElementSource', 'MSE WAA');
+  var test = createConformanceTest(
+      audioStream.codec + '/' + videoStream.codec + 'CreateMediaElementSource',
+      'MSE WAA');
   test.prototype.title = '' +
       'Test if AudioContext#createMediaElementSource supports mimetype ' +
       audioStream.mimetype + '/' + videoStream.mimetype;
