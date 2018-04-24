@@ -502,6 +502,106 @@ testSeekTimeUpdate.prototype.onsourceopen = function() {
   xhr.send();
 };
 
+var createCurrentTimeAccuracyTest =
+    function(videoStream, audioStream, frameRate) {
+  var test = createConformanceTest(
+      frameRate + 'Accuracy', 'MSE currentTime');
+  test.prototype.title = 'Test the currentTime granularity.';
+  test.prototype.onsourceopen = function() {
+    var runner = this.runner;
+    var video = this.video;
+    var maxTimeDiff = 0;
+    var baseTimeDiff = 0;
+    var times = 0;
+    var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
+    var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
+
+    var videoXhr = runner.XHRManager.createRequest(
+        videoStream.src, function(e) {
+      videoSb.appendBuffer(this.getResponseData());
+      video.addEventListener('timeupdate', function(e) {
+        if (times === 0) {
+          baseTimeDiff = Date.now() / 1000.0 - video.currentTime;
+        } else {
+          var timeDiff = Date.now() / 1000.0 - video.currentTime;
+          maxTimeDiff = Math.max(
+              Math.abs(timeDiff - baseTimeDiff), maxTimeDiff);
+        }
+        if (times > 500 || video.currentTime > 10) {
+          runner.checkLE(maxTimeDiff, 0.25, 'Max time diff');
+          runner.succeed();
+        }
+        ++times;
+      });
+      video.play();
+    });
+    var audioXhr = runner.XHRManager.createRequest(audioStream.src, function(e) {
+      audioSb.appendBuffer(this.getResponseData());
+      videoXhr.send();
+    });
+    audioXhr.send();
+  };
+};
+
+createCurrentTimeAccuracyTest(
+    Media.VP9.Webgl720p30fps, Media.AAC.AudioNormal, 'SFR');
+createCurrentTimeAccuracyTest(
+    Media.VP9.Webgl720p60fps, Media.AAC.AudioNormal, 'HFR');
+
+var createCurrentTimePausedAccuracyTest =
+    function(videoStream, audioStream, frameRate) {
+  var test = createConformanceTest(
+      frameRate + 'PausedAccuracy', 'MSE currentTime');
+  test.prototype.title = 'Test the currentTime granularity when pause.';
+  test.prototype.onsourceopen = function() {
+    var runner = this.runner;
+    var video = this.video;
+    var baseTimeDiff = 0;
+    var timeBeforePause = 0;
+    var times = 0;
+    var maxDiffInS = 0.032;
+    var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
+    var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
+
+    var videoXhr = runner.XHRManager.createRequest(
+        videoStream.src, function(e) {
+      videoSb.appendBuffer(this.getResponseData());
+      video.addEventListener('pause', function(e) {
+        runner.checkEq(video.paused, true, 'media.paused');
+        var timeAtPause = video.currentTime;
+        var timeDiff = Date.now() / 1000.0 - timeAtPause;
+        runner.checkLE(
+            timeAtPause - timeBeforePause, maxDiffInS, 'Time to pause');
+        runner.checkLE(Math.abs(timeDiff - baseTimeDiff),
+                       maxDiffInS, 'Time diff when paused');
+        runner.succeed();
+      });
+      video.addEventListener('timeupdate', function onTimeUpdate(e) {
+        if (times === 0) {
+          baseTimeDiff = Date.now() / 1000.0 - video.currentTime;
+        }
+        if (times > 500 || video.currentTime > 10) {
+          timeBeforePause = video.currentTime;
+          video.pause();
+          video.removeEventListener('timeupdate', onTimeUpdate);
+        }
+        ++times;
+      });
+      video.play();
+    });
+    var audioXhr = runner.XHRManager.createRequest(
+        audioStream.src, function(e) {
+      audioSb.appendBuffer(this.getResponseData());
+      videoXhr.send();
+    });
+    audioXhr.send();
+  };
+};
+
+createCurrentTimePausedAccuracyTest(
+    Media.VP9.Webgl720p30fps, Media.AAC.AudioNormal, 'SFR');
+createCurrentTimePausedAccuracyTest(
+    Media.VP9.Webgl720p60fps, Media.AAC.AudioNormal, 'HFR');
 
 var createSupportTest = function(mimetype, desc) {
   var test = createConformanceTest(desc + 'Support', 'MSE Formats');
