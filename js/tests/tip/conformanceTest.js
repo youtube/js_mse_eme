@@ -534,11 +534,11 @@ var createCurrentTimeAccuracyTest =
         ++times;
       });
       video.play();
-    });
+    }, 0, 2500000);
     var audioXhr = runner.XHRManager.createRequest(audioStream.src, function(e) {
       audioSb.appendBuffer(this.getResponseData());
       videoXhr.send();
-    });
+    }, 0, 2500000);
     audioXhr.send();
   };
 };
@@ -567,11 +567,10 @@ var createCurrentTimePausedAccuracyTest =
         videoStream.src, function(e) {
       videoSb.appendBuffer(this.getResponseData());
       video.addEventListener('pause', function(e) {
+        var timeDiff = Date.now() / 1000.0 - video.currentTime;
         runner.checkEq(video.paused, true, 'media.paused');
-        var timeAtPause = video.currentTime;
-        var timeDiff = Date.now() / 1000.0 - timeAtPause;
         runner.checkLE(
-            timeAtPause - timeBeforePause, maxDiffInS, 'Time to pause');
+            video.currentTime - timeBeforePause, maxDiffInS, 'Time to pause');
         runner.checkLE(Math.abs(timeDiff - baseTimeDiff),
                        maxDiffInS, 'Time diff when paused');
         runner.succeed();
@@ -581,19 +580,19 @@ var createCurrentTimePausedAccuracyTest =
           baseTimeDiff = Date.now() / 1000.0 - video.currentTime;
         }
         if (times > 500 || video.currentTime > 10) {
+          video.removeEventListener('timeupdate', onTimeUpdate);
           timeBeforePause = video.currentTime;
           video.pause();
-          video.removeEventListener('timeupdate', onTimeUpdate);
         }
         ++times;
       });
       video.play();
-    });
+    }, 0, 2500000);
     var audioXhr = runner.XHRManager.createRequest(
         audioStream.src, function(e) {
       audioSb.appendBuffer(this.getResponseData());
       videoXhr.send();
-    });
+    }, 0, 2500000);
     audioXhr.send();
   };
 };
