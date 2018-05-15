@@ -492,19 +492,37 @@ window.TestExecutor = TestExecutor;
 window.getTestResults = function(testStartId, testEndId) {
   testStartId = testStartId || 0;
   testEndId = testEndId || window.globalRunner.testList.length;
+
   var results = {
-    pass: [],
-    fail: []
+    pass: {},
+    fail: {}
   };
+
+  for (var r in results) {
+    results[r][harnessConfig.testSuite] = {};
+    results[r][harnessConfig.testSuite][harnessConfig.testType] = {};
+  }
+
+  var passResults =
+      results.pass[harnessConfig.testSuite][harnessConfig.testType];
+  var failResults =
+      results.fail[harnessConfig.testSuite][harnessConfig.testType];
 
   for (var i = testStartId; i < testEndId; ++i) {
     if (window.globalRunner.testList[i]) {
       var test = window.globalRunner.testList[i];
-      var name = test.prototype.category + test.prototype.desc;
+      var category = test.prototype.category;
+      var name = test.prototype.desc;
       if (test.prototype.failures > 0) {
-        results.fail.push(name);
+        if (!failResults[category]) {
+          failResults[category] = [];
+        }
+        failResults[category].push(name);
       } else if (test.prototype.passes > 0) {
-        results.pass.push(name);
+        if (!passResults[category]) {
+          passResults[category] = [];
+        }
+        passResults[category].push(name);
       }
     }
   }

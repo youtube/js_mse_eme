@@ -159,6 +159,7 @@ window.startMseTest = function(testSuiteVer) {
   setupMsePortability(testSuiteVer);
   var testSuiteVersion = testSuiteVersions[testSuiteVer];
   window.harnessConfig = parseParams(testSuiteVersion.config);
+  window.harnessConfig.testSuite = testSuiteVer;
   if (!harnessConfig.timestamp) {
     reloadPageWithTimestamp();
     return;
