@@ -1732,11 +1732,10 @@ createBufUnbufSeekTest(Media.H264.VideoNormal);
 createDelayedTest(Media.H264.VideoNormal, Media.AAC.AudioNormal);
 
 
-var testWAAContext = createConformanceTest('WAAPresence', 'MSE WAA');
-testWAAContext.prototype.title = '' + 'Test if AudioContext is supported';
+var testWAAContext = createConformanceTest('WAAPresence', 'MSE Web Audio API');
+testWAAContext.prototype.title = 'Test if AudioContext is supported';
 testWAAContext.prototype.start = function(runner, video) {
   var Ctor = window.AudioContext || window.webkitAudioContext;
-
   if (!Ctor)
     return runner.fail('No AudioContext object available.');
 
@@ -1751,17 +1750,14 @@ testWAAContext.prototype.start = function(runner, video) {
 var createCreateMESTest = function(audioStream, videoStream) {
   var test = createConformanceTest(
       audioStream.codec + '/' + videoStream.codec + 'CreateMediaElementSource',
-      'MSE WAA');
-  test.prototype.title = '' +
+      'MSE Web Audio API (Optional)',
+      false);
+  test.prototype.title =
       'Test if AudioContext#createMediaElementSource supports mimetype ' +
       audioStream.mimetype + '/' + videoStream.mimetype;
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
     var video = this.video;
-    var self = this;
-
-    var Ctor = window.AudioContext || window.webkitAudioContext;
-    var ctx = self.ctx = new Ctor();
 
     try {
       var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
@@ -1770,23 +1766,25 @@ var createCreateMESTest = function(audioStream, videoStream) {
       runner.fail(e.message);
       return;
     }
+    var Ctor = window.AudioContext || window.webkitAudioContext;
+    var ctx = new Ctor();
 
-    var audioXhr = runner.XHRManager.createRequest(audioStream.src, function(e) {
+    var audioXhr =
+        runner.XHRManager.createRequest(audioStream.src, function(e) {
       var data = audioXhr.getResponseData();
       function updateEnd(e) {
         runner.checkEq(audioSb.buffered.length, 1, 'Source buffer number');
         runner.checkEq(audioSb.buffered.start(0), 0, 'Range start');
-        runner.checkApproxEq(audioSb.buffered.end(0), audioStream.duration,
-            'Range end');
+        runner.checkApproxEq(
+            audioSb.buffered.end(0), audioStream.duration, 'Range end');
         audioSb.removeEventListener('updateend', updateEnd);
         video.play();
       }
       audioSb.addEventListener('updateend', updateEnd);
       audioSb.appendBuffer(data);
     });
-
-    var videoXhr = runner.XHRManager.createRequest(videoStream.src,
-        function(e) {
+    var videoXhr =
+        runner.XHRManager.createRequest(videoStream.src, function(e) {
       var data = videoXhr.getResponseData();
       videoSb.appendBuffer(data);
       audioXhr.send();
@@ -1802,6 +1800,8 @@ var createCreateMESTest = function(audioStream, videoStream) {
         } catch (e) {
           runner.fail(e);
           return;
+        } finally {
+          ctx.close();
         }
         runner.checkNE(source, null, 'MediaElementSource');
         runner.succeed();
@@ -1809,7 +1809,6 @@ var createCreateMESTest = function(audioStream, videoStream) {
     });
   }
 }
-
 
 createCreateMESTest(Media.Opus.CarLow, Media.VP9.VideoNormal);
 createCreateMESTest(Media.AAC.Audio1MB, Media.VP9.VideoNormal);
