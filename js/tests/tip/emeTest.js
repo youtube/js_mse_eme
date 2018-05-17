@@ -390,25 +390,28 @@ testEncryptedEventData.prototype.start = function(runner, video) {
 };
 
 
-var createWidevineCreateMESEMETest = function(videoStream, audioStream,
-    encStream) {
-  var test = createEmeTest('Widevine' + encStream.codec +
-                           util.MakeCapitalName(encStream.mediatype), 'WAA');
+var createWidevineCreateMESEMETest =
+    function(videoStream, audioStream, encStream) {
+  var test = createEmeTest(
+      'Widevine' + encStream.codec +
+          util.MakeCapitalName(encStream.mediatype) +
+          'CreateMediaElementSource',
+      'Web Audio API (Optional)',
+      false);
   test.prototype.title = 'Test if AudioContext#createMediaElementSource ' +
       'succeeds and sends audio data for ' + encStream.codec;
   test.prototype.start = function(runner, video) {
     var testEmeHandler = this.emeHandler;
-    var Ctor = window.AudioContext || window.webkitAudioContext;
-    var ctx = this.ctx = new Ctor();
-
     try {
       setupMse(video, runner, videoStream, audioStream);
-      var licenseManager = new LicenseManager(video, encStream,
-                                              LicenseManager.WIDEVINE);
+      var licenseManager =
+          new LicenseManager(video, encStream, LicenseManager.WIDEVINE);
       testEmeHandler.init(video, licenseManager);
     } catch(err) {
       runner.fail(err);
     }
+    var Ctor = window.AudioContext || window.webkitAudioContext;
+    var ctx = new Ctor();
 
     video.addEventListener('timeupdate', function onTimeUpdate() {
       if (!video.paused && video.currentTime >= 5 &&
@@ -419,25 +422,33 @@ var createWidevineCreateMESEMETest = function(videoStream, audioStream,
           var source = ctx.createMediaElementSource(video);
         } catch (e) {
           runner.fail(e);
+        } finally {
+          ctx.close();
         }
         runner.checkNE(source, null, 'MediaElementSource');
         runner.succeed();
       }
     });
-
     video.play();
   };
 }
 
-createWidevineCreateMESEMETest(Media.H264.VideoSmallCenc,
-    Media.AAC.AudioNormal, Media.H264.VideoSmallCenc);
-createWidevineCreateMESEMETest(Media.H264.VideoNormal,
-    Media.AAC.AudioSmallCenc, Media.AAC.AudioSmallCenc);
-createWidevineCreateMESEMETest(Media.VP9.VideoNormal,
-    Media.Opus.SintelEncrypted, Media.Opus.SintelEncrypted);
-createWidevineCreateMESEMETest(Media.VP9.VideoHighEnc, Media.AAC.AudioNormal,
+createWidevineCreateMESEMETest(
+    Media.H264.VideoSmallCenc,
+    Media.AAC.AudioNormal,
+    Media.H264.VideoSmallCenc);
+createWidevineCreateMESEMETest(
+    Media.H264.VideoNormal,
+    Media.AAC.AudioSmallCenc,
+    Media.AAC.AudioSmallCenc);
+createWidevineCreateMESEMETest(
+    Media.VP9.VideoNormal,
+    Media.Opus.SintelEncrypted,
+    Media.Opus.SintelEncrypted);
+createWidevineCreateMESEMETest(
+    Media.VP9.VideoHighEnc,
+    Media.AAC.AudioNormal,
     Media.VP9.VideoHighEnc);
-
 
 return {tests: tests, info: info, fields: fields, viewType: 'default'};
 
