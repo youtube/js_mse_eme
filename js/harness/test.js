@@ -296,7 +296,7 @@ TestExecutor.prototype.sendTestReport = function(results) {
   resultsURL += '&source=mse_eme_conformance';
   resultsURL += '&testid=' + (harnessConfig.testid ? harnessConfig.testid :
       (navigator.userAgent + '::' + this.runStartTime));
-
+  resultsURL = resultsURL.replace(/;/g, ',');
   var xhr = new XMLHttpRequest();
   xhr.open('POST', resultsURL, true);
   xhr.send(JSON.stringify(results));
