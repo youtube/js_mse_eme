@@ -244,9 +244,9 @@ createWidevineLicenseDelayTest(Media.H264.VideoStreamYTCenc);
 createWidevineLicenseDelayTest(Media.VP9.VideoHighSubSampleEnc);
 
 
-var createWidevineVideoTest = function(videoStream, desc, optional) {
+var createWidevineVideoTest = function(videoStream, desc) {
   var test = createEmeTest('Widevine' + desc + 'Video',
-      'Widevine Video Formats', !optional);
+      'Widevine Video Formats', false);
   test.prototype.title =
       'Test if we can play ' + desc  + ' video format with Widevine key system.';
   test.prototype.start = function(runner, video) {
@@ -272,30 +272,30 @@ var createWidevineVideoTest = function(videoStream, desc, optional) {
   };
 };
 
-createWidevineVideoTest(Media.VP9.SintelLowEnc, 'VP9.Low', true);
-createWidevineVideoTest(Media.VP9.SintelMedEnc, 'VP9.Med', true);
-createWidevineVideoTest(Media.VP9.SintelHighEnc, 'VP9.High', true);
-createWidevineVideoTest(Media.VP9.SintelHighMqEnc, 'VP9.HighMq', true);
-createWidevineVideoTest(Media.VP9.SintelHighHqEnc, 'VP9.HighHq', true);
-createWidevineVideoTest(Media.VP9.Sintel720pEnc, 'VP9.720p', true);
-createWidevineVideoTest(Media.VP9.Sintel720pMqEnc, 'VP9.720pMq', true);
-createWidevineVideoTest(Media.VP9.Sintel720pHqEnc, 'VP9.720pHq', true);
-createWidevineVideoTest(Media.VP9.Sintel1080pEnc, 'VP9.1080p', true);
-createWidevineVideoTest(Media.VP9.Sintel1080pMqEnc, 'VP9.1080pMq', true);
-createWidevineVideoTest(Media.VP9.Sintel1080pHqEnc, 'VP9.1080pHq', true);
-createWidevineVideoTest(Media.VP9.Sintel2kEnc, 'VP9.2k', true);
-createWidevineVideoTest(Media.VP9.Sintel4kEnc, 'VP9.4k', true);
-createWidevineVideoTest(Media.H264.SintelLowCenc, 'H264.Low', true);
-createWidevineVideoTest(Media.H264.SintelMedCenc, 'H264.Med', true);
-createWidevineVideoTest(Media.H264.SintelHighCenc, 'H264.High', true);
-createWidevineVideoTest(Media.H264.SintelHighMqCenc, 'H264.HighMq', true);
-createWidevineVideoTest(Media.H264.SintelHighHqCenc, 'H264.HighHq', true);
-createWidevineVideoTest(Media.H264.Sintel720pCenc, 'H264.720p', true);
-createWidevineVideoTest(Media.H264.Sintel720pMqCenc, 'H264.720pMq', true);
-createWidevineVideoTest(Media.H264.Sintel720pHqCenc, 'H264.720pHq', true);
-createWidevineVideoTest(Media.H264.Sintel1080pCenc, 'H264.1080p', true);
-createWidevineVideoTest(Media.H264.Sintel1080pMqCenc, 'H264.1080pMq', true);
-createWidevineVideoTest(Media.H264.Sintel1080pHqCenc, 'H264.1080pHq', true);
+createWidevineVideoTest(Media.VP9.SintelLowEnc, 'VP9.Low');
+createWidevineVideoTest(Media.VP9.SintelMedEnc, 'VP9.Med');
+createWidevineVideoTest(Media.VP9.SintelHighEnc, 'VP9.High');
+createWidevineVideoTest(Media.VP9.SintelHighMqEnc, 'VP9.HighMq');
+createWidevineVideoTest(Media.VP9.SintelHighHqEnc, 'VP9.HighHq');
+createWidevineVideoTest(Media.VP9.Sintel720pEnc, 'VP9.720p');
+createWidevineVideoTest(Media.VP9.Sintel720pMqEnc, 'VP9.720pMq');
+createWidevineVideoTest(Media.VP9.Sintel720pHqEnc, 'VP9.720pHq');
+createWidevineVideoTest(Media.VP9.Sintel1080pEnc, 'VP9.1080p');
+createWidevineVideoTest(Media.VP9.Sintel1080pMqEnc, 'VP9.1080pMq');
+createWidevineVideoTest(Media.VP9.Sintel1080pHqEnc, 'VP9.1080pHq');
+createWidevineVideoTest(Media.VP9.Sintel2kEnc, 'VP9.2k');
+createWidevineVideoTest(Media.VP9.Sintel4kEnc, 'VP9.4k');
+createWidevineVideoTest(Media.H264.SintelLowCenc, 'H264.Low');
+createWidevineVideoTest(Media.H264.SintelMedCenc, 'H264.Med');
+createWidevineVideoTest(Media.H264.SintelHighCenc, 'H264.High');
+createWidevineVideoTest(Media.H264.SintelHighMqCenc, 'H264.HighMq');
+createWidevineVideoTest(Media.H264.SintelHighHqCenc, 'H264.HighHq');
+createWidevineVideoTest(Media.H264.Sintel720pCenc, 'H264.720p');
+createWidevineVideoTest(Media.H264.Sintel720pMqCenc, 'H264.720pMq');
+createWidevineVideoTest(Media.H264.Sintel720pHqCenc, 'H264.720pHq');
+createWidevineVideoTest(Media.H264.Sintel1080pCenc, 'H264.1080p');
+createWidevineVideoTest(Media.H264.Sintel1080pMqCenc, 'H264.1080pMq');
+createWidevineVideoTest(Media.H264.Sintel1080pHqCenc, 'H264.1080pHq');
 
 
 var testPlayReadyH264Video = createEmeTest('PlayReadyH264Video', 'PlayReady');
@@ -395,24 +395,23 @@ createPlayReadyVideoTest(Media.H264.Sintel1080pMqCenc, 'H264.1080pMq');
 createPlayReadyVideoTest(Media.H264.Sintel1080pHqCenc, 'H264.1080pHq');
 
 
-var testCanPlayType = createEmeTest('canPlayType', 'General');
-testCanPlayType.prototype.title =
-    'Test canPlayType is using the EME Final Rec.';
-testCanPlayType.prototype.start = function(runner, video) {
-  runner.assert(video.canPlayType(Media.AAC.mimetype) === 'probably',
-      'Missing support for AAC');
-  runner.assert(video.canPlayType(Media.H264.mimetype) === 'probably',
-      'Missing support for H264');
-  runner.assert(video.canPlayType(Media.VP9.mimetype) === 'probably',
-      'Missing support for VP9');
-  runner.assert(video.canPlayType(Media.AAC.mimetype, 'Something')
-      === 'probably', 'canPlayType is not using EME final rec.');
-  runner.assert(video.canPlayType(Media.H264.mimetype, 'Something1')
-      === 'probably', 'canPlayType is not using EME final rec.');
-  runner.assert(video.canPlayType(Media.VP9.mimetype, 'Something2')
-      === 'probably', 'canPlayType is not using EME final rec.');
-  runner.succeed();
+var createCanPlayTypeTest = function(type, desc, mandatory = true) {
+  var test = createEmeTest('canPlayType.' + desc, 'General', mandatory);
+  test.prototype.title =
+      'Test canPlayType ' + desc + ' is using the EME Final Rec.';
+  test.prototype.start = function(runner, video) {
+    runner.assert(
+        video.canPlayType(type) === 'probably', 'Missing support for ' + desc);
+    runner.assert(
+        video.canPlayType(type, 'Something') === 'probably',
+        'canPlayType ' + desc + ' is not using EME Final Rec.');
+    runner.succeed();
+  };
 };
+
+createCanPlayTypeTest(Media.AAC.mimetype, 'AAC');
+createCanPlayTypeTest(Media.H264.mimetype, 'H264');
+createCanPlayTypeTest(Media.VP9.mimetype, 'VP9', false);
 
 
 var testEncryptedEventData = createEmeTest('EncryptedEventData', 'General');
