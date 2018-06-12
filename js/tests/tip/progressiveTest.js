@@ -331,9 +331,9 @@ var createTimeUpdateAccuracy = function() {
       video.play();
       video.addEventListener('timeupdate', function() {
         if (times === 0) {
-          baseTimeDiff = Date.now() / 1000.0 - video.currentTime;
+          baseTimeDiff = util.ElapsedTimeInS() - video.currentTime;
         } else {
-          var timeDiff = Date.now() / 1000.0 - video.currentTime;
+          var timeDiff = util.ElapsedTimeInS() - video.currentTime;
           maxTimeDiff = Math.max(Math.abs(timeDiff - baseTimeDiff),
                                  maxTimeDiff);
         }

@@ -117,6 +117,10 @@ util.Round = function(value, digits) {
   return Math.round(value * Math.pow(10, digits)) / Math.pow(10, digits);
 };
 
+util.ElapsedTimeInS = function() {
+  return Date.now() / 1000.0;
+};
+
 util.SizeToText = function(size, unitType) {
   var unit = 'B';
   if (!!unitType && (unitType == 'B' || unitType == 'b')) {

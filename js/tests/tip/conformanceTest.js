@@ -521,9 +521,9 @@ var createCurrentTimeAccuracyTest =
       videoSb.appendBuffer(this.getResponseData());
       video.addEventListener('timeupdate', function(e) {
         if (times === 0) {
-          baseTimeDiff = Date.now() / 1000.0 - video.currentTime;
+          baseTimeDiff = util.ElapsedTimeInS() - video.currentTime;
         } else {
-          var timeDiff = Date.now() / 1000.0 - video.currentTime;
+          var timeDiff = util.ElapsedTimeInS() - video.currentTime;
           maxTimeDiff = Math.max(
               Math.abs(timeDiff - baseTimeDiff), maxTimeDiff);
         }
@@ -567,7 +567,7 @@ var createCurrentTimePausedAccuracyTest =
         videoStream.src, function(e) {
       videoSb.appendBuffer(this.getResponseData());
       video.addEventListener('pause', function(e) {
-        var timeDiff = Date.now() / 1000.0 - video.currentTime;
+        var timeDiff = util.ElapsedTimeInS() - video.currentTime;
         runner.checkEq(video.paused, true, 'media.paused');
         runner.checkLE(
             video.currentTime - timeBeforePause, maxDiffInS, 'Time to pause');
@@ -577,7 +577,7 @@ var createCurrentTimePausedAccuracyTest =
       });
       video.addEventListener('timeupdate', function onTimeUpdate(e) {
         if (times === 0) {
-          baseTimeDiff = Date.now() / 1000.0 - video.currentTime;
+          baseTimeDiff = util.ElapsedTimeInS() - video.currentTime;
         }
         if (times > 500 || video.currentTime > 10) {
           video.removeEventListener('timeupdate', onTimeUpdate);
