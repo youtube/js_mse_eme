@@ -15,6 +15,10 @@ limitations under the License.
  */
 'use strict';
 
+/**
+ * MSE Conformance Test Suite.
+ * @class
+ */
 var ConformanceTest = function() {
 
 var mseVersion = 'Current Editor\'s Draft';
@@ -502,6 +506,11 @@ testSeekTimeUpdate.prototype.onsourceopen = function() {
   xhr.send();
 };
 
+/**
+ * Creates a MSE currentTime Accuracy test to validate if the media.currentTime
+ * is accurate to within 250 milliseconds during active playback. This can
+ * be used for video features a standard frame rate or a high frame rate.
+ */
 var createCurrentTimeAccuracyTest =
     function(videoStream, audioStream, frameRate) {
   var test = createConformanceTest(
@@ -528,7 +537,8 @@ var createCurrentTimeAccuracyTest =
               Math.abs(timeDiff - baseTimeDiff), maxTimeDiff);
         }
         if (times > 500 || video.currentTime > 10) {
-          runner.checkLE(maxTimeDiff, 0.25, 'Max time diff');
+          runner.checkLE(
+              maxTimeDiff, 0.25, 'media.currentTime diff during playback');
           runner.succeed();
         }
         ++times;
@@ -548,44 +558,72 @@ createCurrentTimeAccuracyTest(
 createCurrentTimeAccuracyTest(
     Media.VP9.Webgl720p60fps, Media.AAC.AudioNormal, 'HFR');
 
+/**
+ * Creates a MSE currentTime PausedAccuracy test to validate if
+ * the media.currentTime is accurate to within 32 milliseconds when content
+ * is paused. This can be used for video features a standard frame rate
+ * or a high frame rate. Test checks the accuracy of media.currentTime at
+ * two events: when content is paused and when content is played again after
+ * the pause, if either one meets the threshold, test passes.
+ */
 var createCurrentTimePausedAccuracyTest =
     function(videoStream, audioStream, frameRate) {
   var test = createConformanceTest(
       frameRate + 'PausedAccuracy', 'MSE currentTime');
   test.prototype.title = 'Test the currentTime granularity when pause.';
   test.prototype.onsourceopen = function() {
+    var maxDiffInS = 0.032;
     var runner = this.runner;
     var video = this.video;
     var baseTimeDiff = 0;
-    var timeBeforePause = 0;
     var times = 0;
-    var maxDiffInS = 0.032;
+    var assertTimeAtPlay = false;
+    var currentTimeIsAccurate = false;
+    var self = this;
     var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
     var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
 
     var videoXhr = runner.XHRManager.createRequest(
         videoStream.src, function(e) {
       videoSb.appendBuffer(this.getResponseData());
-      video.addEventListener('pause', function(e) {
-        var timeDiff = util.ElapsedTimeInS() - video.currentTime;
-        runner.checkEq(video.paused, true, 'media.paused');
-        runner.checkLE(
-            video.currentTime - timeBeforePause, maxDiffInS, 'Time to pause');
-        runner.checkLE(Math.abs(timeDiff - baseTimeDiff),
-                       maxDiffInS, 'Time diff when paused');
-        runner.succeed();
-      });
-      video.addEventListener('timeupdate', function onTimeUpdate(e) {
+
+      function onTimeUpdate(e) {
         if (times === 0) {
           baseTimeDiff = util.ElapsedTimeInS() - video.currentTime;
         }
         if (times > 500 || video.currentTime > 10) {
           video.removeEventListener('timeupdate', onTimeUpdate);
-          timeBeforePause = video.currentTime;
           video.pause();
         }
         ++times;
+      };
+      video.addEventListener('play', function() {
+        if (assertTimeAtPlay) {
+          var timeDiff = util.ElapsedTimeInS() - video.currentTime;
+          var currentTimeDiff = Math.abs(baseTimeDiff - timeDiff);
+          self.log('media.currentTime is ' + currentTimeDiff + 's different' +
+              ' from actual time when video is played after a pause.');
+          currentTimeIsAccurate =
+              currentTimeIsAccurate || (currentTimeDiff <= maxDiffInS);
+          runner.checkEq(
+              currentTimeIsAccurate,
+              true,
+              'media.currentTime diff is within ' + maxDiffInS + 's');
+          assertTimeAtPlay = false;
+          runner.succeed();
+        }
       });
+      video.addEventListener('pause', function(e) {
+        var timeDiff = util.ElapsedTimeInS() - video.currentTime;
+        var currentTimeDiff = Math.abs(baseTimeDiff - timeDiff);
+        runner.checkEq(video.paused, true, 'media.paused');
+        self.log('meida.currentTime is ' + currentTimeDiff +
+            's different from actual time when video is paused.');
+        currentTimeIsAccurate = currentTimeDiff <= maxDiffInS;
+        assertTimeAtPlay = true;
+        video.play();
+      });
+      video.addEventListener('timeupdate', onTimeUpdate);
       video.play();
     }, 0, 2500000);
     var audioXhr = runner.XHRManager.createRequest(
