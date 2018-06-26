@@ -569,7 +569,7 @@ createCurrentTimeAccuracyTest(
 var createCurrentTimePausedAccuracyTest =
     function(videoStream, audioStream, frameRate) {
   var test = createConformanceTest(
-      frameRate + 'PausedAccuracy', 'MSE currentTime');
+      frameRate + 'PausedAccuracy', 'MSE currentTime', false);
   test.prototype.title = 'Test the currentTime granularity when pause.';
   test.prototype.onsourceopen = function() {
     var maxDiffInS = 0.032;
