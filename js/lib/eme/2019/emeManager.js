@@ -90,6 +90,7 @@ EMEHandler.prototype.onMessage = function(event) {
   var keySession = event.target;
   var message = event.message;
   var licenseDelay = this.licenseDelay;
+
   this.licenseManager.acquireLicense(message, function(license) {
     setTimeout(function() {
       keySession.update(license);

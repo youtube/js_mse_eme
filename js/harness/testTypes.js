@@ -132,6 +132,20 @@ window.testSuiteVersions = {
       'controlMediaFormatSelection': false
     }
   },
+  '2019' : {
+    'testSuites' : [
+      'conformance-test',
+      'encryptedmedia-test',
+      'webgl-test',
+      'progressive-test',
+      'playbackperf-test'
+    ],
+    'config' : {
+      'defaultTestSuite': 'conformance-test',
+      'enablewebm': true,
+      'controlMediaFormatSelection': false
+    }
+  },
   'tip' : {
     'testSuites' : [
       'conformance-test',
