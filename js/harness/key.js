@@ -69,7 +69,25 @@ var keydb = {
   0x1A1: 'Fast Forward',
   0x1A8: 'Previous',
   0x1A9: 'Next',
-  0x1CD: 'Escape'
+  0x1CD: 'Escape',
+
+  /* Gamepad */
+  0x8001: 'Escape',
+  0x8000: 'Enter',
+  0x8008: 'Enter',
+  0x8009: 'Enter',
+  0x800C: 'Up',
+  0x800D: 'Down',
+  0x800E: 'Left',
+  0x800F: 'Right',
+  0x8011: 'Up',
+  0x8012: 'Down',
+  0x8013: 'Left',
+  0x8014: 'Right',
+  0x8015: 'Up',
+  0x8016: 'Down',
+  0x8017: 'Left',
+  0x8018: 'Right'
 };
 
 function translateKeycode(e) {
