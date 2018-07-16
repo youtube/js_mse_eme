@@ -15,6 +15,10 @@ limitations under the License.
  */
 'use strict';
 
+/**
+ * Encrypted Media Test Suite.
+ * @class
+ */
 var EncryptedmediaTest = function() {
 
 var emeVersion = 'Current Editor\'s Draft';
@@ -51,7 +55,9 @@ var createEmeTest = function(name, category, mandatory) {
   return t;
 };
 
-
+/**
+ * Ensure Widevine encrypted H264 video could be played.
+ */
 var testWidevineH264Video = createEmeTest('WidevineH264Video', 'Widevine');
 testWidevineH264Video.prototype.title =
     'Test if we can play video encrypted with Widevine encryption.';
@@ -78,7 +84,9 @@ testWidevineH264Video.prototype.start = function(runner, video) {
   video.play();
 };
 
-
+/**
+ * Ensure Widevine encrypted aac audio could be played.
+ */
 var testWidevineAacAudio = createEmeTest('WidevineAacAudio', 'Widevine');
 testWidevineAacAudio.prototype.title =
     'Test if we can play aac audio encrypted with Widevine encryption.';
@@ -105,7 +113,9 @@ testWidevineAacAudio.prototype.start = function(runner, video) {
   video.play();
 };
 
-
+/**
+ * Ensure Widevine encrypted Opus audio could be played.
+ */
 var testWidevineOpusAudio = createEmeTest('WidevineOpusAudio', 'Widevine');
 testWidevineOpusAudio.prototype.title =
     'Test if we can play opus audio encrypted with Widevine encryption.';
@@ -132,7 +142,9 @@ testWidevineOpusAudio.prototype.start = function(runner, video) {
   video.play();
 };
 
-
+/**
+ * Ensure Widevine subsample or full-sample encrypted VP9 video could be played.
+ */
 var createWidevineVP9VideoTest = function(videoStream, desc) {
   var test = createEmeTest('WidevineVP9' + desc + 'Video', 'Widevine');
   test.prototype.title =
@@ -164,13 +176,17 @@ var createWidevineVP9VideoTest = function(videoStream, desc) {
 createWidevineVP9VideoTest(Media.VP9.VideoHighEnc, '');
 createWidevineVP9VideoTest(Media.VP9.VideoHighSubSampleEnc, 'Subsample');
 
-
+/**
+ * Validate device supports key rotation with 16 MediaKeySesssion objects and
+ * 16 keys per MediaKeySession object.
+ */
 var testWidevineH264MultiMediaKeySessions = createEmeTest(
     'WidevineH264MultiMediaKeySessions', 'Widevine');
 testWidevineH264MultiMediaKeySessions.prototype.title =
     'Test creating 16 MediaKeySession objects each with 16 keys for playing ' +
     'encrypted with Widevine encryption.';
-testWidevineH264MultiMediaKeySessions.prototype.start = function(runner, video) {
+testWidevineH264MultiMediaKeySessions.prototype.start = function(
+    runner, video) {
   var testEmeHandler = this.emeHandler;
   var videoStream = Media.H264.VideoMultiKeyCenc;
   var audioStream = Media.AAC.AudioNormal;
@@ -199,7 +215,10 @@ testWidevineH264MultiMediaKeySessions.prototype.start = function(runner, video) 
   video.play();
 };
 
-
+/**
+ * Ensure Widevine encrypted video could be played with no clear start and
+ * a 5 seconds license delay.
+ */
 var createWidevineLicenseDelayTest = function(videoStream) {
   var test = createEmeTest(
       'WidevineLicenseDelay' + videoStream.codec  + 'Video', 'Widevine');
@@ -233,7 +252,10 @@ var createWidevineLicenseDelayTest = function(videoStream) {
 createWidevineLicenseDelayTest(Media.H264.VideoStreamYTCenc);
 createWidevineLicenseDelayTest(Media.VP9.VideoHighSubSampleEnc);
 
-
+/**
+ * Validate specified video format with different display resolution could be
+ * played with Widevine key system.
+ */
 var createWidevineVideoTest = function(videoStream, desc) {
   var test = createEmeTest(
       'Widevine' + desc + 'Video', 'Widevine Video Formats');
@@ -288,6 +310,9 @@ createWidevineVideoTest(Media.H264.Sintel1080pMqCenc, 'H264.1080pMq');
 createWidevineVideoTest(Media.H264.Sintel1080pHqCenc, 'H264.1080pHq');
 
 
+/**
+ * Ensure PlayReady encrypted H264 video could be played.
+ */
 var testPlayReadyH264Video = createEmeTest('PlayReadyH264Video',
     'PlayReady (Optional)', false);
 testPlayReadyH264Video.prototype.title =
@@ -315,7 +340,9 @@ testPlayReadyH264Video.prototype.start = function(runner, video) {
   video.play();
 };
 
-
+/**
+ * Ensure PlayReady encrypted aac audio could be played.
+ */
 var testPlayReadyAacAudio = createEmeTest('PlayReadyAacAudio',
     'PlayReady (Optional)', false);
 testPlayReadyAacAudio.prototype.title =
@@ -343,7 +370,9 @@ testPlayReadyAacAudio.prototype.start = function(runner, video) {
   video.play();
 };
 
-
+/**
+ * Ensure canPlayType for specified mime type is using the EME Final Rec.
+ */
 var createCanPlayTypeTest = function(type, desc, mandatory = true) {
   var test = createEmeTest('canPlayType.' + desc, 'General', mandatory);
   test.prototype.title =
@@ -362,7 +391,10 @@ createCanPlayTypeTest(Media.AAC.mimetype, 'AAC');
 createCanPlayTypeTest(Media.H264.mimetype, 'H264');
 createCanPlayTypeTest(Media.VP9.mimetype, 'VP9');
 
-
+/**
+ * Test encrypted event data contains all expected pssh atoms in the initData
+ * and a null keySystem.
+ */
 var testEncryptedEventData = createEmeTest('EncryptedEventData', 'General');
 testEncryptedEventData.prototype.title =
     'Test encrypted event data contains all expected pssh atoms in the ' +
@@ -389,7 +421,10 @@ testEncryptedEventData.prototype.start = function(runner, video) {
   video.play();
 };
 
-
+/**
+ * Validate AudioContext#createMediaElementSource succeeds and sends audio
+ * data for specified mime type.
+ */
 var createWidevineCreateMESEMETest =
     function(videoStream, audioStream, encStream) {
   var test = createEmeTest(
