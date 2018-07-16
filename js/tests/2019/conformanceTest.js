@@ -47,11 +47,13 @@ var createConformanceTest = function(name, category, mandatory) {
   return t;
 };
 
-
+/**
+ * Test if the value of video state is expected when onsourceopen
+ * event happens.
+ */
 var createInitialMediaStateTest = function(state, value, check) {
-  var test = createConformanceTest('InitialMedia' +
-                                   util.MakeCapitalName(state), 'Media Element Core');
-
+  var test = createConformanceTest(
+      'InitialMedia' + util.MakeCapitalName(state), 'Media Element Core');
   check = typeof(check) === 'undefined' ? 'checkEq' : check;
   test.prototype.title = 'Test if the state ' + state +
       ' is correct when onsourceopen is called';
@@ -68,7 +70,9 @@ createInitialMediaStateTest('readyState', HTMLMediaElement.HAVE_NOTHING);
 createInitialMediaStateTest('src', '', 'checkNE');
 createInitialMediaStateTest('currentSrc', '', 'checkNE');
 
-
+/**
+ * Validate the XHR request can send Uint8Array.
+ */
 var testXHRUint8Array = createConformanceTest('XHRUint8Array', 'XHR');
 testXHRUint8Array.prototype.title = 'Ensure that XHR can send an Uint8Array';
 testXHRUint8Array.prototype.timeout = 10000;
@@ -91,7 +95,10 @@ testXHRUint8Array.prototype.start = function(runner, video) {
   xhr.send(view);
 };
 
-
+/**
+ * Ensure that XHR aborts actually abort by issuing an absurd number of them
+ * and then aborting all but one.
+ */
 var testXHRAbort = createConformanceTest('XHRAbort', 'XHR');
 testXHRAbort.prototype.title = 'Ensure that XHR aborts actually abort by ' +
     'issuing an absurd number of them and then aborting all but one.';
@@ -117,7 +124,9 @@ testXHRAbort.prototype.start = function(runner, video) {
   startXHR(0);
 };
 
-
+/**
+ * Ensure XMLHttpRequest.open does not reset XMLHttpRequest.responseType.
+ */
 var testXHROpenState = createConformanceTest('XHROpenState', 'XHR');
 testXHROpenState.prototype.title = 'Ensure XMLHttpRequest.open does not ' +
     'reset XMLHttpRequest.responseType';
@@ -130,7 +139,9 @@ testXHROpenState.prototype.start = function(runner, video) {
   runner.succeed();
 };
 
-
+/**
+ * Validate existence of MediaSource object.
+ */
 var testPresence = createConformanceTest('Presence', 'MSE Core');
 testPresence.prototype.title = 'Test if MediaSource object is present.';
 testPresence.prototype.start = function(runner, video) {
@@ -149,7 +160,9 @@ testPresence.prototype.start = function(runner, video) {
   runner.succeed();
 };
 
-
+/**
+ * Ensure MediaSource object can be attached to video.
+ */
 var testAttach = createConformanceTest('Attach', 'MSE Core');
 testAttach.prototype.timeout = 2000;
 testAttach.prototype.title =
@@ -163,24 +176,31 @@ testAttach.prototype.start = function(runner, video) {
   video.load();
 };
 
-
+/**
+ * Test addSourceBuffer is working correctly.
+ */
 var testAddSourceBuffer = createConformanceTest('AddSourceBuffer', 'MSE Core');
 testAddSourceBuffer.prototype.title =
     'Test if we can add source buffer';
 testAddSourceBuffer.prototype.onsourceopen = function() {
   try {
-    this.runner.checkEq(this.ms.sourceBuffers.length, 0, 'Source buffer number');
+    this.runner.checkEq(
+        this.ms.sourceBuffers.length, 0, 'Source buffer number');
     this.ms.addSourceBuffer(Media.AAC.mimetype);
-    this.runner.checkEq(this.ms.sourceBuffers.length, 1, 'Source buffer number');
+    this.runner.checkEq(
+        this.ms.sourceBuffers.length, 1, 'Source buffer number');
     this.ms.addSourceBuffer(Media.VP9.mimetype);
-    this.runner.checkEq(this.ms.sourceBuffers.length, 2, 'Source buffer number');
+    this.runner.checkEq(
+        this.ms.sourceBuffers.length, 2, 'Source buffer number');
   } catch (e) {
     this.runner.fail(e);
   }
   this.runner.succeed();
 };
 
-
+/**
+ * Ensure add incorrect source buffer type will fire the correct exceptions.
+ */
 var testAddSourceBufferException =
     createConformanceTest('AddSBException', 'MSE Core');
 testAddSourceBufferException.prototype.title = 'Test if add incorrect ' +
@@ -200,7 +220,9 @@ testAddSourceBufferException.prototype.onsourceopen = function() {
   runner.succeed();
 };
 
-
+/**
+ * Test addSourceBuffer and removeSourceBuffer are working correctly.
+ */
 var testSourceRemove = createConformanceTest('RemoveSourceBuffer', 'MSE Core');
 testSourceRemove.prototype.title = 'Test if we can add/remove source buffers';
 testSourceRemove.prototype.onsourceopen = function() {
@@ -224,7 +246,9 @@ testSourceRemove.prototype.onsourceopen = function() {
   this.runner.succeed();
 };
 
-
+/**
+ * Ensure MediaSource state has the expected value when onsourceopen happens.
+ */
 var createInitialMSStateTest = function(state, value, check) {
   var test = createConformanceTest('InitialMS' + util.MakeCapitalName(state),
                                    'MSE Core');
@@ -241,7 +265,9 @@ var createInitialMSStateTest = function(state, value, check) {
 createInitialMSStateTest('duration', NaN);
 createInitialMSStateTest('readyState', 'open');
 
-
+/**
+ * Ensure we can set MediaSource.duration.
+ */
 var testDuration = createConformanceTest('Duration', 'MSE Core');
 testDuration.prototype.title =
     'Test if we can set duration.';
@@ -251,7 +277,9 @@ testDuration.prototype.onsourceopen = function() {
   this.runner.succeed();
 };
 
-
+/**
+ * Test events on the MediaElement.
+ */
 var mediaElementEvents =
     createConformanceTest('MediaElementEvents', 'MSE Core');
 mediaElementEvents.prototype.title = 'Test events on the MediaElement.';
@@ -298,7 +326,9 @@ mediaElementEvents.prototype.onsourceopen = function() {
   audioXhr.send();
 };
 
-
+/**
+ * Test if the events on MediaSource are correct.
+ */
 var mediaSourceEvents = createConformanceTest('MediaSourceEvents', 'MSE Core');
 mediaSourceEvents.prototype.title =
     'Test if the events on MediaSource are correct.';
@@ -342,7 +372,9 @@ mediaSourceEvents.prototype.onsourceopen = function() {
   audioXhr.send();
 };
 
-
+/**
+ * Append to buffer until exceeding the quota error.
+ */
 var testBufferSize = createConformanceTest('VideoBufferSize', 'MSE Core');
 testBufferSize.prototype.title = 'Determines video buffer sizes by ' +
     'appending incrementally until discard occurs, and tests that it meets ' +
@@ -401,7 +433,10 @@ testBufferSize.prototype.onsourceopen = function() {
   xhr.send();
 };
 
-
+/**
+ * Ensure we can start play before feeding any data. The play should
+ * start automatically after data is appended.
+ */
 var testStartPlayWithoutData = createConformanceTest('StartPlayWithoutData',
                                                      'MSE Core');
 testStartPlayWithoutData.prototype.title =
@@ -432,7 +467,9 @@ testStartPlayWithoutData.prototype.onsourceopen = function() {
   });
 };
 
-
+/**
+ * Ensure event timestamp is relative to the initial page load.
+ */
 var testEventTimestamp = createConformanceTest('EventTimestamp', 'MSE Core');
 testEventTimestamp.prototype.title = 'Test Event Timestamp is relative to ' +
     'the initial page load';
@@ -467,7 +504,9 @@ testEventTimestamp.prototype.onsourceopen = function() {
   videoXhr.send();
 };
 
-
+/**
+ * Ensure timeupdate event fired with correct currentTime value after seeking.
+ */
 var testSeekTimeUpdate = createConformanceTest('SeekTimeUpdate', 'MSE Core');
 testSeekTimeUpdate.prototype.title =
   'Timeupdate event fired with correct currentTime after seeking.';
@@ -547,7 +586,8 @@ var createCurrentTimeAccuracyTest =
       });
       video.play();
     }, 0, 2500000);
-    var audioXhr = runner.XHRManager.createRequest(audioStream.src, function(e) {
+    var audioXhr = runner.XHRManager.createRequest(
+        audioStream.src, function(e) {
       audioSb.appendBuffer(this.getResponseData());
       videoXhr.send();
     }, 0, 2500000);
@@ -642,6 +682,9 @@ createCurrentTimePausedAccuracyTest(
 createCurrentTimePausedAccuracyTest(
     Media.VP9.Webgl720p60fps, Media.AAC.AudioNormal, 'HFR');
 
+/**
+ * Validate specified mimetype is supported.
+ */
 var createSupportTest = function(mimetype, desc) {
   var test = createConformanceTest(desc + 'Support', 'MSE Formats');
   test.prototype.title =
@@ -662,7 +705,14 @@ createSupportTest(Media.H264.mimetype, 'H264');
 createSupportTest(Media.VP9.mimetype, 'VP9');
 createSupportTest(Media.Opus.mimetype, 'Opus');
 
-
+/**
+ * Test appendBuffer for specified mimetype by appending twice in a row.
+ * When the first append happens, the sourceBuffer becomes temporarily unusable
+ * and it's updating should be set to true, which makes the second appends
+ * unsuccessful and throws INVALID_STATE_ERR exception.
+ * However, sometimes the update happens so fast that the second append manage
+ * as well.
+ */
 var createAppendTest = function(stream, unused_stream) {
   var test = createConformanceTest(
       'Append' + stream.codec + util.MakeCapitalName(stream.mediatype),
@@ -714,7 +764,9 @@ var createAppendTest = function(stream, unused_stream) {
   };
 };
 
-
+/**
+ * Ensure sourceBuffer can abort current segment and end up with correct value.
+ */
 var createAbortTest = function(stream, unused_stream) {
   var test = createConformanceTest(
       'Abort' + stream.codec + util.MakeCapitalName(stream.mediatype),
@@ -748,7 +800,9 @@ var createAbortTest = function(stream, unused_stream) {
   };
 };
 
-
+/**
+ * Ensure timestamp offset can be set.
+ */
 var createTimestampOffsetTest = function(stream, unused_stream) {
   var test = createConformanceTest(
       'TimestampOffset' + stream.codec +
@@ -774,7 +828,10 @@ var createTimestampOffsetTest = function(stream, unused_stream) {
   };
 };
 
-
+/**
+ * Test the sourceBuffer DASH switch latency.
+ * Validate it's less than 1 second.
+ */
 var createDASHLatencyTest = function(videoStream, audioStream) {
   var test = createConformanceTest('DASHLatency' + videoStream.codec,
       'MSE (' + videoStream.codec + ')');
@@ -852,7 +909,9 @@ var createDASHLatencyTest = function(videoStream, audioStream) {
   };
 };
 
-
+/**
+ * Ensure valid duration change after append buffer by halving the duration.
+ */
 var createDurationAfterAppendTest = function(stream, unused_stream) {
   var test = createConformanceTest(
       'DurationAfterAppend' + stream.codec +
@@ -920,7 +979,9 @@ var createDurationAfterAppendTest = function(stream, unused_stream) {
   };
 };
 
-
+/**
+ * Test pause state before or after appending data to sourceBuffer.
+ */
 var createPausedTest = function(stream) {
   var test = createConformanceTest(
       'PausedStateWith' + stream.codec +
@@ -950,12 +1011,14 @@ var createPausedTest = function(stream) {
   };
 };
 
-
+/**
+ * Test if video dimension is correct before or after appending data.
+ */
 var createVideoDimensionTest = function(videoStream, audioStream) {
   var test = createConformanceTest('VideoDimension' + videoStream.codec,
       'MSE (' + videoStream.codec + ')');
   test.prototype.title =
-      'Test if the readyState transition is correct.';
+      'Test if video dimension is correct before or after appending data.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
     var media = this.video;
@@ -994,7 +1057,9 @@ var createVideoDimensionTest = function(videoStream, audioStream) {
   };
 };
 
-
+/**
+ * Test if the playback state transition is correct.
+ */
 var createPlaybackStateTest = function(stream) {
   var test = createConformanceTest('PlaybackState' + stream.codec,
       'MSE (' + stream.codec + ')');
@@ -1047,7 +1112,9 @@ var createPlaybackStateTest = function(stream) {
   };
 };
 
-
+/**
+ * Ensure we can play a partially appended video segment.
+ */
 var createPlayPartialSegmentTest = function(stream) {
   var test = createConformanceTest('PlayPartial' + stream.codec + 'Segment',
       'MSE (' + stream.codec + ')');
@@ -1060,7 +1127,8 @@ var createPlayPartialSegmentTest = function(stream) {
     var audioStream = Media.AAC.AudioTiny;
     var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
     var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
-    var videoXhr = runner.XHRManager.createRequest(videoStream.src, function(e) {
+    var videoXhr = runner.XHRManager.createRequest(
+        videoStream.src, function(e) {
       videoSb.appendBuffer(this.getResponseData());
       video.addEventListener('timeupdate', function(e) {
         if (!video.paused && video.currentTime >= 2) {
@@ -1069,7 +1137,8 @@ var createPlayPartialSegmentTest = function(stream) {
       });
       video.play();
     }, 0, 1500000);
-    var audioXhr = runner.XHRManager.createRequest(audioStream.src, function(e) {
+    var audioXhr = runner.XHRManager.createRequest(
+        audioStream.src, function(e) {
       audioSb.appendBuffer(this.getResponseData());
       videoXhr.send();
     }, 0, 500000);
@@ -1077,7 +1146,9 @@ var createPlayPartialSegmentTest = function(stream) {
   };
 };
 
-
+/**
+ * Ensure we can play a partially appended audio segment.
+ */
 var createIncrementalAudioTest = function(stream) {
   var test = createConformanceTest('Incremental' + stream.codec + 'Audio',
       'MSE (' + stream.codec + ')');
@@ -1101,7 +1172,9 @@ var createIncrementalAudioTest = function(stream) {
   };
 };
 
-
+/**
+ * Ensure we can append audio data with an explicit offset.
+ */
 var createAppendAudioOffsetTest = function(stream1, stream2) {
   var test = createConformanceTest('Append' + stream1.codec + 'AudioOffset',
       'MSE (' + stream1.codec + ')');
@@ -1136,7 +1209,9 @@ var createAppendAudioOffsetTest = function(stream1, stream2) {
   };
 };
 
-
+/**
+ * Ensure we can append video data with an explicit offset.
+ */
 var createAppendVideoOffsetTest = function(stream1, stream2, audioStream) {
   var test = createConformanceTest('Append' + stream1.codec + 'VideoOffset',
       'MSE (' + stream1.codec + ')');
@@ -1191,7 +1266,9 @@ var createAppendVideoOffsetTest = function(stream1, stream2, audioStream) {
   };
 };
 
-
+/**
+ * Ensure we can append multiple init segments.
+ */
 var createAppendMultipleInitTest = function(stream, unused_stream) {
   var test = createConformanceTest(
       'AppendMultipleInit' + stream.codec +
@@ -1249,7 +1326,9 @@ var createAppendMultipleInitTest = function(stream, unused_stream) {
   };
 };
 
-
+/**
+ * Test appending segments out of order.
+ */
 var createAppendOutOfOrderTest = function(stream, unused_stream) {
   var test = createConformanceTest(
       'Append' + stream.codec + util.MakeCapitalName(stream.mediatype) +
@@ -1306,7 +1385,9 @@ var createAppendOutOfOrderTest = function(stream, unused_stream) {
   };
 };
 
-
+/**
+ * Test SourceBuffer.buffered get updated correctly after feeding data.
+ */
 var createBufferedRangeTest = function(stream, unused_stream) {
   var test = createConformanceTest(
       'BufferedRange' + stream.codec + util.MakeCapitalName(stream.mediatype),
@@ -1334,7 +1415,9 @@ var createBufferedRangeTest = function(stream, unused_stream) {
   };
 };
 
-
+/**
+ * Ensure the duration on MediaSource can be set and retrieved sucessfully.
+ */
 var createMediaSourceDurationTest = function(videoStream, audioStream) {
   var test = createConformanceTest('MediaSourceDuration' + videoStream.codec,
       'MSE (' + videoStream.codec + ')');
@@ -1411,7 +1494,9 @@ var createMediaSourceDurationTest = function(videoStream, audioStream) {
   };
 };
 
-
+/**
+ * Validate media data with overlap is merged into one range.
+ */
 var createOverlapTest = function(stream, unused_stream) {
   var test = createConformanceTest(
       stream.codec + util.MakeCapitalName(stream.mediatype) + 'WithOverlap',
@@ -1458,7 +1543,10 @@ var createOverlapTest = function(stream, unused_stream) {
   };
 };
 
-
+/**
+ * Validate media data with a gap smaller than an media frame size is merged
+ * into one buffered range.
+ */
 var createSmallGapTest = function(stream, unused_stream) {
   var test = createConformanceTest(
       stream.codec + util.MakeCapitalName(stream.mediatype) + 'WithSmallGap',
@@ -1506,7 +1594,10 @@ var createSmallGapTest = function(stream, unused_stream) {
   };
 };
 
-
+/**
+ * Validate media data with a gap larger than an media frame size will not be
+ * merged into one buffered range.
+ */
 var createLargeGapTest = function(stream, unused_stream) {
   var test = createConformanceTest(
       stream.codec + util.MakeCapitalName(stream.mediatype) + 'WithLargeGap',
@@ -1552,7 +1643,11 @@ var createLargeGapTest = function(stream, unused_stream) {
   };
 };
 
-
+/**
+ * Validate we can seek during playing. It also tests if the implementation
+ * properly supports seek operation fired immediately after another seek that
+ * hasn't been completed.
+ */
 var createSeekTest = function(videoStream) {
   var test = createConformanceTest('Seek' + videoStream.codec,
       'MSE (' + videoStream.codec + ')');
@@ -1608,7 +1703,9 @@ var createSeekTest = function(videoStream) {
   };
 };
 
-
+/**
+ * Seek into and out of a buffered region.
+ */
 var createBufUnbufSeekTest = function(videoStream) {
   var test = createConformanceTest('BufUnbufSeek' + videoStream.codec,
       'MSE (' + videoStream.codec + ')');
@@ -1648,7 +1745,10 @@ var createBufUnbufSeekTest = function(videoStream) {
   };
 };
 
-
+/**
+ * Ensure we can play properly when there is not enough audio or video data.
+ * The play should resume once src data is appended.
+ */
 var createDelayedTest = function(delayed, nonDelayed) {
   var test = createConformanceTest(
       'Delayed' + delayed.codec + util.MakeCapitalName(delayed.mediatype),
@@ -1661,7 +1761,8 @@ var createDelayedTest = function(delayed, nonDelayed) {
     var runner = this.runner;
     var media = this.video;
     // Chrome allows for 3 seconds of underflow for streams that have audio
-    // but are video starved. See code.google.com/p/chromium/issues/detail?id=423801
+    // but are video starved.
+    // See code.google.com/p/chromium/issues/detail?id=423801
     var underflowTime = 0.0;
     if (delayed.mediatype == 'video') {
       underflowTime = 3.0;
@@ -1785,7 +1886,9 @@ createSeekTest(Media.H264.VideoNormal);
 createBufUnbufSeekTest(Media.H264.VideoNormal);
 createDelayedTest(Media.H264.VideoNormal, Media.AAC.AudioNormal);
 
-
+/**
+ * Ensure AudioContext is supported.
+ */
 var testWAAContext = createConformanceTest('WAAPresence', 'MSE Web Audio API');
 testWAAContext.prototype.title = 'Test if AudioContext is supported';
 testWAAContext.prototype.start = function(runner, video) {
@@ -1800,7 +1903,10 @@ testWAAContext.prototype.start = function(runner, video) {
   runner.succeed();
 };
 
-
+/**
+ * Validate AudioContext#createMediaElementSource supports specified video and
+ * audio mimetype.
+ */
 var createCreateMESTest = function(audioStream, videoStream) {
   var test = createConformanceTest(
       audioStream.codec + '/' + videoStream.codec + 'CreateMediaElementSource',
@@ -1868,7 +1974,9 @@ createCreateMESTest(Media.Opus.CarLow, Media.VP9.VideoNormal);
 createCreateMESTest(Media.AAC.Audio1MB, Media.VP9.VideoNormal);
 createCreateMESTest(Media.AAC.Audio1MB, Media.H264.VideoNormal);
 
-
+/**
+ * Test media with mismatched frame duration and segment timing.
+ */
 var frameTestOnSourceOpen = function() {
   var runner = this.runner;
   var media = this.video;
@@ -1898,7 +2006,10 @@ testFrameOverlaps.prototype.title = 'Test media with frame durations of ' +
 testFrameOverlaps.prototype.filename = Media.H264.FrameOverlap.src;
 testFrameOverlaps.prototype.onsourceopen = frameTestOnSourceOpen;
 
-
+/**
+ * Test different audio codec with 5.1 surround sound (six channel surround
+ * sound audio system).
+ */
 var createAudio51Test = function(audioStream) {
   var test = createConformanceTest(audioStream.codec + '5.1', 'Media');
   test.prototype.title = 'Test 5.1-channel ' + audioStream.codec;
@@ -1929,7 +2040,10 @@ var createAudio51Test = function(audioStream) {
 createAudio51Test(Media.Opus.Audio51);
 createAudio51Test(Media.AAC.Audio51);
 
-
+/**
+ * Test playback of HE-AAC (High-Efficiency Advanced Audio Coding) with
+ * specified type of SBR signaling.
+ */
 var createHeAacTest = function(audioStream) {
   var test = createConformanceTest('HE-AAC/' +
       audioStream.get('sbrSignaling') + 'SBR', 'Media');
