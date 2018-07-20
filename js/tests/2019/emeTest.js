@@ -44,8 +44,8 @@ var createEmeTest = function(name, category, mandatory) {
   t.prototype.teardown = function(testSuiteVer, cb) {
     t.prototype.emeHandler.closeAllKeySessions(function() {
       t.prototype.emeHandler = new EMEHandler();
-      t.prototype.baseTearDown(testSuiteVer, cb);
     });
+    this.baseTearDown(testSuiteVer, cb);
   };
   tests.push(t);
   return t;
