@@ -15,6 +15,10 @@ limitations under the License.
  */
 'use strict';
 
+/**
+ * WebGL Performance Test Suite.
+ * @class
+ */
 var WebglTest = function() {
 
 var webkitPrefix = MediaSource.prototype.version.indexOf('webkit') >= 0;
@@ -52,7 +56,10 @@ function setupWebglTest(video, runner, videoStream) {
   return new WebglHandler(video, canvas);
 }
 
-
+/**
+ * Ensure WebGL performance of given video format by comparing the playback
+ * frame rate with threshold values.
+ */
 var createWebglPerformanceTest = function(videoStream) {
   var test = createWebglTest('WebGLPerformance' + '.' + videoStream.codec +
       '.' + videoStream.get('resolution') + videoStream.get('fps'),

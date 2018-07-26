@@ -102,6 +102,10 @@ var createTotalVideoFramesValidationTest = function(videoStream, frames) {
 
 createTotalVideoFramesValidationTest(Media.H264.Video1MB, 25);
 
+/**
+ * Ensure that browser is able to detect frame drops by correctly implementing
+ * the DroppedFrameCount API.
+ */
 var createFrameDropValidationTest = function(videoStream1, videoStream2) {
   var test = createPerfTest('FrameDrop', 'Media Playback Quality');
   test.prototype.title = 'Frame Drop Validation';
@@ -148,7 +152,10 @@ var createFrameDropValidationTest = function(videoStream1, videoStream2) {
 createFrameDropValidationTest(
     Media.H264.Webgl1080p60fps, Media.VP9.Webgl2160p60fps);
 
-
+/**
+ * Ensure no dropped frame is encountered during playback of specified media
+ * format in certain playback rate.
+ */
 var createPlaybackPerfTest = function(
     videoStream, playbackRate, category, optional) {
   var test = createPerfTest('PlaybackPerf' + '.' + videoStream.codec +
