@@ -19,8 +19,16 @@ limitations under the License.
     <meta charset="utf-8" />
     <title>Media Source and Encrypted Media Conformance Tests</title>
     <link rel="stylesheet" href="main.css" type="text/css">
+    <script type="text/javascript" src="js/harness/constants.js"></script>
   </head>
   <body>
+    <script type="text/javascript">
+      var name = testVersion + " Tests";
+
+      window.onload = function() {
+       document.getElementById("testVersion").innerHTML=name;
+      }
+    </script>
     <header>
       <div>
         <h1>Media Source and Encrypted Media Conformance Tests</h1>
@@ -28,15 +36,7 @@ limitations under the License.
     </header>
     <div class="content">
       <div class="linkbar">
-        <strong><a href="2019.html">2019 Tests</a></strong> .
-        <a href="2018.html">2018 Tests</a> ·
-        <a href="2017.html">2017 Tests</a> ·
-        <a href="2016.html">2016 Tests</a> ·
-        <a href="2015.html">2015 Tests</a> ·
-        <a href="0.6.html">2014 Tests</a> ·
-        <a href="0.5.html">2013 Tests</a> ·
-        <a href="tip.html">Tip Tests</a> |
-        <a href="links.html">Links</a>
+        <strong><a id="testVersion" href="main.html"></a></strong>
       </div>
       <h2>Changelog</h2>
       <h3>2018-06-29</h3>
