@@ -113,6 +113,15 @@ util.MakeCapitalName = function(name) {
   return name;
 };
 
+util.MakeFieldName = function(name) {
+  var arr = name.split('-');
+  name = arr[0];
+  for (var i = 1; i < arr.length; i++) {
+    name += util.MakeCapitalName(arr[i]);
+  }
+  return name;
+};
+
 util.Round = function(value, digits) {
   return Math.round(value * Math.pow(10, digits)) / Math.pow(10, digits);
 };
@@ -213,6 +222,39 @@ util.dlog = function(level) {
     else
       console.log(args);
   }
+};
+
+// return [width, height] of current window
+util.getMaxWindow = function() {
+  return [
+    window.innerWidth * window.devicePixelRatio,
+    window.innerHeight * window.devicePixelRatio
+  ];
+};
+
+util.getMaxVp9SupportedWindow = function() {
+  if (MediaSource.isTypeSupported(
+      'video/webm; codecs="vp9"; width=3840; height=2160;') &&
+          !MediaSource.isTypeSupported(
+              'video/webm; codecs="vp9"; width=9999; height=9999;'))
+    return [3840, 2160];
+  else
+    return util.getMaxWindow();
+};
+
+util.getMaxH264SupportedWindow = function() {
+  if (MediaSource.isTypeSupported(
+      'video/mp4; codecs="avc1.4d401e"; width=1920; height=1080;') &&
+          !MediaSource.isTypeSupported(
+              'video/mp4; codecs="avc1.4d401e"; width=9999; height=9999;'))
+    return [1920, 1080];
+  else
+    return util.getMaxWindow();
+};
+
+util.is4k = function() {
+  return util.getMaxVp9SupportedWindow[0] == 3840 &&
+      util.getMaxVp9SupportedWindow[1] == 2160;
 };
 
 window.util = util;

@@ -72,9 +72,12 @@ function TestView(testSuiteVer) {
   this.addTestSuites = function(testSuites) {
     for (var index in testSuites) {
       var testSuite = testSuites[index];
+      var testSuiteName = testSuiteDescriptions[testSuite].name;
       if (testSuite !== harnessConfig.testType) {
-        var testSuiteName = testSuiteDescriptions[testSuite].name;
         this.addTestSuite(testSuiteName, '?test_type=' + testSuite);
+      }
+      else {
+        this.addTestSuite(testSuiteName, null);
       }
     }
   }
@@ -164,9 +167,15 @@ function TestView(testSuiteVer) {
     var testSuitesDiv = document.getElementById('testsuites');
     for (var i = 0; i < testSuites.length; ++i) {
       testSuitesDiv.appendChild(createAnchor(testSuites[i].text));
-      testSuitesDiv.lastChild.setAttribute('data-href', testSuites[i].href);
-      testSuitesDiv.lastChild.onclick = window.navigate;
-      testSuitesDiv.lastChild.classList.add('focusable');
+      if (testSuites[i].href != null) {
+        testSuitesDiv.lastChild.setAttribute('data-href', testSuites[i].href);
+        testSuitesDiv.lastChild.onclick = window.navigate;
+        testSuitesDiv.lastChild.classList.add('focusable');
+      }
+      else {
+        // display the current test suite name in black border
+        testSuitesDiv.lastChild.style.border = "solid #000000";
+      }
     }
 
     this.testList.generate(document.getElementById('testlist'));

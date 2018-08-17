@@ -286,7 +286,8 @@ TestExecutor.prototype.onfinished = function() {
     }
   }
 
-  if (document.URL.indexOf('yt-dash-mse-test') >= 0) {
+  if (document.URL.indexOf('appspot.com') >= 0 ||
+      document.URL.indexOf('googleapis.com') >= 0) {
     this.sendTestReport(getTestResults());
   }
 };
