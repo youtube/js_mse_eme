@@ -43,6 +43,21 @@ limitations under the License.
       title: 'Tests for performance of video playback and decoding',
       heading: 'Playback Performance Tests'
     },
+    'functional-test': {
+      name: 'Functional Tests',
+      title: 'Tests for required HTML/CSS/DOM/JS functionality',
+      heading: 'Functional Tests'
+    },
+    'css-test': {
+      name: 'CSS Conformance Tests',
+      title: 'Tests for CSS Conformance functionalities',
+      heading: 'CSS Conformance Tests'
+    },
+    'domelement-test': {
+      name: 'HTML DOM Element Tests',
+      title: 'Tests for various types of DOM Element',
+      heading: 'HTML DOM ELement Tests'
+    },
   };
 
   window.testSuiteVersions = {
@@ -53,6 +68,9 @@ limitations under the License.
         'webgl-test',
         'progressive-test',
         'playbackperf-test',
+        'functional-test',
+        'css-test',
+        'domelement-test',
       ],
       'config' : {
         'defaultTestSuite': 'conformance-test',
