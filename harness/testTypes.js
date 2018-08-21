@@ -58,6 +58,21 @@ limitations under the License.
       title: 'Tests for various types of DOM Element',
       heading: 'HTML DOM ELement Tests'
     },
+    'domcss-test': {
+      name: 'DOM CSS Tests',
+      title: 'Tests for DOM CSS element',
+      heading: 'DOM CSS Tests'
+    },
+    'domdocument-test': {
+      name: 'DOM Document Tests',
+      title: 'Tests for DOM Document Event',
+      heading: 'DOM Document & Event Tests'
+    },
+    'dommisc-test': {
+      name: 'DOM chardata, window & Miscellaneous Tests',
+      title: 'Tests for DOM chardata, window & Miscellaneous',
+      heading: 'DOM chardata, window & Miscellaneous Tests'
+    }
   };
 
   window.testSuiteVersions = {
@@ -71,6 +86,9 @@ limitations under the License.
         'functional-test',
         'css-test',
         'domelement-test',
+        'domcss-test',
+        'domdocument-test',
+        'dommisc-test',
       ],
       'config' : {
         'defaultTestSuite': 'conformance-test',
