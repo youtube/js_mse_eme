@@ -145,6 +145,14 @@ div.container_hidden {
   display: none;
 }
 
+#testsuites {
+  max-width: 85%;
+}
+
+#testsuites span {
+  display: inline-block;
+}
+
 #outputarea {
   padding-top: 5px;
   height: 230px;
