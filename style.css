@@ -254,3 +254,15 @@ span:focus {
   font-weight: bold;
   margin: 5px 0px 0px 0px;
 }
+
+@keyframes blink {
+  from {background-color: white;}
+  to {background-color: black;}
+}
+
+/* Use to activate CSS animation */
+.spinner {
+  animation: blink 1s infinite alternate;
+  width: 420px;
+  height: 210px;
+}

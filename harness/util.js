@@ -257,6 +257,10 @@ util.is4k = function() {
       util.getMaxVp9SupportedWindow[1] == 2160;
 };
 
+util.isCobalt = function() {
+  return navigator.userAgent.includes('Cobalt');
+};
+
 window.util = util;
 
 })();

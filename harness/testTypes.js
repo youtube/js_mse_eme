@@ -72,7 +72,12 @@ limitations under the License.
       name: 'DOM chardata, window & Miscellaneous Tests',
       title: 'Tests for DOM chardata, window & Miscellaneous',
       heading: 'DOM chardata, window & Miscellaneous Tests'
-    }
+    },
+    'sphericalOnCobalt-test': {
+      name: 'Cobalt Spherical Tests',
+      title: 'Spherical video performance tests on Cobalt',
+      heading: 'Spherical on Cobalt Tests'
+    },
   };
 
   window.testSuiteVersions = {
@@ -81,6 +86,7 @@ limitations under the License.
         'conformance-test',
         'encryptedmedia-test',
         'webgl-test',
+        'sphericalOnCobalt-test',
         'progressive-test',
         'playbackperf-test',
         'functional-test',
