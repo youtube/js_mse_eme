@@ -1,0 +1,248 @@
+/*
+Copyright 2018 Google Inc. All rights reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+body {
+  background: #fff;
+  font: normal 0.64em 'Roboto',Sans-Serif;
+  margin: 10px 20px 0 20px;
+  width: 1240px;
+  height: 710px;
+}
+
+.default-list .cell-category {
+  display: inline-block;
+  font-weight: bold;
+  color: #039;
+  padding: 0px;
+  border-bottom: 2px solid #6678b1;
+  width: 100%;
+}
+
+.expanded-test-status-list .cell-category {
+  display: inline-block;
+  font-weight: bold;
+  color: #039;
+  padding: 0px;
+  border-bottom: 2px solid #6678b1;
+  width: 100%;
+  text-align: center;
+}
+
+.cell-name {
+  display: inline-block;
+  padding: 1px 0px;
+}
+
+.expanded-test-status-list .test-status-normal {
+  display: inline-block;
+  min-width: 60px;
+  text-align: center;
+  font-size: 0.6em;
+}
+
+.expanded-test-status-list .test-status-running {
+  display: inline-block;
+  min-width: 60px;
+  text-align: center;
+  font-size: 0.6em;
+}
+
+.expanded-test-status-list .test-status-fail {
+  display: inline-block;
+  min-width: 58px;
+  background-color: #800;
+  border: 1px solid #000;
+  color: #FFF;
+  text-align: center;
+  font-size: 0.6em;
+}
+
+.expanded-test-status-list .test-status-pass {
+  display: inline-block;
+  min-width: 58px;
+  background-color: #b5e61d;
+  border: 1px solid #080;
+  color: #FFF;
+  text-align: center;
+  font-size: 0.6em;
+}
+
+.expanded-test-status-list .test-status-optional-fail {
+  display: inline-block;
+  min-width: 56px;
+  border-style: solid;
+  border-color: #800;
+  border-width: 2px;
+  padding: 0px;
+  text-align: center;
+  font-size: 0.6em;
+}
+
+.test-status-none {
+  display: inline-block;
+  min-width: 7px;
+}
+
+.default-list .test-status-running {
+  display: inline-block;
+  min-width: 5px;
+  background-color: #f0e68c;
+  border: 1px solid #880;
+}
+
+.default-list .test-status-fail {
+  display: inline-block;
+  min-width: 5px;
+  background-color: #800;
+  border: 1px solid #000;
+}
+
+.default-list .test-status-pass {
+  display: inline-block;
+  min-width: 5px;
+  background-color: #b5e61d;
+  border: 1px solid #080;
+}
+
+.default-list .test-status-optional-fail {
+  display: inline-block;
+  min-width: 5px;
+  border-style: solid;
+  border-color: #800;
+  border-width: 2px;
+  padding: 0px;
+}
+
+.cell-column {
+  display: inline-block;
+  vertical-align: top;
+  padding-right: 5px;
+}
+
+div.container {
+  margin: 0 0 0 0;
+  padding: 5px 0 5px 0;
+  overflow: hidden;
+}
+
+div.container_hidden {
+  width: 100%;
+  margin: 10px 0 10px 0;
+  overflow: hidden;
+  display: none;
+}
+
+#outputarea {
+  padding-top: 5px;
+  height: 230px;
+}
+
+.box-left {
+  height: 370px;
+  display: inline-block;
+}
+
+.box-right {
+  width: 420px;
+  height: 210px;
+}
+
+#testarea {
+  vertical-align: top;
+  display: inline-block;
+  height: 230px;
+}
+
+#outputcontainer {
+  vertical-align: top;
+  display: inline-block;
+  height: 230px;
+  padding-right: 5px;
+}
+
+#output {
+  height: 210px;
+  width: 502px;
+  overflow: hidden;
+  color: #369;
+  border-width: 1px;
+  border-style: solid;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  font-size: 1.1em;
+  letter-spacing: 0.2px;
+  padding: 2px;
+}
+
+#switches {
+  display: inline-block;
+}
+
+#controls {
+  display: inline-block;
+}
+
+.desc-expl-popup {
+  position: absolute;
+  padding: 0.5em;
+  max-width: 20em;
+  z-index: 100;
+  background-color: white;
+  border: solid 1px black;
+  box-shadow: 3px 3px 4px #000;
+  white-space: normal;
+  display: none;
+}
+
+.desc-expl-point:hover .desc-expl-popup {
+  display: inline-block;
+}
+
+span {
+  white-space: nowrap;
+}
+
+span.code {
+  font-family: Courier;
+}
+
+.rightmargin20 {
+  margin-left: 0px;
+  margin-right: 20px;
+}
+
+span:focus {
+  border: 1px solid blue !important;
+}
+
+.focusable {
+  color: #0000EE;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+#title {
+  display: block;
+  font-size: 1.17em;
+  font-weight: bold;
+  margin: 0 0 0 0;
+}
+
+.h4 {
+  display: block;
+  font-weight: bold;
+  margin: 5px 0px 0px 0px;
+}

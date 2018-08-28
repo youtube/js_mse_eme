@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<!--
+Copyright 2018 Google Inc. All rights reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<html>
+  <head>
+    <title>Media Source and Encrypted Media Conformance Tests</title>
+    <link rel="stylesheet" href="style.css" type="text/css"></link>
+    <script type="text/javascript" src="harness/eventListener.js"></script>
+  </head>
+  <body>
+    <video id="v" width='640' height='480'></video>
+    <script type="text/javascript">
+      v = document.getElementById('v');
+      console.log('Log started ...');
+      createEventListener(v, ['abort', 'canplay', 'canplaythrough',
+          'durationchange', 'emptied', 'ended', 'error', 'loadeddata',
+          'loadedmetadata', 'loadstart', 'pause', 'play', 'playing', 'progress',
+          'ratechange', 'seeked', 'seeking', 'stalled', 'suspend', 'timeupdate',
+          'volumnchange', 'waiting'
+        ], [
+          'autoplay', 'buffered', 'crossOrigin', 'currentSrc', 'currentTime',
+          'defaultPlaybackRate', 'duration', 'ended', 'loop', 'networkState',
+          'paused', 'playbackRate', 'played', 'preload', 'readyState',
+          'seekable', 'seeking', 'src', 'startDate'
+        ]);
+      v.src = 'media/car_20130125_22.mp4';
+      v.addEventListener('timeupdate', function() {
+        if (v.currentTime > 10 && v.currentTime < 50)
+          v.currentTime = 100;
+        if (v.currentTime > 120)
+          v.pause();;
+      });
+      window.setTimeout(v.play.bind(v), 2000);
+    </script>
+  </body>
+</html>
