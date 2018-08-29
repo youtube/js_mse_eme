@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<!--
+Copyright 2018 Google Inc. All rights reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Media Source and Encrypted Media Conformance Tests</title>
+    <link rel="stylesheet" href="changelog.css" type="text/css">
+    <script type="text/javascript" src="harness/constants.js"></script>
+  </head>
+  <body>
+    <script type="text/javascript">
+      var name = testVersion + " Tests";
+
+      window.onload = function() {
+       document.getElementById("testVersion").innerHTML=name;
+      }
+    </script>
+    <header>
+      <div>
+        <h1>Media Source and Encrypted Media Conformance Tests</h1>
+      </div>
+    </header>
+    <div class="content">
+      <div class="linkbar">
+        <strong><a id="testVersion" href="main.html"></a></strong>
+      </div>
+      <h2>Changelog</h2>
+      <div id="changelog"></div>
+      <h3>2016-10-31</h3>
+      <ul>
+        <li>Added EME initData validation tests for 2016, 2017, and tip.</li>
+      </ul>
+      <h3>2016-08-08</h3>
+      <ul>
+        <li>Fixed mixed-content license requests issue for 2016 and Tip.</li>
+      </ul>
+      <h3>2016-07-20</h3>
+      <ul>
+        <li>Reduced the number of audio segments appended to the audio buffer in 2016 and tip EME tests.</li>
+        <li>Performance and Endurance tests have been removed for all test versions.</li>
+        <li>Tip EME tests have been updated with Widevine and PlayReady tests using EME Spec from 04 February 2016.</li>
+      </ul>
+      <h3>2016-06-23</h3>
+      <ul>
+        <li>Added tests for Widevine Aac, Widevine VP9, PlayReady H264, and PlayReady Aac to EME 2016.</li>
+      </ul>
+      <h3>2016-06-17</h3>
+      <ul>
+        <li>Added Widevine H264 test to EME 2016.</li>
+      </ul>
+      <h3>2016-06-13</h3>
+      <ul>
+        <li>Cleaned up EME Tests for 2016.</li>
+        <li>Fixed a webm parser bug that excluded Tracks from the init segment.</li>
+        <li>Fixed a bug in the msutil appendAt method that assumed a blocking appendBuffer call.</li>
+      </ul>
+      <h3>2016-04-28</h3>
+      <ul>
+        <li>Cleaned up console logging.</li>
+      </ul>
+      <h3>2016-02-24</h3>
+      <ul>
+        <li>Removed PIFF uuid header from encrypted mp4 files.</li>
+      </ul>
+      <h3>2016-01-20</h3>
+      <ul>
+        <li>Clear Key PSSH headers are now added for encrypted MP4 content in cases where the header is missing.</li>
+      </ul>
+      <h3>2016-01-13</h3>
+      <ul>
+        <li>Resolved a bug where some tests were failing with VP9 media unexpectedly.</li>
+      </ul>
+      <h3>2015-12-11</h3>
+      <ul>
+        <li>Resolved a bug where some tests were not using VP9 media as expected and were instead using H264 media. Tests now use VP9 media as expected.</li>
+        <li>Updated DurationAfterAppendAudio and DurationAfterAppendVideo tests on 2015, 2016, and tip. Tests are now more MSE spec compliant and account for timing issues.</li>
+      </ul>
+      <h3>2015-10-27</h3>
+      <ul>
+        <li>Update to MediaSource duration test to make it more compatible with webkit based browsers.</li>
+        <li>Branched 2016 tests.</li>
+        <li>Updated test runner to have more control over the configurations for each test version. Tip will now default to VP9.</li>
+      </ul>
+    </div>
+  </body>
+</html>
