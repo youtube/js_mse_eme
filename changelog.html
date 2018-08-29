@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<!--
+Copyright 2018 Google Inc. All rights reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Media Source and Encrypted Media Conformance Tests</title>
+    <link rel="stylesheet" href="changelog.css" type="text/css">
+    <script type="text/javascript" src="harness/constants.js"></script>
+  </head>
+  <body>
+    <script type="text/javascript">
+      var name = testVersion + " Tests";
+
+      window.onload = function() {
+       document.getElementById("testVersion").innerHTML=name;
+      }
+    </script>
+    <header>
+      <div>
+        <h1>Media Source and Encrypted Media Conformance Tests</h1>
+      </div>
+    </header>
+    <div class="content">
+      <div class="linkbar">
+        <strong><a id="testVersion" href="main.html"></a></strong>
+      </div>
+      <h2>Changelog</h2>
+      <div id="changelog"></div>
+      <h3>2014-12-04</h3>
+      <ul>
+        <li>Fixed session issue related to mediakey detection for EME tests on tip.</li>
+        <li>Fixed race condition in PlaybackState test on tip.</li>
+      </ul>
+      <h3>2014-11-25</h3>
+      <ul>
+        <li>WidevineSupport test on tip now validates for VP9.</li>
+      </ul>
+      <h3>2014-11-17</h3>
+      <ul>
+        <li>Fixed issue with mediakey detection in EME tests on tip.</li>
+        <li>Updated instructions page.</li>
+      </ul>
+      <h3>2014-11-12</h3>
+      <ul>
+        <li>It is now easier to select 'webm/vp9'. Replaced dropdown selector with on/off switch. You can also enable webm/vp9 testing by appending '&amp;enablewebm=true' to the url.</li>
+        <li>WebMHandling test removed from tip. To validate VP9 playback with MSE run the tests with 'webm/vp9' set to 'on'.</li>
+      </ul>
+      <h3>2014-11-07</h3>
+      <ul>
+        <li>Fixed format issue in DASHLatency test on tip. Reduced size of video content that is added to the source buffer.</li>
+        <li>Fixed format issues in some tests as a result of VP9 migration. Specifically fixes failures in 'Seek' test on tip.</li>
+        <li>Log output is now in reverse order.</li>
+        <li>Branched performance tests into 0.5, 0.6, and Tip. Updated tip tests to use 'appendBuffer' instead of 'append'.</li>
+      </ul>
+      <h3>2014-10-08</h3>
+      <ul>
+        <li>Tests are now checking for updating source buffers. This fixes issues with tests #42 and #48.</li>
+      </ul>
+      <h3>2014-09-04</h3>
+      <ul>
+        <li>Fixed timeout issues that resulted from downloading large video files on slow connections (specifically with test #20).</li>
+      </ul>
+      <h3>2014-04-11</h3>
+      <ul>
+        <li>Added initial webm/VP9/vorbis support into <b>tip</b> <i>only</i>, so ignore the switch in the 2013/2014 tests. Not all tests are working (the mp4-specific tests and some of the clearkey tests get a pass). Use the dropdown for webm. Nothing should be changed for legacy or 2014 tests.</li>
+        <li>Note that vp9 testing isn't ready for the other tests (Performance, Progressive, Endurance).</li>
+        <li>Abstracted out streams so that the tests can be toggled between mp4 and webm.</li>
+        <li>Fixed issue with DASHLatency test not being, well, testing latency.</li>
+        <li>Moved DASHLatency test below TimestampOffset* tests, as it will most likely fail if TimestampOffsetVideo test fails.</li>
+        <li>Known bugs:
+          <ul>
+            <li>Existing bug with unprefixed API usage in tip + endurance/performance/progressive tests.</li>
+          </ul>
+        </li>
+        <li>TODO:
+          <ul>
+            <li>Add URL options to start the tests in mp4 or webm mode directly.</li>
+            <li>Fix tests to be more MVC.</li>
+            <li>Branch 2015 tests.</li>
+          </ul>
+        </li>
+      </ul>
+      <h3>2014-01-16</h3>
+      <ul>
+        <li>Fixed a leak issue involving create/revokeObjectURL.</li>
+      </ul>
+      <h3>2013-12-11</h3>
+      <ul>
+        <li>Consolidated and documented EME portability files.</li>
+        <li>Unified MSE backend between 0.6 and tip.</li>
+        <li>Fixed an issue with shutdown code.</li>
+        <li>General style cleanups.</li>
+      </ul>
+      <h3>2013-11-14</h3>
+      <ul>
+        <li>Missed a teardown override removal for 0.6.</li>
+      </ul>
+      <h3>2013-11-13</h3>
+      <ul>
+        <li>Changed SourceBufferGC to DASHLatency.</li>
+        <li>Added watchdog behavior for timeouts. Now test timeout logic will check if there are outstanding XHR requests. If so, it will delay timeout by 15 seconds, and try the same logic again. Hopefully this will help clients with low bandwidth connections.</li>
+        <li>Added webkit wrappers for source(open|close|ended) events in 0.6.</li>
+        <li>Removed teardown overrides for various tests in 0.6 and tip. This will cause some browsers to fail (e.g. Chrome, but fixed in a later release).</li>
+        <li>Renamed tot.html to tip.html, to be more consistent with naming schemes.</li>
+        <li>Cosmetic changes for landing page.</li>
+      </ul>
+      <h3>2013-11-06</h3>
+      <ul>
+        <li>Updated test 28 (VideoBufferSize) in 0.6/tot to be more relaxed in terms of its requirements.</li>
+        <li>Added new test to test of SourceBuffer GC in Tip.</li>
+        <li>Reorganized 0.6/tot tests into categories. Test numbers have shuffled and names shortened. It shouldn't be too difficult to match up.</li>
+        <li>Reformated test view to be more compact. Color codes:</li>
+        <ul>
+          <li>Red: Fail</li>
+          <li>Green: Pass</li>
+          <li>Hollow Red: Optional test that failed</li>
+          <li>Yellow: Running test</li>
+        </ul>
+        <li>Tuning cursor selection with the arrow keys.</li>
+        <li>Internal code refactoring.</li>
+        <li>Grouping all MSE/EME/Optional tests for better organization.</li>
+        <li>Relaxed VideoBufferSize's test requirements to allow for GC at the beginning.</li>
+      </ul>
+      <h3>2013-10-30</h3>
+      <ul>
+        <li>General site cleanup (no test changes).</li>
+        <li>Fixed broken links.</li>
+        <li>Consolidated changes page into main page (and removed old main page).</li>
+      </ul>
+      <h3>2013-10-25</h3>
+      <ul>
+        <li>Fixed the links page.</li>
+      </ul>
+      <h3>2013-10-23</h3>
+      <ul>
+        <li>Added test to determine if the CDM supports dual video keys. This is meant for LQ/HQ protected playback streams. This has been marked optional for 0.5 and 0.6.</li>
+      </ul>
+      <h3>2013-10-15</h3>
+      <ul>
+        <li>Changed ClearKeyCancelKeyRequestPostAdd to listen to keyadded event.</li>
+        <li>Changed ClearKeyCancelKeyRequestPostAdd to skip the InvalidStateError test if the CDM doesn't support session IDs.</li>
+        <li>Added playback test to CanPlayClearKey, to make sure the browser can actually play ClearKey content.</li>
+        <li>Added focus manager to links.html.</li>
+        <li>Added ClearKey cancel key tests.</li>
+        <li>Fixed some links in the links page.</li>
+        <li>Fixed many bugs with tests and infrastructure.</li>
+      </ul>
+      <h3>2013-9-30</h3>
+      <ul>
+        <li>Fixed broken tot.html tests.</li>
+        <li>Fixed 0.6 tests.</li>
+        <li>Added generateKeyRequest and addKey tests.</li>
+      </ul>
+      <h3>2013-9-16</h3>
+      <ul>
+        <li>Segregated tests into 0.5 (legacy) and 0.6 (late 2013 and beyond).
+        </li>
+        <li>Stripped 0.5 polyfill from 0.6.
+        </li>
+      </ul>
+    </div>
+  </body>
+</html>
