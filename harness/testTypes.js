@@ -78,6 +78,11 @@ limitations under the License.
       title: 'Spherical video performance tests on Cobalt',
       heading: 'Spherical on Cobalt Tests'
     },
+    'manual-test': {
+      name: 'Manual Tests',
+      title: 'Links to all manual tests',
+      heading: 'Manual Test Links',
+    }
   };
 
   window.testSuiteVersions = {
@@ -95,6 +100,7 @@ limitations under the License.
         'domcss-test',
         'domdocument-test',
         'dommisc-test',
+        'manual-test',
       ],
       'config' : {
         'defaultTestSuite': 'conformance-test',
