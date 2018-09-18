@@ -261,6 +261,10 @@ util.isCobalt = function() {
   return navigator.userAgent.includes('Cobalt');
 };
 
+util.createUrlwithParams = function(url, params) {
+  return url + '?' + params.join('&');
+};
+
 window.util = util;
 
 })();
