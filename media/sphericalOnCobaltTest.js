@@ -18,8 +18,9 @@ limitations under the License.
 /**
  * Spherical video playback on Cobalt Test Suite.
  * @class
- * @classdesc This test suite also validates the capability of
- * decoding video to texture.
+ * @classdesc This test suite is Cobalt specific (https://cobalt.dev).
+ * It validates spherical video playback on Cobalt and
+ * the capability of decoding video to texture.
  */
 var SphericalOnCobaltTest = function() {
   var webkitPrefix = MediaSource.prototype.version.indexOf('webkit') >= 0;
