@@ -45,6 +45,7 @@ function CompactTestView(fields, style) {
     if (harnessConfig.novp9) {
       this.addLink('No VP9', 'main.html');
     }
+    this.addLink('YouTube', 'https://youtube.com/tv');
 
     this.addTestSuites(testSuiteVersions[this.testSuiteVer].testSuites);
   };
