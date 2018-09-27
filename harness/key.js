@@ -15,52 +15,86 @@ limitations under the License.
 */
 
 var keydb = {
-  0x25:'Left',
-  0x27:'Right',
-  0x26:'Up',
-  0x28:'Down',
-  0x0D:'Enter',
-  0x1B:'Back',
-  0xFA:'Play',
-  0x13:'Pause',
-  0xB3:'Play/Pause',
-  0xB2:'Stop',
-  0xE4:'Fast Forward',
-  0xE3:'Rewind',
-  0x20:'Space',
-  0x08:'Backspace',
-  0x47:'Delete',
-  0x53:'Search',
-  0xB1:'Previous',
-  0xB0:'Next',
-  0x1CC:'Closed Captions',
-  0x193:'Red',
-  0x194:'Green',
-  0x195:'Yellow',
-  0x196:'Blue',
-  0xAC:'YouTube button',
+  0x25: 'Left',
+  0x27: 'Right',
+  0x26: 'Up',
+  0x28: 'Down',
+  0x0D: 'Enter',
+  0x1B: 'Back',
+  0xFA: 'Play',
+  0x13: 'Pause',
+  0xB3: 'Play/Pause',
+  0xB2: 'Stop',
+  0xE4: 'Fast Forward',
+  0xE3: 'Rewind',
+  0x20: 'Space',
+  0x08: 'Backspace',
+  0x47: 'Delete',
+  0x53: 'Search',
+  0xAA: 'Search',
+  0x3002: 'Mic/Voice',
+  0xB1: 'Previous',
+  0xB0: 'Next',
+  0x1CC: 'Closed Captions',
+  0x193: 'Red',
+  0x194: 'Green',
+  0x195: 'Yellow',
+  0x196: 'Blue',
+  0xAC:' YouTube button',
+  0x1AB: 'ChannelUp',
+  0x1AC: 'ChannelDown',
+  0x25F: 'Last',
+  0x3001: 'AudioTrackSelection',
+  0x1C9: 'Info',
+  0x1CA: 'Guide' ,
+
+  /* Number Pad */
+  0x60: '0',
+  0x61: '1',
+  0x62: '2',
+  0x63: '3',
+  0x64: '4',
+  0x65: '5',
+  0x66: '6',
+  0x67: '7',
+  0x68: '8',
+  0x69: '9',
+
+  /* Numbers */
+  0x30: '0',
+  0x31: '1',
+  0x32: '2',
+  0x33: '3',
+  0x34: '4',
+  0x35: '5',
+  0x36: '6',
+  0x37: '7',
+  0x38: '8',
+  0x39: '9',
 
   /* Samsung Orsay */
-  0x04:'Left',
-  0x05:'Right',
-  0x7314:'Up',
-  0x7315:'Down',
+  0x04: 'Left',
+  0x05: 'Right',
+  0x7314: 'Up',
+  0x7315: 'Down',
   0x4A: 'Play/Pause',
   0x46: 'Stop',
   0x438: 'Previous',
   0x436: 'Next',
 
   /* Tizen */
-  0x2719:'Escape',
-  0x019F:'Play',
-  0x280C:'Play/Pause',
-  0x019D:'Stop',
-  0x01A1:'Fast Forward',
-  0x019C:'Rewind',
-  0x002E:'Delete',
-  0x27F1:'Search',
-  0x27CE:'Previous',
-  0x0022:'Next',
+  0x2719: 'Escape',
+  0x019F: 'Play',
+  0x280C: 'Play/Pause',
+  0x019D: 'Stop',
+  0x01A1: 'Fast Forward',
+  0x019C: 'Rewind',
+  0x002E: 'Delete',
+  0x27F1: 'Search',
+  0x27CE: 'Previous',
+  0x27F8: 'Previous',
+  0x27F9: 'Next',
+  0x0022: 'Next',
 
   /* CEA 2014 */
   0x19C: 'Rewind',
@@ -90,6 +124,26 @@ var keydb = {
   0x8018: 'Right'
 };
 
+function getKeyName(keycode) {
+  return keydb[keycode];
+};
+
 function translateKeycode(e) {
-  return keydb[e.keyCode];
-}
+  return getKeyName(e.keyCode);
+};
+
+function getKeycode(e) {
+  var keycode;
+  if (window.event) {
+    keycode = window.event.keyCode;
+  }
+  else if (e) {
+    if (e.which != 0) {
+      keycode = e.which;
+    } else {
+      keycode = e.keyCode;
+    }
+  }
+
+  return keycode;
+};
