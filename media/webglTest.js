@@ -40,6 +40,8 @@ var createWebglTest = function(name, category, mandatory) {
   t.prototype.category = category || 'WebGL';
   if (typeof mandatory === 'boolean') {
     t.prototype.mandatory = mandatory;
+  } else {
+    t.prototype.mandatory = harnessConfig.support_webgl;
   }
   tests.push(t);
   return t;

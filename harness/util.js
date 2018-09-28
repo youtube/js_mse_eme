@@ -269,6 +269,72 @@ util.createUrlwithParams = function(url, params) {
   return url + '?' + params.join('&');
 };
 
+util.createVideoFormatStr = function(
+    video, codec, width, height, framerate, suffix) {
+  return createMimeTypeStr(
+      'video/' + video, codec, width, height, framerate, suffix);
+};
+
+util.createSimpleVideoFormatStr = function(video, codec, suffix) {
+  return util.createVideoFormatStr(video, codec, null, null, null, suffix);
+};
+
+util.createAudioFormatStr = function(audio, codec, suffix) {
+  return createMimeTypeStr('audio/' + audio, codec, null, null, null, suffix);
+};
+
+util.supportHdr = function() {
+  var smpte2084Type = util.createVideoFormatStr(
+      'webm', 'vp9.2', 1280, 720, 30, 'eotf=smpte2084');
+  var smpte2084Supported = MediaSource.isTypeSupported(smpte2084Type);
+
+  var bt709Type = util.createVideoFormatStr(
+      'webm', 'vp9.2', 1280, 720, 30, 'eotf=bt709');
+  var bt709Supported = MediaSource.isTypeSupported(bt709Type);
+
+  var hlgType = util.createVideoFormatStr(
+      'webm', 'vp9.2', 1280, 720, 30, 'eotf=arib-std-b67');
+  var hlgSupported = MediaSource.isTypeSupported(hlgType);
+
+  var invalidEOTFType = util.createVideoFormatStr(
+      'webm', 'vp9.2', 1280, 720, 30, 'eotf=strobevision');
+  var invalidEOTFSupported = MediaSource.isTypeSupported(invalidEOTFType);
+
+  if (smpte2084Supported && bt709Supported &&
+      hlgSupported && !invalidEOTFSupported) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+util.supportWebGL = function() {
+  try {
+    if (window.WebGLRenderingContext) {
+      var canvas = document.createElement('canvas');
+      var ctx = canvas.getContext('webgl');
+      return !!ctx;
+    }
+  } catch (e) {}
+  return false;
+};
+
+util.supportWebSpeech = function() {
+  try {
+    // check if WebSpeech API is supported.
+    var recognition = new SpeechRecognition();
+    // check if the microphone itself is correctly connected.
+    navigator.mediaDevices.enumerateDevices().then(function(listOfDevices) {
+      for (var device of listOfDevices) {
+        if (device.kind == "audioinput") {
+          return true;
+        }
+      }
+    });
+  } catch (e) {}
+  return false;
+};
+
 window.util = util;
 
 })();
