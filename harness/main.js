@@ -50,6 +50,7 @@ var parseParams = function(testSuiteConfig) {
   config.testsMask = parseParam('tests_mask', '');
   config.testid = parseParam('testid', '');
 
+  config.is_cobalt = util.isCobalt();
   config.support_hdr = util.supportHdr();
   config.support_webgl = util.supportWebGL();
   config.support_webspeech = util.supportWebSpeech();
