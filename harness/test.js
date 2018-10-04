@@ -286,6 +286,10 @@ TestExecutor.prototype.onfinished = function() {
     }
   }
 
+  this.log('[PLEASE VERIFY]Device Status: {HDR: ' + harnessConfig.support_hdr +
+      '}, {WebGL: ' + harnessConfig.support_webgl + '}, {WebSpeech: ' +
+      harnessConfig.support_webspeech + '}.');
+
   if (document.URL.indexOf('appspot.com') >= 0 ||
       document.URL.indexOf('googleapis.com') >= 0) {
     this.sendTestReport(getTestResults());

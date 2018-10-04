@@ -50,6 +50,11 @@ var parseParams = function(testSuiteConfig) {
   config.testsMask = parseParam('tests_mask', '');
   config.testid = parseParam('testid', '');
 
+  config.is_cobalt = util.isCobalt();
+  config.support_hdr = util.supportHdr();
+  config.support_webgl = util.supportWebGL();
+  config.support_webspeech = util.supportWebSpeech();
+
   // Overloaded run command to support browsers that have limitations on extra
   // parameters. Example usage: command=run:1,2,3
   if (config.command.indexOf(':') != -1) {
