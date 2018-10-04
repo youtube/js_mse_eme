@@ -22,6 +22,7 @@ body {
   height: 710px;
 }
 
+
 .default-list .cell-category {
   display: inline-block;
   font-weight: bold;
@@ -145,6 +146,14 @@ div.container_hidden {
   display: none;
 }
 
+#testsuites {
+  max-width: 95%;
+}
+
+#testsuites span {
+  display: inline-block;
+}
+
 #outputarea {
   padding-top: 5px;
   height: 230px;
@@ -174,7 +183,7 @@ div.container_hidden {
 }
 
 #output {
-  height: 210px;
+  height: 200px;
   width: 502px;
   overflow: hidden;
   color: #369;
@@ -245,4 +254,48 @@ span:focus {
   display: block;
   font-weight: bold;
   margin: 5px 0px 0px 0px;
+}
+
+@keyframes blink {
+  from {background-color: white;}
+  to {background-color: black;}
+}
+
+/* Use to activate CSS animation */
+.spinner {
+  animation: blink 1s infinite alternate;
+  width: 420px;
+  height: 210px;
+}
+
+
+@media screen and (min-height: 720px) and (max-height: 721px) {
+  body {
+    font-size: 0.64em!important;
+    width: 1240px!important;
+  }
+  #output {
+    height: 200px;
+    width: 502px;
+  }
+}
+@media screen and (min-height: 1080px) and (max-height: 1081px) {
+  body {
+    font-size: 0.96em!important;
+    width: 1860px!important;
+  }
+  #output {
+    height: 300px;
+    width: 700px;
+  }
+}
+@media screen and (min-height: 2160px) and (max-height: 2161px) {
+  body {
+    font-size: 1.92em!important;
+    width: 3720px!important;
+  }
+  #output {
+    height: 600px;
+    width: 1400px;
+  }
 }
