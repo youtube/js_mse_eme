@@ -43,46 +43,11 @@ limitations under the License.
       title: 'Tests for performance of video playback and decoding',
       heading: 'Playback Performance Tests'
     },
-    'functional-test': {
-      name: 'Functional Tests',
-      title: 'Tests for required HTML/CSS/DOM/JS functionality',
-      heading: 'Functional Tests'
-    },
-    'css-test': {
-      name: 'CSS Conformance Tests',
-      title: 'Tests for CSS Conformance functionalities',
-      heading: 'CSS Conformance Tests'
-    },
-    'domelement-test': {
-      name: 'HTML DOM Element Tests',
-      title: 'Tests for various types of DOM Element',
-      heading: 'HTML DOM ELement Tests'
-    },
-    'domcss-test': {
-      name: 'DOM CSS Tests',
-      title: 'Tests for DOM CSS element',
-      heading: 'DOM CSS Tests'
-    },
-    'domdocument-test': {
-      name: 'DOM Document Tests',
-      title: 'Tests for DOM Document Event',
-      heading: 'DOM Document & Event Tests'
-    },
-    'dommisc-test': {
-      name: 'DOM chardata, window & Miscellaneous Tests',
-      title: 'Tests for DOM chardata, window & Miscellaneous',
-      heading: 'DOM chardata, window & Miscellaneous Tests'
-    },
     'sphericalOnCobalt-test': {
       name: 'Cobalt Spherical Tests',
       title: 'Spherical video performance tests on Cobalt',
       heading: 'Spherical on Cobalt Tests'
     },
-    'manual-test': {
-      name: 'Manual Tests',
-      title: 'Links to all manual tests',
-      heading: 'Manual Test Links',
-    }
   };
 
   window.testSuiteVersions = {
@@ -94,13 +59,6 @@ limitations under the License.
         'sphericalOnCobalt-test',
         'progressive-test',
         'playbackperf-test',
-        'functional-test',
-        'css-test',
-        'domelement-test',
-        'domcss-test',
-        'domdocument-test',
-        'dommisc-test',
-        'manual-test',
       ],
       'config' : {
         'defaultTestSuite': 'conformance-test',
