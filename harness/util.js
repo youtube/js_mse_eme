@@ -335,6 +335,24 @@ util.supportWebSpeech = function() {
   return false;
 };
 
+util.compareResolutions = function(r1, r2) {
+  if (r1[r1.length - 1] != 'p' || r2[r2.length - 1] != 'p') {
+    throw "Resolution Format Error: should be {number}p"
+  }
+  var n1 = parseInt(r1);
+  var n2 = parseInt(r2);
+  if (isNaN(n1) || isNaN(n2) || n1 <= 0 || n2 <= 0) {
+    throw "Resolution Format Error: No valid number could be parsed."
+  }
+  if (n1 > n2) {
+    return 1;
+  } else if (n1 == n2) {
+    return 0;
+  } else {
+    return -1;
+  }
+};
+
 window.util = util;
 
 })();

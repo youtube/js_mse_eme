@@ -157,10 +157,18 @@ createFrameDropValidationTest(
  * format in certain playback rate.
  */
 var createPlaybackPerfTest = function(
-    videoStream, playbackRate, category, optional) {
+    videoStream, playbackRate, category, mandatory) {
+  // H264 tests that are greater than 1080p are optional
+  var isOptionalPlayBackPerfStream = function(videoStream) {
+    return videoStream.codec == 'H264' &&
+        (util.compareResolutions(videoStream.get('resolution'), '1080p') > 0);
+  };
+
+  mandatory = mandatory? mandatory : !isOptionalPlayBackPerfStream(videoStream);
+
   var test = createPerfTest('PlaybackPerf' + '.' + videoStream.codec +
       '.' + videoStream.get('resolution') + videoStream.get('fps') + '@' +
-      playbackRate + 'X', category, !optional);
+      playbackRate + 'X', category, mandatory);
   test.prototype.title = 'Playback performance test';
   test.prototype.start = function(runner, video) {
     var videoPerfMetrics = new VideoPerformanceMetrics(video);
@@ -248,17 +256,17 @@ for (var formatIdx in mediaFormats) {
 
 for (var formatIdx in mediaFormatsHfr) {
   createPlaybackPerfTest(
-      mediaFormatsHfr[formatIdx], 1.25, 'HFR Playback Rate Performance', true);
+      mediaFormatsHfr[formatIdx], 1.25, 'HFR Playback Rate Performance', false);
 }
 
 for (var formatIdx in mediaFormatsHfr) {
   createPlaybackPerfTest(
-      mediaFormatsHfr[formatIdx], 1.5, 'HFR Playback Rate Performance', true);
+      mediaFormatsHfr[formatIdx], 1.5, 'HFR Playback Rate Performance', false);
 }
 
 for (var formatIdx in mediaFormatsHfr) {
   createPlaybackPerfTest(
-      mediaFormatsHfr[formatIdx], 2.0, 'HFR Playback Rate Performance', true);
+      mediaFormatsHfr[formatIdx], 2.0, 'HFR Playback Rate Performance', false);
 }
 
 return {
