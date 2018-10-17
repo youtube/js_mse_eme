@@ -166,7 +166,9 @@ var createPlaybackPerfTest = function(
         (util.compareResolutions(videoStream.get('resolution'), '1080p') > 0);
   };
 
-  mandatory = mandatory? mandatory : !isOptionalPlayBackPerfStream(videoStream);
+  mandatory = (typeof mandatory != 'undefined') ?
+    mandatory :
+    !isOptionalPlayBackPerfStream(videoStream);
 
   var test = createPerfTest('PlaybackPerf' + '.' + videoStream.codec +
       '.' + videoStream.get('resolution') + videoStream.get('fps') + '@' +
