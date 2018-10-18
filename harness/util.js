@@ -19,6 +19,8 @@
 
 (function() {
 
+const MEDIA_PATH = 'test-materials/media/';
+
 if (!Function.prototype.bind) {
   Function.prototype.bind = function(oThis) {
     if (typeof this !== 'function') {
@@ -349,6 +351,10 @@ util.compareResolutions = function(r1, r2) {
   } else {
     return -1;
   }
+};
+
+util.getMediaPath = function(filename) {
+  return MEDIA_PATH + filename;
 };
 
 window.util = util;
