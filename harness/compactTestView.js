@@ -43,7 +43,8 @@ function CompactTestView(fields, style) {
     this.addLink('Links', 'links.html');
     this.addLink('Instructions', 'instructions.html');
     this.addLink('Changelog', 'changelog.html');
-    this.addLink('Download', 'download.tar.gz');
+    this.addLink('Download-Source', 'download.tar.gz');
+    this.addLink('Download-Media-files', 'YTS-media-files.tar.gz');
     if (harnessConfig.novp9) {
       this.addLink('No VP9', 'main.html');
     }
