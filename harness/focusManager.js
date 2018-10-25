@@ -283,6 +283,36 @@ function FocusManager() {
           e.stopPropagation();
           e.preventDefault();
         }
+
+        // Animated WebP page scrolling
+        if (document.getElementById('webp-animated-container')) {
+          var target = document.getElementById('webp-animated-container');
+          var vpad = 0;
+          var hpad = 0;
+          switch(dir) {
+            case LEFT:
+              hpad = 0;
+              vpad = parseInt(target.style.top) / 2;
+              break;
+            case UP:
+              vpad = parseInt(target.style.top) / 2;
+              break;
+            case RIGHT:
+              hpad += 200;
+              vpad = parseInt(target.style.top) / 2;
+              break;
+            case DOWN:
+              vpad = parseInt(target.style.top);
+              break;
+            default:
+              break;
+          }
+          target.style.top = '0px';
+          target.style.left = '0px';
+          var rect = document.activeElement.getBoundingClientRect();
+          target.style.top = -(rect.top - vpad)/2 +'px';
+          target.style.left = -(rect.left + hpad)/2 +'px';
+        }
       }
 
       return true;
