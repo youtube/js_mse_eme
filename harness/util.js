@@ -270,34 +270,36 @@ util.createUrlwithParams = function(url, params) {
 };
 
 util.createVideoFormatStr = function(
-    video, codec, width, height, framerate, suffix) {
+    video, codec, width, height, framerate, spherical, suffix) {
   return createMimeTypeStr(
-      'video/' + video, codec, width, height, framerate, suffix);
+      'video/' + video, codec, width, height, framerate, spherical, suffix);
 };
 
 util.createSimpleVideoFormatStr = function(video, codec, suffix) {
-  return util.createVideoFormatStr(video, codec, null, null, null, suffix);
+  return util.createVideoFormatStr(
+      video, codec, null, null, null, null, suffix);
 };
 
 util.createAudioFormatStr = function(audio, codec, suffix) {
-  return createMimeTypeStr('audio/' + audio, codec, null, null, null, suffix);
+  return createMimeTypeStr(
+      'audio/' + audio, codec, null, null, null, null, suffix);
 };
 
 util.supportHdr = function() {
   var smpte2084Type = util.createVideoFormatStr(
-      'webm', 'vp9.2', 1280, 720, 30, 'eotf=smpte2084');
+      'webm', 'vp9.2', 1280, 720, 30, null, 'eotf=smpte2084');
   var smpte2084Supported = MediaSource.isTypeSupported(smpte2084Type);
 
   var bt709Type = util.createVideoFormatStr(
-      'webm', 'vp9.2', 1280, 720, 30, 'eotf=bt709');
+      'webm', 'vp9.2', 1280, 720, 30, null, 'eotf=bt709');
   var bt709Supported = MediaSource.isTypeSupported(bt709Type);
 
   var hlgType = util.createVideoFormatStr(
-      'webm', 'vp9.2', 1280, 720, 30, 'eotf=arib-std-b67');
+      'webm', 'vp9.2', 1280, 720, 30, null, 'eotf=arib-std-b67');
   var hlgSupported = MediaSource.isTypeSupported(hlgType);
 
   var invalidEOTFType = util.createVideoFormatStr(
-      'webm', 'vp9.2', 1280, 720, 30, 'eotf=strobevision');
+      'webm', 'vp9.2', 1280, 720, 30, null, 'eotf=strobevision');
   var invalidEOTFSupported = MediaSource.isTypeSupported(invalidEOTFType);
 
   if (smpte2084Supported && bt709Supported &&
