@@ -1,21 +1,25 @@
-/*
-Copyright 2018 Google Inc. All rights reserved.
+/**
+ * @license
+ * Copyright 2018 Google Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-   http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
 'use strict';
 
 (function() {
+
+const MEDIA_PATH = 'test-materials/media/';
 
 if (!Function.prototype.bind) {
   Function.prototype.bind = function(oThis) {
@@ -257,10 +261,6 @@ util.is4k = function() {
       util.getMaxVp9SupportedWindow[1] == 2160;
 };
 
-util.isGtFHD = function() {
-  return ((util.getMaxWindow()[0] * util.getMaxWindow()[1]) > 2073600);
-}
-
 util.isCobalt = function() {
   return navigator.userAgent.includes('Cobalt');
 };
@@ -270,34 +270,36 @@ util.createUrlwithParams = function(url, params) {
 };
 
 util.createVideoFormatStr = function(
-    video, codec, width, height, framerate, suffix) {
+    video, codec, width, height, framerate, spherical, suffix) {
   return createMimeTypeStr(
-      'video/' + video, codec, width, height, framerate, suffix);
+      'video/' + video, codec, width, height, framerate, spherical, suffix);
 };
 
 util.createSimpleVideoFormatStr = function(video, codec, suffix) {
-  return util.createVideoFormatStr(video, codec, null, null, null, suffix);
+  return util.createVideoFormatStr(
+      video, codec, null, null, null, null, suffix);
 };
 
 util.createAudioFormatStr = function(audio, codec, suffix) {
-  return createMimeTypeStr('audio/' + audio, codec, null, null, null, suffix);
+  return createMimeTypeStr(
+      'audio/' + audio, codec, null, null, null, null, suffix);
 };
 
 util.supportHdr = function() {
   var smpte2084Type = util.createVideoFormatStr(
-      'webm', 'vp9.2', 1280, 720, 30, 'eotf=smpte2084');
+      'webm', 'vp9.2', 1280, 720, 30, null, 'eotf=smpte2084');
   var smpte2084Supported = MediaSource.isTypeSupported(smpte2084Type);
 
   var bt709Type = util.createVideoFormatStr(
-      'webm', 'vp9.2', 1280, 720, 30, 'eotf=bt709');
+      'webm', 'vp9.2', 1280, 720, 30, null, 'eotf=bt709');
   var bt709Supported = MediaSource.isTypeSupported(bt709Type);
 
   var hlgType = util.createVideoFormatStr(
-      'webm', 'vp9.2', 1280, 720, 30, 'eotf=arib-std-b67');
+      'webm', 'vp9.2', 1280, 720, 30, null, 'eotf=arib-std-b67');
   var hlgSupported = MediaSource.isTypeSupported(hlgType);
 
   var invalidEOTFType = util.createVideoFormatStr(
-      'webm', 'vp9.2', 1280, 720, 30, 'eotf=strobevision');
+      'webm', 'vp9.2', 1280, 720, 30, null, 'eotf=strobevision');
   var invalidEOTFSupported = MediaSource.isTypeSupported(invalidEOTFType);
 
   if (smpte2084Supported && bt709Supported &&
@@ -333,6 +335,28 @@ util.supportWebSpeech = function() {
     });
   } catch (e) {}
   return false;
+};
+
+util.compareResolutions = function(r1, r2) {
+  if (r1[r1.length - 1] != 'p' || r2[r2.length - 1] != 'p') {
+    throw "Resolution Format Error: should be {number}p"
+  }
+  var n1 = parseInt(r1);
+  var n2 = parseInt(r2);
+  if (isNaN(n1) || isNaN(n2) || n1 <= 0 || n2 <= 0) {
+    throw "Resolution Format Error: No valid number could be parsed."
+  }
+  if (n1 > n2) {
+    return 1;
+  } else if (n1 == n2) {
+    return 0;
+  } else {
+    return -1;
+  }
+};
+
+util.getMediaPath = function(filename) {
+  return MEDIA_PATH + filename;
 };
 
 window.util = util;

@@ -1,18 +1,20 @@
-/*
-Copyright 2018 Google Inc. All rights reserved.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-   http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+/**
+ * @license
+ * Copyright 2018 Google Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+
 'use strict';
 
 /**
@@ -373,39 +375,44 @@ mediaSourceEvents.prototype.onsourceopen = function() {
 };
 
 /**
- * Test if device can hold a minimum size of video source buffer.
+ * Append to buffer until exceeding the quota error.
  */
 var testBufferSize = createConformanceTest('VideoBufferSize', 'MSE Core');
 testBufferSize.prototype.title = 'Determines video buffer sizes by ' +
-    'appending incrementally until discard occurs or requirement is met.';
+    'appending incrementally until discard occurs, and tests that it meets ' +
+    'the minimum requirements for streaming.';
 testBufferSize.prototype.onsourceopen = function() {
   var runner = this.runner;
-  var self = this;
-  // The test clip has a bitrate which is nearly exactly 1MB/sec,
-  // file size of 1103716 bytes, and lasts 1s.
-  // We start appending it repeatedly until we get eviction.
+  // The test clip has a bitrate which is nearly exactly 1MB/sec, and
+  // lasts 1s. We start appending it repeatedly until we get eviction.
   var videoStream = Media.VP9.Video1MB;
   var sb = this.ms.addSourceBuffer(videoStream.mimetype);
   var audioStream = Media.AAC.Audio1MB;
   var unused_audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
-  var minSizeMb = util.isGtFHD() ? 200 : 100;
-  var minSize = minSizeMb * 1024 * 1024;
-  var estimatedMinTime = minSizeMb == 200 ? 190 : 95;
-  var appendCount = 0;
-  var expectedTime = 0;
-  var expectedSize = 0;
-
+  var self = this;
+  var MIN_SIZE = 12 * 1024 * 1024;
+  var ESTIMATED_MIN_TIME = 12;
   var xhr = runner.XHRManager.createRequest(videoStream.src, function(e) {
-    var onUpdate = function() {
+    var onBufferFull = function() {
+      runner.checkGE(expectedTime - sb.buffered.start(0), ESTIMATED_MIN_TIME,
+                     'Estimated source buffer size');
+      runner.succeed();
+    };
+    var expectedTime = 0;
+    var expectedSize = 0;
+    var appendCount = 0;
+    sb.addEventListener('updateend', function onUpdate() {
       appendCount++;
       self.log('Append count ' + appendCount);
       if (sb.buffered.start(0) > 0 || expectedTime > sb.buffered.end(0)) {
+        sb.removeEventListener('updateend', onUpdate);
         onBufferFull();
       } else {
         expectedTime += videoStream.duration;
         expectedSize += videoStream.size;
-        if (expectedSize > minSize) {
-          self.log('Source buffer exceeded minimum: ' + minSize);
+        // Pass the test if the UA can handle 10x more than expected.
+        if (expectedSize > (10 * MIN_SIZE)) {
+          sb.removeEventListener('updateend', onUpdate);
           onBufferFull();
           return;
         }
@@ -413,25 +420,16 @@ testBufferSize.prototype.onsourceopen = function() {
         try {
           sb.appendBuffer(xhr.getResponseData());
         } catch (e) {
-          self.log(e);
           var QUOTA_EXCEEDED_ERROR_CODE = 22;
           if (e.code == QUOTA_EXCEEDED_ERROR_CODE) {
+            sb.removeEventListener('updateend', onUpdate);
             onBufferFull();
           } else {
             runner.fail(e);
           }
         }
       }
-    };
-    var onBufferFull = function() {
-      sb.removeEventListener('updateend', onUpdate);
-      runner.checkGE(
-          sb.buffered.end(0) - sb.buffered.start(0),
-          estimatedMinTime,
-          'Time range in source buffer');
-      runner.succeed();
-    };
-    sb.addEventListener('updateend', onUpdate);
+    });
     sb.appendBuffer(xhr.getResponseData());
   });
   xhr.send();

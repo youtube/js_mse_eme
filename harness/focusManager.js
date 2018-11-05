@@ -1,18 +1,20 @@
-/*
-Copyright 2018 Google Inc. All rights reserved.
+/**
+ * @license
+ * Copyright 2018 Google Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-   http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
 'use strict';
 
 (function() {
@@ -280,6 +282,36 @@ function FocusManager() {
           element.focus();
           e.stopPropagation();
           e.preventDefault();
+        }
+
+        // Animated WebP page scrolling
+        if (document.getElementById('webp-animated-container')) {
+          var target = document.getElementById('webp-animated-container');
+          var vpad = 0;
+          var hpad = 0;
+          switch(dir) {
+            case LEFT:
+              hpad = 0;
+              vpad = parseInt(target.style.top) / 2;
+              break;
+            case UP:
+              vpad = parseInt(target.style.top) / 2;
+              break;
+            case RIGHT:
+              hpad += 200;
+              vpad = parseInt(target.style.top) / 2;
+              break;
+            case DOWN:
+              vpad = parseInt(target.style.top);
+              break;
+            default:
+              break;
+          }
+          target.style.top = '0px';
+          target.style.left = '0px';
+          var rect = document.activeElement.getBoundingClientRect();
+          target.style.top = -(rect.top - vpad)/2 +'px';
+          target.style.left = -(rect.left + hpad)/2 +'px';
         }
       }
 

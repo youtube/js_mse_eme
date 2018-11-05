@@ -1,18 +1,20 @@
-/*
-Copyright 2018 Google Inc. All rights reserved.
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-   http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+/**
+ * @license
+ * Copyright 2018 Google Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+
 'use strict';
 
 /**
@@ -157,10 +159,20 @@ createFrameDropValidationTest(
  * format in certain playback rate.
  */
 var createPlaybackPerfTest = function(
-    videoStream, playbackRate, category, optional) {
+    videoStream, playbackRate, category, mandatory) {
+  // H264 tests that are greater than 1080p are optional
+  var isOptionalPlayBackPerfStream = function(videoStream) {
+    return videoStream.codec == 'H264' &&
+        (util.compareResolutions(videoStream.get('resolution'), '1080p') > 0);
+  };
+
+  mandatory = (typeof mandatory != 'undefined') ?
+    mandatory :
+    !isOptionalPlayBackPerfStream(videoStream);
+
   var test = createPerfTest('PlaybackPerf' + '.' + videoStream.codec +
       '.' + videoStream.get('resolution') + videoStream.get('fps') + '@' +
-      playbackRate + 'X', category, !optional);
+      playbackRate + 'X', category, mandatory);
   test.prototype.title = 'Playback performance test';
   test.prototype.start = function(runner, video) {
     var videoPerfMetrics = new VideoPerformanceMetrics(video);
@@ -248,17 +260,17 @@ for (var formatIdx in mediaFormats) {
 
 for (var formatIdx in mediaFormatsHfr) {
   createPlaybackPerfTest(
-      mediaFormatsHfr[formatIdx], 1.25, 'HFR Playback Rate Performance', true);
+      mediaFormatsHfr[formatIdx], 1.25, 'HFR Playback Rate Performance', false);
 }
 
 for (var formatIdx in mediaFormatsHfr) {
   createPlaybackPerfTest(
-      mediaFormatsHfr[formatIdx], 1.5, 'HFR Playback Rate Performance', true);
+      mediaFormatsHfr[formatIdx], 1.5, 'HFR Playback Rate Performance', false);
 }
 
 for (var formatIdx in mediaFormatsHfr) {
   createPlaybackPerfTest(
-      mediaFormatsHfr[formatIdx], 2.0, 'HFR Playback Rate Performance', true);
+      mediaFormatsHfr[formatIdx], 2.0, 'HFR Playback Rate Performance', false);
 }
 
 return {
