@@ -321,7 +321,6 @@ TestExecutor.prototype.startTest = function(startIndex, numOfTestToRun) {
 };
 
 TestExecutor.prototype.startNextTest = function() {
-  UpdateStreamDef(Number(harnessConfig.enablewebm));
   if (this.numOfTestToRun != 1) {
     while (this.testToRun > 0 &&
            !this.testView.getTest(this.currentTestIdx).selected()) {
