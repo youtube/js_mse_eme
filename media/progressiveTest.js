@@ -361,17 +361,16 @@ var createTimeUpdateAccuracy = function() {
     var maxTimeDiff = 0;
     var baseTimeDiff = 0;
     var times = 0;
-    video.addEventListener('loadstart', function() {
+    video.addEventListener('canplay', function() {
       video.play();
       video.addEventListener('timeupdate', function() {
         if (times === 0) {
           baseTimeDiff = util.ElapsedTimeInS() - video.currentTime;
         } else {
           var timeDiff = util.ElapsedTimeInS() - video.currentTime;
-          maxTimeDiff = Math.max(Math.abs(timeDiff - baseTimeDiff),
-                                 maxTimeDiff);
+          maxTimeDiff = Math.max(
+              Math.abs(timeDiff - baseTimeDiff), maxTimeDiff);
         }
-
         if (times > 500 || video.currentTime > 10) {
           test.prototype.status = util.Round(maxTimeDiff, 2);
           runner.checkLE(maxTimeDiff, 0.25, 'maxTimeDiff');
@@ -383,6 +382,7 @@ var createTimeUpdateAccuracy = function() {
     video.src = Media.H264.ProgressiveLow.src;
   };
 };
+
 createTimeUpdateAccuracy();
 
 /**
@@ -402,7 +402,6 @@ var createTimeUpdateProgressing = function() {
         runner.checkGE(video.currentTime, last, 'video.currentTime');
         last = video.currentTime;
       }
-
       if (video.currentTime > 10) {
         test.prototype.status = util.Round(video.currentTime, 2);
         runner.succeed();
@@ -437,7 +436,6 @@ var createTimeUpdateProgressingWithInitialSeek = function() {
             runner.checkGE(video.currentTime, last, 'video.currentTime');
             last = video.currentTime;
           }
-
           if (video.currentTime > 10) {
             test.prototype.status = util.Round(video.currentTime, 2);
             runner.succeed();
@@ -490,7 +488,7 @@ var createPlaybackRateTest = function(playbackRate) {
       var realTimeLast;
       var playTimeLast;
       video.addEventListener('timeupdate', function() {
-	      if (times <= warmUpCount) {
+        if (times <= warmUpCount) {
           realTimeLast = Date.now();
           playTimeLast = video.currentTime;
         } else {
