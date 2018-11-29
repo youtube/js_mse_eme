@@ -43,6 +43,8 @@ TestBase.teardown = function(testSuiteVer, cb) {
     if (testSuiteVer && testSuiteVer !== '0.5') // For backwards compatibility.
       window.URL.revokeObjectURL(this.video.src);
     this.video.src = '';
+    this.video.removeAttribute('src');
+    this.video.load();
     if (harnessConfig.recycleVideoTag)
       this.video.parentNode.removeChild(this.video);
   }
