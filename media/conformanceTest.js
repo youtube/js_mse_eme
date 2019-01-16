@@ -1808,6 +1808,30 @@ var createDelayedTest = function(delayed, nonDelayed) {
   };
 };
 
+/**
+ * Test to check if audio-less or audio-only can be playback properly.
+ */
+var createSingleSourceBufferPlaybackTest = function(stream) {
+  var test = createConformanceTest(
+      'PlaybackOnly' + stream.codec + util.MakeCapitalName(stream.mediatype),
+      'MSE (' + stream.codec + ')');
+  test.prototype.title = 'Test if we can playback a single source buffer.';
+  test.prototype.onsourceopen = function() {
+    var runner = this.runner;
+    var video = this.video;
+    var videoSb = this.ms.addSourceBuffer(stream.mimetype);
+    var videoXhr = runner.XHRManager.createRequest(stream.src, function(e) {
+      videoSb.appendBuffer(this.getResponseData());
+      video.addEventListener('timeupdate', function(e) {
+        if (video.currentTime > 5) {
+          runner.succeed();
+        }
+      });
+      video.play();
+    }, 0, 300000);
+    videoXhr.send();
+  };
+};
 
 // Opus Specific tests.
 createAppendTest(Media.Opus.SantaHigh, Media.VP9.Video1MB);
@@ -1824,7 +1848,7 @@ createOverlapTest(Media.Opus.CarMed, Media.VP9.Video1MB);
 createSmallGapTest(Media.Opus.CarMed, Media.VP9.Video1MB);
 createLargeGapTest(Media.Opus.CarMed, Media.VP9.Video1MB);
 createDelayedTest(Media.Opus.CarMed, Media.VP9.VideoNormal);
-
+createSingleSourceBufferPlaybackTest(Media.Opus.SantaHigh)
 
 // AAC Specific tests.
 createAppendTest(Media.AAC.Audio1MB, Media.H264.Video1MB);
@@ -1841,6 +1865,7 @@ createOverlapTest(Media.AAC.AudioNormal, Media.H264.Video1MB);
 createSmallGapTest(Media.AAC.AudioNormal, Media.H264.Video1MB);
 createLargeGapTest(Media.AAC.AudioNormal, Media.H264.Video1MB);
 createDelayedTest(Media.AAC.AudioNormal, Media.VP9.VideoNormal);
+createSingleSourceBufferPlaybackTest(Media.AAC.Audio1MB)
 
 // VP9 Specific tests.
 createAppendTest(Media.VP9.Video1MB, Media.AAC.Audio1MB);
@@ -1852,8 +1877,8 @@ createPausedTest(Media.VP9.Video1MB);
 createVideoDimensionTest(Media.VP9.VideoNormal, Media.AAC.AudioNormal);
 createPlaybackStateTest(Media.VP9.VideoNormal);
 createPlayPartialSegmentTest(Media.VP9.VideoTiny);
-createAppendVideoOffsetTest(Media.VP9.VideoNormal, Media.VP9.VideoTiny,
-                            Media.AAC.AudioNormal);
+createAppendVideoOffsetTest(
+    Media.VP9.VideoNormal, Media.VP9.VideoTiny, Media.AAC.AudioNormal);
 createAppendMultipleInitTest(Media.VP9.Video1MB, Media.AAC.Audio1MB);
 createAppendOutOfOrderTest(Media.VP9.VideoNormal, Media.AAC.AudioNormal);
 createBufferedRangeTest(Media.VP9.VideoNormal, Media.AAC.AudioNormal);
@@ -1864,6 +1889,7 @@ createLargeGapTest(Media.VP9.VideoNormal, Media.AAC.AudioNormal);
 createSeekTest(Media.VP9.VideoNormal);
 createBufUnbufSeekTest(Media.VP9.VideoNormal);
 createDelayedTest(Media.VP9.VideoNormal, Media.AAC.AudioNormal);
+createSingleSourceBufferPlaybackTest(Media.VP9.VideoTiny)
 
 // H264 Specific tests.
 createAppendTest(Media.H264.Video1MB, Media.AAC.Audio1MB);
@@ -1875,8 +1901,8 @@ createPausedTest(Media.H264.Video1MB);
 createVideoDimensionTest(Media.H264.VideoNormal, Media.AAC.Audio1MB);
 createPlaybackStateTest(Media.H264.VideoNormal);
 createPlayPartialSegmentTest(Media.H264.VideoTiny);
-createAppendVideoOffsetTest(Media.H264.VideoNormal, Media.H264.VideoTiny,
-                            Media.AAC.Audio1MB);
+createAppendVideoOffsetTest(
+    Media.H264.VideoNormal, Media.H264.VideoTiny, Media.AAC.Audio1MB);
 createAppendMultipleInitTest(Media.H264.Video1MB, Media.AAC.Audio1MB);
 createAppendOutOfOrderTest(Media.H264.CarMedium, Media.AAC.Audio1MB);
 createBufferedRangeTest(Media.H264.VideoNormal, Media.AAC.Audio1MB);
@@ -1887,6 +1913,7 @@ createLargeGapTest(Media.H264.VideoNormal, Media.AAC.Audio1MB);
 createSeekTest(Media.H264.VideoNormal);
 createBufUnbufSeekTest(Media.H264.VideoNormal);
 createDelayedTest(Media.H264.VideoNormal, Media.AAC.AudioNormal);
+createSingleSourceBufferPlaybackTest(Media.H264.VideoTiny)
 
 /**
  * Ensure AudioContext is supported.
