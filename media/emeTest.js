@@ -373,25 +373,24 @@ testPlayReadyAacAudio.prototype.start = function(runner, video) {
 };
 
 /**
- * Ensure canPlayType for specified mime type is using the EME Final Rec.
+ * Ensure isTypeSupported and requestMediaKeySystemAccess for specified mime
+ * type.
  */
-var createCanPlayTypeTest = function(type, desc, mandatory = true) {
-  var test = createEmeTest('canPlayType.' + desc, 'General', mandatory);
-  test.prototype.title =
-      'Test canPlayType ' + desc + ' is using the EME Final Rec.';
+var createIsTypeSupportedTest = function(type, desc, mandatory = true) {
+  var test = createEmeTest('isTypeSupported.' + desc, 'General', mandatory);
+  var descWithType = desc + ' (' + type + ')';
+  test.prototype.title = 'Test support for ' + descWithType;
   test.prototype.start = function(runner, video) {
     runner.assert(
-        video.canPlayType(type) === 'probably', 'Missing support for ' + desc);
-    runner.assert(
-        video.canPlayType(type, 'Something') === 'probably',
-        'canPlayType ' + desc + ' is not using EME Final Rec.');
+        MediaSource.isTypeSupported(type),
+        'isTypeSupported failed for ' + descWithType);
     runner.succeed();
   };
 };
 
-createCanPlayTypeTest(Media.AAC.mimetype, 'AAC');
-createCanPlayTypeTest(Media.H264.mimetype, 'H264');
-createCanPlayTypeTest(Media.VP9.mimetype, 'VP9');
+createIsTypeSupportedTest(Media.AAC.mimetype, 'AAC');
+createIsTypeSupportedTest(Media.H264.mimetype, 'H264');
+createIsTypeSupportedTest(Media.VP9.mimetype, 'VP9');
 
 /**
  * Test encrypted event data contains all expected pssh atoms in the initData
