@@ -633,6 +633,8 @@ var createCurrentTimePausedAccuracyTest =
 
       function onTimeUpdate(e) {
         if (times === 0) {
+          if (video.currentTime == 0)
+            return;
           baseTimeDiff = util.ElapsedTimeInS() - video.currentTime;
         }
         if (times > 500 || video.currentTime > 10) {
