@@ -255,11 +255,6 @@ for (var formatIdx in mediaFormats) {
 
 for (var formatIdx in mediaFormats) {
   createPlaybackPerfTest(
-      mediaFormats[formatIdx], 1.75, 'Playback Rate Performance');
-}
-
-for (var formatIdx in mediaFormats) {
-  createPlaybackPerfTest(
       mediaFormats[formatIdx], 2.0, 'Playback Rate Performance');
 }
 
@@ -271,11 +266,6 @@ for (var formatIdx in mediaFormatsHfr) {
 for (var formatIdx in mediaFormatsHfr) {
   createPlaybackPerfTest(
       mediaFormatsHfr[formatIdx], 1.5, 'HFR Playback Rate Performance', false);
-}
-
-for (var formatIdx in mediaFormatsHfr) {
-  createPlaybackPerfTest(
-      mediaFormatsHfr[formatIdx], 1.75, 'HFR Playback Rate Performance', false);
 }
 
 for (var formatIdx in mediaFormatsHfr) {
