@@ -586,7 +586,9 @@ var createCurrentTimeAccuracyTest =
         }
         ++times;
       });
-      video.play();
+      video.addEventListener('canplaythrough', function(e) {
+        video.play();
+      });
     }, 0, 2500000);
     var audioXhr = runner.XHRManager.createRequest(
         audioStream.src, function(e) {
@@ -668,7 +670,10 @@ var createCurrentTimePausedAccuracyTest =
         video.play();
       });
       video.addEventListener('timeupdate', onTimeUpdate);
-      video.play();
+
+      video.addEventListener('canplaythrough', function(e) {
+        video.play();
+      })
     }, 0, 2500000);
     var audioXhr = runner.XHRManager.createRequest(
         audioStream.src, function(e) {
