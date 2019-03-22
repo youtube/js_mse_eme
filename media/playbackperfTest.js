@@ -243,6 +243,16 @@ createPlaybackPerfTest(
 createPlaybackPerfTest(
     Media.H264.Webgl2160p30fps, 0.5, 'Playback Rate Performance');
 
+// Optional for 2019. Possibly required for 2020.
+createPlaybackPerfTest(
+    Media.VP9.Webgl720p60fps, 0.75, 'Playback Rate Performance', false);
+createPlaybackPerfTest(
+    Media.VP9.Webgl2160p60fps, 0.75, 'Playback Rate Performance', false);
+createPlaybackPerfTest(
+    Media.H264.Webgl720p30fps, 0.75, 'Playback Rate Performance',false);
+createPlaybackPerfTest(
+    Media.H264.Webgl2160p30fps, 0.75, 'Playback Rate Performance',false);
+
 for (var formatIdx in mediaFormats) {
   createPlaybackPerfTest(
       mediaFormats[formatIdx], 1.25, 'Playback Rate Performance');
@@ -253,9 +263,10 @@ for (var formatIdx in mediaFormats) {
       mediaFormats[formatIdx], 1.5, 'Playback Rate Performance');
 }
 
+// Optional for 2019. Possibly required for 2020.
 for (var formatIdx in mediaFormats) {
   createPlaybackPerfTest(
-      mediaFormats[formatIdx], 1.75, 'Playback Rate Performance');
+      mediaFormats[formatIdx], 1.75, 'Playback Rate Performance', false);
 }
 
 for (var formatIdx in mediaFormats) {
