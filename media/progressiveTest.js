@@ -361,7 +361,7 @@ var createTimeUpdateAccuracy = function() {
     var maxTimeDiff = 0;
     var baseTimeDiff = 0;
     var times = 0;
-    video.addEventListener('canplay', function() {
+    video.addEventListener('canplaythrough', function() {
       video.play();
       video.addEventListener('timeupdate', function() {
         if (times === 0) {
