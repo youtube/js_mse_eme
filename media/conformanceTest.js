@@ -550,6 +550,83 @@ testSeekTimeUpdate.prototype.onsourceopen = function() {
 };
 
 /**
+ * Test SourceBuffer.appendWindowStart can be correctly set and applied.
+ */
+var testAppendWindowStart =
+  createConformanceTest('AppendWindowStart', 'MSE Core');
+testAppendWindowStart.prototype.title =
+  'Test if SourceBuffer respects appendWindowStart for appending.';
+testAppendWindowStart.prototype.onsourceopen = function() {
+  var runner = this.runner;
+  var start = 3.4;
+  var videoStream = Media.VP9.VideoNormal;
+  var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
+  // appendWindowStart cannot be smaller than 0
+  // or greater than or equal to appendWindowEnd.
+  try {
+    videoSb.appendWindowStart = -1;
+  } catch (e) {
+    runner.checkEq(e.name, 'TypeError', 'Expected error');
+  }
+  try {
+    videoSb.appendWindowEnd = 10;
+    videoSb.appendWindowStart = 11;
+  } catch (e) {
+    runner.checkEq(e.name, 'TypeError', 'Expected error');
+  }
+  runner.checkEq(videoSb.appendWindowStart, 0, 'appendWindowStart');
+
+  videoSb.appendWindowStart = start;
+  var xhr = runner.XHRManager.createRequest(videoStream.src, function(e) {
+    videoSb.appendBuffer(this.getResponseData());
+
+    videoSb.addEventListener('updateend', function() {
+      runner.checkEq(videoSb.appendWindowStart, start, 'appendWindowStart');
+      // More frames maybe dropped due to missing key frame.
+      runner.checkGE(videoSb.buffered.start(0), start, 'Buffered range start');
+      runner.succeed();
+    });
+  }, 0, 3000000);
+  xhr.send();
+};
+
+/**
+ * Test SourceBuffer.appendWindowEnd can be correctly set and applied.
+ */
+var testAppendWindowEnd =
+  createConformanceTest('AppendWindowEnd', 'MSE Core');
+testAppendWindowEnd.prototype.title =
+  'Test if SourceBuffer respects appendWindowEnd for appending.';
+testAppendWindowEnd.prototype.onsourceopen = function() {
+  var runner = this.runner;
+  var end = 5.3;
+  var videoStream = Media.VP9.VideoNormal;
+  var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
+  // appendWindowEnd cannot be smaller than appendWindowStart.
+  try {
+    videoSb.appendWindowStart = 2;
+    videoSb.appendWindowEnd = 1;
+  } catch (e) {
+    runner.checkEq(e.name, 'TypeError', 'Expected error');
+  }
+  runner.checkEq(videoSb.appendWindowEnd, 'Infinity', 'appendWindowEnd');
+
+  videoSb.appendWindowStart = 0;
+  videoSb.appendWindowEnd = end;
+  var xhr = runner.XHRManager.createRequest(videoStream.src, function(e) {
+    videoSb.appendBuffer(this.getResponseData());
+
+    videoSb.addEventListener('updateend', function() {
+      runner.checkEq(videoSb.appendWindowEnd, end, 'appendWindowEnd');
+      runner.checkApproxEq(
+          videoSb.buffered.end(0), end, 'Buffered range end', 0.05);
+      runner.succeed();
+    });
+  }, 0, 3000000);
+  xhr.send();
+};
+
+/**
  * Creates a MSE currentTime Accuracy test to validate if the media.currentTime
  * is accurate to within 250 milliseconds during active playback. This can
  * be used for video features a standard frame rate or a high frame rate.
