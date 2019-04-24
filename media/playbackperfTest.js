@@ -205,39 +205,50 @@ var createPlaybackPerfTest = function(
   };
 };
 
-var mediaFormats = [Media.VP9.Webgl144p30fps, Media.VP9.Webgl240p30fps,
-                    Media.VP9.Webgl360p30fps, Media.VP9.Webgl480p30fps,
-                    Media.VP9.Webgl720p30fps, Media.VP9.Webgl1080p30fps,
-                    Media.VP9.Webgl1440p30fps, Media.VP9.Webgl2160p30fps,
-                    Media.H264.Webgl144p15fps, Media.H264.Webgl240p30fps,
-                    Media.H264.Webgl360p30fps, Media.H264.Webgl480p30fps,
-                    Media.H264.Webgl720p30fps, Media.H264.Webgl1080p30fps,
-                    Media.H264.Webgl1440p30fps, Media.H264.Webgl2160p30fps];
+var mediaFormats = [
+  Media.H264.Webgl144p15fps,
+  Media.H264.Webgl240p30fps,
+  Media.H264.Webgl360p30fps,
+  Media.H264.Webgl480p30fps,
+  Media.H264.Webgl720p30fps,
+  Media.H264.Webgl1080p30fps,
+  Media.H264.Webgl1440p30fps,
+  Media.H264.Webgl2160p30fps,
+  Media.VP9.Webgl144p30fps,
+  Media.VP9.Webgl240p30fps,
+  Media.VP9.Webgl360p30fps,
+  Media.VP9.Webgl480p30fps,
+  Media.VP9.Webgl720p30fps,
+  Media.VP9.Webgl1080p30fps,
+  Media.VP9.Webgl1440p30fps,
+  Media.VP9.Webgl2160p30fps,
+];
 
-var mediaFormatsHfr = [Media.VP9.Webgl720p60fps, Media.VP9.Webgl1080p60fps,
-                       Media.VP9.Webgl1440p60fps, Media.VP9.Webgl2160p60fps,
-                       Media.H264.Webgl720p60fps, Media.H264.Webgl1080p60fps];
+var mediaFormatsHfr = [
+  Media.H264.Webgl720p60fps,
+  Media.H264.Webgl1080p60fps,
+  Media.VP9.Webgl720p60fps,
+  Media.VP9.Webgl1080p60fps,
+  Media.VP9.Webgl1440p60fps,
+  Media.VP9.Webgl2160p60fps,
+];
 
 var allMediaFormats = mediaFormats.concat(mediaFormatsHfr);
 
-for (var formatIdx in allMediaFormats) {
+for (var formatIdx in mediaFormats) {
   createPlaybackPerfTest(
-      allMediaFormats[formatIdx], 1.0, 'Playback Performance');
+      mediaFormats[formatIdx], 1.0, 'Playback Performance');
+}
+for (var formatIdx in mediaFormatsHfr) {
+  createPlaybackPerfTest(
+      mediaFormatsHfr[formatIdx], 1.0, 'HFR Playback Performance');
 }
 
-createPlaybackPerfTest(
-    Media.VP9.Webgl720p60fps, 0.25, 'Playback Rate Performance');
-createPlaybackPerfTest(
-    Media.VP9.Webgl2160p60fps, 0.25, 'Playback Rate Performance');
 createPlaybackPerfTest(
     Media.H264.Webgl720p30fps, 0.25, 'Playback Rate Performance');
 createPlaybackPerfTest(
     Media.H264.Webgl2160p30fps, 0.25, 'Playback Rate Performance');
 
-createPlaybackPerfTest(
-    Media.VP9.Webgl720p60fps, 0.5, 'Playback Rate Performance');
-createPlaybackPerfTest(
-    Media.VP9.Webgl2160p60fps, 0.5, 'Playback Rate Performance');
 createPlaybackPerfTest(
     Media.H264.Webgl720p30fps, 0.5, 'Playback Rate Performance');
 createPlaybackPerfTest(
@@ -257,6 +268,16 @@ for (var formatIdx in mediaFormats) {
   createPlaybackPerfTest(
       mediaFormats[formatIdx], 2.0, 'Playback Rate Performance');
 }
+
+createPlaybackPerfTest(
+    Media.VP9.Webgl720p60fps, 0.25, 'HFR Playback Rate Performance');
+createPlaybackPerfTest(
+    Media.VP9.Webgl2160p60fps, 0.25, 'HFR Playback Rate Performance');
+
+createPlaybackPerfTest(
+    Media.VP9.Webgl720p60fps, 0.5, 'HFR Playback Rate Performance');
+createPlaybackPerfTest(
+    Media.VP9.Webgl2160p60fps, 0.5, 'HFR Playback Rate Performance');
 
 for (var formatIdx in mediaFormatsHfr) {
   createPlaybackPerfTest(
