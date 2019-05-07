@@ -275,6 +275,10 @@ util.isGtFHD = function() {
   return ((util.getMaxWindow()[0] * util.getMaxWindow()[1]) > 2073600);
 }
 
+util.isGt4K = function() {
+  return ((util.getMaxWindow()[0] * util.getMaxWindow()[1]) > 8294400);
+}
+
 util.isCobalt = function() {
   return navigator.userAgent.includes('Cobalt');
 };
