@@ -74,15 +74,31 @@ var configureHarness = function(testSuiteConfig) {
   if (harnessConfig.testsMask) {
     harnessConfig.testsMask += '0';
   } else if (harnessConfig.tests) {
-    harnessConfig.tests = harnessConfig.tests.split(',').
-        map(function(x) {return parseInt(x);}).
-        sort(function(a, b) {return a - b;});
+    harnessConfig.tests =
+        harnessConfig.tests.split(',')
+            .map(function(x) {
+              if (x.indexOf('-') != -1) {
+                var [start, end] = x.split('-');
+                var arr = [];
+                for (var i = parseInt(start); i <= parseInt(end); i++) {
+                  arr.push(i);
+                }
+                return arr;
+              } else {
+                return parseInt(x);
+              }
+            })
+            .reduce((acc, val) => acc.concat(val), [])
+            .sort(function(a, b) {
+              return a - b;
+            });
+    harnessConfig.tests = [...new Set(harnessConfig.tests)];
     for (var i = 0; i < harnessConfig.tests.length; ++i) {
       var index = harnessConfig.tests[i] * 1 - 1;
       if (index < 0)
         continue;
-      harnessConfig.testsMask = util.resize(
-          harnessConfig.testsMask, index, '0');
+      harnessConfig.testsMask =
+          util.resize(harnessConfig.testsMask, index, '0');
       harnessConfig.testsMask += '1';
     }
     harnessConfig.testsMask += '0';
@@ -94,8 +110,8 @@ var configureHarness = function(testSuiteConfig) {
       var index = harnessConfig.exclude[i] * 1 - 1;
       if (index < 0)
         continue;
-      harnessConfig.testsMask = util.resize(
-          harnessConfig.testsMask, index, '1');
+      harnessConfig.testsMask =
+          util.resize(harnessConfig.testsMask, index, '1');
       harnessConfig.testsMask += '0';
     }
     harnessConfig.testsMask += '1';
