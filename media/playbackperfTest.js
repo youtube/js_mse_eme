@@ -45,6 +45,14 @@ var PlaybackperfTest = function() {
     if (typeof mandatory === 'boolean') {
       t.prototype.mandatory = mandatory;
     }
+    t.prototype.emeHandler = new EMEHandler();
+    t.prototype.baseTearDown = t.prototype.teardown;
+    t.prototype.teardown = function(testSuiteVer, cb) {
+      t.prototype.emeHandler.closeAllKeySessions(function() {
+        t.prototype.emeHandler = new EMEHandler();
+      });
+      this.baseTearDown(testSuiteVer, cb);
+    };
     tests.push(t);
     return t;
   };
@@ -201,7 +209,7 @@ var PlaybackperfTest = function() {
    */
   var createPlaybackPerfTest = function(
       videoStream, playbackRate, category,
-      stopPlayback, assertTest, mandatory) {
+      stopPlayback, assertTest, drmScheme, mandatory) {
     // H264 tests that are greater than 1080p are optional
     var isOptionalPlayBackPerfStream = function(videoStream) {
       return videoStream.codec == 'H264' &&
@@ -217,12 +225,16 @@ var PlaybackperfTest = function() {
         playbackRate + 'X', category, mandatory);
     test.prototype.title = 'Playback performance test';
     test.prototype.start = function(runner, video) {
+      var testEmeHandler = this.emeHandler;
       var perfTestUtil = new PerfTestUtil_(test, runner, video);
       setupMse(video, runner, videoStream, Media.AAC.AudioNormal);
+      if (drmScheme) {
+        setupEme(runner, testEmeHandler, video, videoStream, drmScheme);
+      }
       video.playbackRate = playbackRate;
       video.addEventListener('timeupdate', function onTimeUpdate(e) {
         perfTestUtil.updateVideoPerfMetricsStatus();
-        if (stopPlayback(video)) {
+        if (stopPlayback(video, testEmeHandler)) {
           video.removeEventListener('timeupdate', onTimeUpdate);
           video.pause();
           assertTest(perfTestUtil);
@@ -261,10 +273,51 @@ var PlaybackperfTest = function() {
     Media.H264.Webgl1080p60fps
   ];
 
+  var widevineMediaFormats = [
+    Media.VP9.DrmL3NoHDCP240p30fpsEnc,
+    Media.VP9.DrmL3NoHDCP360p30fpsEnc,
+    Media.VP9.DrmL3NoHDCP480p30fpsEnc,
+    Media.VP9.DrmL3NoHDCP480p30fpsMqEnc,
+    Media.VP9.DrmL3NoHDCP480p30fpsHqEnc,
+    Media.VP9.DrmL3NoHDCP720p30fpsEnc,
+    Media.VP9.DrmL3NoHDCP720p30fpsMqEnc,
+    Media.VP9.DrmL3NoHDCP720p30fpsHqEnc,
+    Media.VP9.DrmL3NoHDCP1080p30fpsEnc,
+    Media.VP9.DrmL3NoHDCP1080p30fpsMqEnc,
+    Media.VP9.DrmL3NoHDCP1080p30fpsHqEnc,
+    Media.H264.DrmL3NoHDCP144p30fpsCenc,
+    Media.H264.DrmL3NoHDCP240p30fpsCenc,
+    Media.H264.DrmL3NoHDCP360p30fpsCenc,
+    Media.H264.DrmL3NoHDCP480p30fpsCenc,
+    Media.H264.DrmL3NoHDCP480p30fpsMqCenc,
+    Media.H264.DrmL3NoHDCP480p30fpsHqCenc,
+    Media.H264.DrmL3NoHDCP720p30fpsCenc,
+    Media.H264.DrmL3NoHDCP720p30fpsMqCenc,
+    Media.H264.DrmL3NoHDCP720p30fpsHqCenc,
+    Media.H264.DrmL3NoHDCP1080p30fpsCenc,
+    Media.H264.DrmL3NoHDCP1080p30fpsMqCenc,
+    Media.H264.DrmL3NoHDCP1080p30fpsHqCenc
+  ];
+
+  var widevineMediaFormatsHfr = [
+    Media.VP9.DrmL3NoHDCP720p60fpsEnc,
+    Media.VP9.DrmL3NoHDCP720p60fpsMqEnc,
+    Media.VP9.DrmL3NoHDCP1080p60fpsEnc,
+    Media.VP9.DrmL3NoHDCP1080p60fpsMqEnc,
+    Media.H264.DrmL3NoHDCP720p60fpsCenc,
+    Media.H264.DrmL3NoHDCP720p60fpsMqCenc,
+    Media.H264.DrmL3NoHDCP1080p60fpsCenc,
+    Media.H264.DrmL3NoHDCP1080p60fpsMqCenc
+  ];
+
   var playbackSpeeds = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
 
   function shouldStopPlayback(video) {
     return !video.paused && video.currentTime >= 15;
+  }
+
+  function shouldStopDrmPlayback(video, emeHandler) {
+    return !video.paused && video.currentTime >= 16 && !emeHandler.keyUnusable;
   }
 
   function defaultTestAssertion(perfTestUtil) {
@@ -299,6 +352,33 @@ var PlaybackperfTest = function() {
           shouldStopPlayback,
           playbackSpeeds[s] <= 1
               ? defaultTestAssertion : HFRHighSpeedPlaybackTestAssertion);
+    }
+  }
+
+  // Widevine SFR.
+  for (var s in playbackSpeeds) {
+    for (var formatIdx in widevineMediaFormats) {
+      createPlaybackPerfTest(
+          widevineMediaFormats[formatIdx],
+          playbackSpeeds[s],
+          'Widevine Playback Performance',
+          shouldStopDrmPlayback,
+          defaultTestAssertion,
+          LicenseManager.WIDEVINE);
+    }
+  }
+
+  // Widevine HFR.
+  for (var s in playbackSpeeds) {
+    for (var formatIdx in widevineMediaFormatsHfr) {
+      createPlaybackPerfTest(
+          widevineMediaFormatsHfr[formatIdx],
+          playbackSpeeds[s],
+          'Widevine Playback Performance',
+          shouldStopDrmPlayback,
+          playbackSpeeds[s] <= 1
+              ? defaultTestAssertion : HFRHighSpeedPlaybackTestAssertion,
+          LicenseManager.WIDEVINE);
     }
   }
 
