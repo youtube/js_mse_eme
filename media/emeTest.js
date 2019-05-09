@@ -67,14 +67,9 @@ testWidevineH264Video.prototype.start = function(runner, video) {
   var testEmeHandler = this.emeHandler;
   var videoStream = Media.H264.VideoSmallCenc;
   var audioStream = Media.AAC.AudioNormal;
-  try {
-    setupMse(video, runner, videoStream, audioStream);
-    var licenseManager = new LicenseManager(video, videoStream,
-                                            LicenseManager.WIDEVINE);
-    testEmeHandler.init(video, licenseManager);
-  } catch(err) {
-    runner.fail(err);
-  }
+  setupMse(video, runner, videoStream, audioStream);
+  setupEme(
+      runner, testEmeHandler, video, videoStream, LicenseManager.WIDEVINE);
   video.addEventListener('timeupdate', function onTimeUpdate(e) {
     if (!video.paused && video.currentTime >= 15 &&
         !testEmeHandler.keyUnusable) {
@@ -96,14 +91,10 @@ testWidevineAacAudio.prototype.start = function(runner, video) {
   var testEmeHandler = this.emeHandler;
   var audioStream = Media.AAC.AudioSmallCenc;
   var videoStream = Media.H264.VideoNormal;
-  try {
-    setupMse(video, runner, videoStream, audioStream);
-    var licenseManager = new LicenseManager(video, audioStream,
-                                            LicenseManager.WIDEVINE);
-    testEmeHandler.init(video, licenseManager);
-  } catch(err) {
-    runner.fail(err);
-  }
+
+  setupMse(video, runner, videoStream, audioStream);
+  setupEme(
+      runner, testEmeHandler, video, audioStream, LicenseManager.WIDEVINE);
   video.addEventListener('timeupdate', function onTimeUpdate(e) {
     if (!video.paused && video.currentTime >= 15 &&
         !testEmeHandler.keyUnusable) {
@@ -125,14 +116,10 @@ testWidevineOpusAudio.prototype.start = function(runner, video) {
   var testEmeHandler = this.emeHandler;
   var audioStream = Media.Opus.SintelEncrypted;
   var videoStream = Media.VP9.VideoNormal;
-  try {
-    setupMse(video, runner, videoStream, audioStream);
-    var licenseManager = new LicenseManager(video, audioStream,
-                                            LicenseManager.WIDEVINE);
-    testEmeHandler.init(video, licenseManager);
-  } catch(err) {
-    runner.fail(err);
-  }
+
+  setupMse(video, runner, videoStream, audioStream);
+  setupEme(
+      runner, testEmeHandler, video, audioStream, LicenseManager.WIDEVINE);
   video.addEventListener('timeupdate', function onTimeUpdate(e) {
     if (!video.paused && video.currentTime >= 15 &&
         !testEmeHandler.keyUnusable) {
@@ -154,14 +141,10 @@ var createWidevineVP9VideoTest = function(videoStream, desc) {
   test.prototype.start = function(runner, video) {
     var testEmeHandler = this.emeHandler;
     var audioStream = Media.AAC.AudioNormal
-    try {
-      setupMse(video, runner, videoStream, audioStream);
-      var licenseManager = new LicenseManager(video, videoStream,
-                                              LicenseManager.WIDEVINE);
-      testEmeHandler.init(video, licenseManager);
-    } catch(err) {
-      runner.fail(err);
-    }
+
+    setupMse(video, runner, videoStream, audioStream);
+    setupEme(
+        runner, testEmeHandler, video, videoStream, LicenseManager.WIDEVINE);
     video.addEventListener('timeupdate', function onTimeUpdate(e) {
       if (!video.paused && video.currentTime >= 15 &&
           !testEmeHandler.keyUnusable) {
@@ -187,8 +170,8 @@ var testWidevineH264MultiMediaKeySessions = createEmeTest(
 testWidevineH264MultiMediaKeySessions.prototype.title =
     'Test creating 16 MediaKeySession objects each with 16 keys for playing ' +
     'encrypted with Widevine encryption.';
-testWidevineH264MultiMediaKeySessions.prototype.start = function(
-    runner, video) {
+testWidevineH264MultiMediaKeySessions.prototype.start =
+    function(runner, video) {
   var testEmeHandler = this.emeHandler;
   var videoStream = Media.H264.VideoMultiKeyCenc;
   var audioStream = Media.AAC.AudioNormal;
@@ -196,14 +179,9 @@ testWidevineH264MultiMediaKeySessions.prototype.start = function(
   for (var i = 0; i < 16; i++) {
     videoStreams.push(videoStream);
   }
-  try {
-    setupMse(video, runner, videoStreams, audioStream);
-    var licenseManager = new LicenseManager(
-        video, videoStream, LicenseManager.WIDEVINE);
-    testEmeHandler.init(video, licenseManager);
-  } catch(err) {
-    runner.fail(err);
-  }
+  setupMse(video, runner, videoStreams, audioStream);
+  setupEme(
+      runner, testEmeHandler, video, videoStream, LicenseManager.WIDEVINE);
   video.addEventListener('timeupdate', function onTimeUpdate(e) {
     if (!video.paused && video.currentTime >= 15 &&
         !testEmeHandler.keyUnusable) {
@@ -229,15 +207,10 @@ var createWidevineLicenseDelayTest = function(videoStream) {
   test.prototype.start = function(runner, video) {
     var testEmeHandler = this.emeHandler;
     var audioStream = Media.AAC.AudioNormal;
-    try {
-      setupMse(video, runner, videoStream, audioStream);
-      var licenseManager = new LicenseManager(video, videoStream,
-                                              LicenseManager.WIDEVINE);
-      testEmeHandler.init(video, licenseManager);
-      testEmeHandler.licenseDelay = 5000;
-    } catch(err) {
-      runner.fail(err);
-    }
+
+    setupMse(video, runner, videoStream, audioStream);
+    setupEme(
+        runner, testEmeHandler, video, videoStream, LicenseManager.WIDEVINE);
     video.addEventListener('timeupdate', function onTimeUpdate(e) {
       if (!video.paused && video.currentTime >= 15 &&
           !testEmeHandler.keyUnusable) {
@@ -266,14 +239,9 @@ var createWidevineVideoTest = function(videoStream, desc) {
   test.prototype.start = function(runner, video) {
     var testEmeHandler = this.emeHandler;
     var audioStream = Media.AAC.AudioNormal
-    try {
-      setupMse(video, runner, videoStream, audioStream);
-      var licenseManager = new LicenseManager(video, videoStream,
-                                              LicenseManager.WIDEVINE);
-      testEmeHandler.init(video, licenseManager);
-    } catch(err) {
-      runner.fail(err);
-    }
+    setupMse(video, runner, videoStream, audioStream);
+    setupEme(
+        runner, testEmeHandler, video, videoStream, LicenseManager.WIDEVINE);
     video.addEventListener('timeupdate', function onTimeUpdate(e) {
       if (!video.paused && video.currentTime >= 15 &&
           !testEmeHandler.keyUnusable) {
@@ -323,14 +291,10 @@ testPlayReadyH264Video.prototype.start = function(runner, video) {
   var testEmeHandler = this.emeHandler;
   var videoStream = Media.H264.VideoSmallCenc;
   var audioStream = Media.AAC.AudioNormal;
-  try {
-    setupMse(video, runner, videoStream, audioStream);
-    var licenseManager = new LicenseManager(video, videoStream,
-                                            LicenseManager.PLAYREADY);
-    testEmeHandler.init(video, licenseManager);
-  } catch(err) {
-    runner.fail(err);
-  }
+
+  setupMse(video, runner, videoStream, audioStream);
+  setupEme(
+      runner, testEmeHandler, video, videoStream, LicenseManager.PLAYREADY);
   video.addEventListener('timeupdate', function onTimeUpdate(e) {
     if (!video.paused && video.currentTime >= 15 &&
         !testEmeHandler.keyUnusable) {
@@ -353,14 +317,10 @@ testPlayReadyAacAudio.prototype.start = function(runner, video) {
   var testEmeHandler = this.emeHandler;
   var audioStream = Media.AAC.AudioSmallCenc;
   var videoStream = Media.H264.VideoNormal;
-  try {
-    setupMse(video, runner, videoStream, audioStream);
-    var licenseManager = new LicenseManager(video, audioStream,
-                                            LicenseManager.PLAYREADY);
-    testEmeHandler.init(video, licenseManager);
-  } catch(err) {
-    runner.fail(err);
-  }
+
+  setupMse(video, runner, videoStream, audioStream);
+  setupEme(
+      runner, testEmeHandler, video, audioStream, LicenseManager.PLAYREADY);
   video.addEventListener('timeupdate', function onTimeUpdate(e) {
     if (!video.paused && video.currentTime >= 15 &&
         !testEmeHandler.keyUnusable) {
@@ -413,9 +373,8 @@ testEncryptedEventData.prototype.start = function(runner, video) {
         runner.succeed();
       }
     });
-    var licenseManager = new LicenseManager(video, videoStream,
-                                            LicenseManager.WIDEVINE);
-    testEmeHandler.init(video, licenseManager);
+    setupEme(
+        runner, testEmeHandler, video, videoStream, LicenseManager.WIDEVINE);
   } catch(err) {
     runner.fail(err);
   }
@@ -438,14 +397,9 @@ var createWidevineCreateMESEMETest =
       'succeeds and sends audio data for ' + encStream.codec;
   test.prototype.start = function(runner, video) {
     var testEmeHandler = this.emeHandler;
-    try {
-      setupMse(video, runner, videoStream, audioStream);
-      var licenseManager =
-          new LicenseManager(video, encStream, LicenseManager.WIDEVINE);
-      testEmeHandler.init(video, licenseManager);
-    } catch(err) {
-      runner.fail(err);
-    }
+    setupMse(video, runner, videoStream, audioStream);
+    setupEme(
+        runner, testEmeHandler, video, encStream, LicenseManager.WIDEVINE);
     var Ctor = window.AudioContext || window.webkitAudioContext;
     var ctx = new Ctor();
 
