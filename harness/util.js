@@ -238,11 +238,16 @@ util.getMaxWindow = function() {
 
 util.getMaxVp9SupportedWindow = function() {
   if (MediaSource.isTypeSupported(
+      'video/webm; codecs="vp9"; width=7680; height=4320;') &&
+          !MediaSource.isTypeSupported(
+              'video/webm; codecs="vp9"; width=9999; height=9999;')) {
+    return [7680, 4320];
+  } else if (MediaSource.isTypeSupported(
       'video/webm; codecs="vp9"; width=3840; height=2160;') &&
           !MediaSource.isTypeSupported(
-              'video/webm; codecs="vp9"; width=9999; height=9999;'))
+              'video/webm; codecs="vp9"; width=9999; height=9999;')) {
     return [3840, 2160];
-  else
+  } else
     return util.getMaxWindow();
 };
 
@@ -257,9 +262,18 @@ util.getMaxH264SupportedWindow = function() {
 };
 
 util.is4k = function() {
-  return util.getMaxVp9SupportedWindow[0] == 3840 &&
-      util.getMaxVp9SupportedWindow[1] == 2160;
+  return util.getMaxVp9SupportedWindow()[0] == 3840 &&
+      util.getMaxVp9SupportedWindow()[1] == 2160;
 };
+
+util.is8k = function() {
+  return util.getMaxVp9SupportedWindow()[0] == 7680 &&
+      util.getMaxVp9SupportedWindow()[1] == 4320;
+};
+
+util.isGtFHD = function() {
+  return ((util.getMaxWindow()[0] * util.getMaxWindow()[1]) > 2073600);
+}
 
 util.isCobalt = function() {
   return navigator.userAgent.includes('Cobalt');
