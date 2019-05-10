@@ -218,7 +218,8 @@ var PlaybackperfTest = function(subgroup) {
     };
     mandatory = (typeof mandatory != 'undefined') ?
       mandatory :
-      !isOptionalPlayBackPerfStream(videoStream);
+      !isOptionalPlayBackPerfStream(videoStream)
+          && isTypeSupported(videoStream);
 
     var test = createPerfTest('PlaybackPerf' + '.' + videoStream.codec +
         '.' + videoStream.get('resolution') + videoStream.get('fps') + '@' +
@@ -227,12 +228,19 @@ var PlaybackperfTest = function(subgroup) {
     test.prototype.start = function(runner, video) {
       var testEmeHandler = this.emeHandler;
       var perfTestUtil = new PerfTestUtil_(test, runner, video);
-      setupMse(video, runner, videoStream, Media.AAC.AudioNormal);
+      setupMse(video, runner, videoStream, Media.AAC.AudioNormal, 6);
       if (drmScheme) {
         setupEme(runner, testEmeHandler, video, videoStream, drmScheme);
       }
       video.playbackRate = playbackRate;
       video.addEventListener('timeupdate', function onTimeUpdate(e) {
+        if (video.playbackRate != playbackRate) {
+          runner.fail('playbackRate is not set');
+        }
+        if (video.currentTime > 0 && video.currentTime < 10) {
+          video.currentTime = 10;
+          return;
+        }
         perfTestUtil.updateVideoPerfMetricsStatus();
         if (stopPlayback(video, testEmeHandler)) {
           video.removeEventListener('timeupdate', onTimeUpdate);
@@ -287,7 +295,9 @@ var PlaybackperfTest = function(subgroup) {
     Media.VP9.DrmL3NoHDCP720p30fpsHqEnc,
     Media.VP9.DrmL3NoHDCP1080p30fpsEnc,
     Media.VP9.DrmL3NoHDCP1080p30fpsMqEnc,
-    Media.VP9.DrmL3NoHDCP1080p30fpsHqEnc
+    Media.VP9.DrmL3NoHDCP1080p30fpsHqEnc,
+    Media.VP9.Sintel2kEnc,
+    Media.VP9.Sintel4kEnc
   ];
 
   var widevineMediaFormatsH264 = [
@@ -319,11 +329,11 @@ var PlaybackperfTest = function(subgroup) {
   var playbackSpeeds = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
 
   function shouldStopPlayback(video) {
-    return !video.paused && video.currentTime >= 15;
+    return !video.paused && video.currentTime >= 25;
   }
 
   function shouldStopDrmPlayback(video, emeHandler) {
-    return !video.paused && video.currentTime >= 16 && !emeHandler.keyUnusable;
+    return shouldStopPlayback(video) && !emeHandler.keyUnusable;
   }
 
   function defaultTestAssertion(perfTestUtil) {
