@@ -626,6 +626,31 @@ testAppendWindowEnd.prototype.onsourceopen = function() {
   xhr.send();
 };
 
+var createSourceBufferChangeTypeTest = function(fromType, toType) {
+  var test = createConformanceTest(
+      `ChangeType.${fromType}.${toType}`,
+      'MSE Core');
+  test.prototype.title =
+      `Test SourceBuffer.changeType() from ${fromType} to ${toType}`;
+  test.prototype.mandatory = false;
+  test.prototype.onsourceopen = function() {
+    try {
+      var sb = this.ms.addSourceBuffer(Media[fromType].mimetype);
+      sb.changeType(Media[toType].mimetype);
+      this.runner.succeed();
+    } catch (e) {
+      this.runner.fail(e);
+    }
+  }
+}
+
+createSourceBufferChangeTypeTest('H264', 'VP9');
+createSourceBufferChangeTypeTest('H264', 'AV1');
+createSourceBufferChangeTypeTest('VP9', 'H264');
+createSourceBufferChangeTypeTest('VP9', 'AV1');
+createSourceBufferChangeTypeTest('AV1', 'H264');
+createSourceBufferChangeTypeTest('AV1', 'VP9');
+
 /**
  * Creates a MSE currentTime Accuracy test to validate if the media.currentTime
  * is accurate to within 250 milliseconds during active playback. This can
