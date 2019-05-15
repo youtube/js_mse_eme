@@ -21,7 +21,7 @@
  * Playback Performance Test Suite.
  * @class
  */
-var PlaybackperfTest = function() {
+var PlaybackperfTest = function(subgroup) {
 
   var webkitPrefix = MediaSource.prototype.version.indexOf('webkit') >= 0;
   var tests = [];
@@ -245,7 +245,7 @@ var PlaybackperfTest = function() {
     };
   };
 
-  var mediaFormats = [
+  var mediaFormatsVP9 = [
     Media.VP9.Webgl144p30fps,
     Media.VP9.Webgl240p30fps,
     Media.VP9.Webgl360p30fps,
@@ -253,7 +253,10 @@ var PlaybackperfTest = function() {
     Media.VP9.Webgl720p30fps,
     Media.VP9.Webgl1080p30fps,
     Media.VP9.Webgl1440p30fps,
-    Media.VP9.Webgl2160p30fps,
+    Media.VP9.Webgl2160p30fps
+  ];
+
+  var mediaFormatsH264 = [
     Media.H264.Webgl144p15fps,
     Media.H264.Webgl240p30fps,
     Media.H264.Webgl360p30fps,
@@ -273,7 +276,7 @@ var PlaybackperfTest = function() {
     Media.H264.Webgl1080p60fps
   ];
 
-  var widevineMediaFormats = [
+  var widevineMediaFormatsVP9 = [
     Media.VP9.DrmL3NoHDCP240p30fpsEnc,
     Media.VP9.DrmL3NoHDCP360p30fpsEnc,
     Media.VP9.DrmL3NoHDCP480p30fpsEnc,
@@ -284,7 +287,10 @@ var PlaybackperfTest = function() {
     Media.VP9.DrmL3NoHDCP720p30fpsHqEnc,
     Media.VP9.DrmL3NoHDCP1080p30fpsEnc,
     Media.VP9.DrmL3NoHDCP1080p30fpsMqEnc,
-    Media.VP9.DrmL3NoHDCP1080p30fpsHqEnc,
+    Media.VP9.DrmL3NoHDCP1080p30fpsHqEnc
+  ];
+
+  var widevineMediaFormatsH264 = [
     Media.H264.DrmL3NoHDCP144p30fpsCenc,
     Media.H264.DrmL3NoHDCP240p30fpsCenc,
     Media.H264.DrmL3NoHDCP360p30fpsCenc,
@@ -330,56 +336,78 @@ var PlaybackperfTest = function() {
     perfTestUtil.assertMaxDroppedFramesRatio(0.45);
   }
 
-  // SFR.
-  for (var s in playbackSpeeds) {
-    for (var formatIdx in mediaFormats) {
-      createPlaybackPerfTest(
-          mediaFormats[formatIdx],
-          playbackSpeeds[s],
-          'Playback Performance',
-          shouldStopPlayback,
-          defaultTestAssertion);
+  function getTestAssertion(playbackSpeed, isHFR) {
+    if (isHFR && playbackSpeed > 1)
+      return HFRHighSpeedPlaybackTestAssertion;
+    else
+      return defaultTestAssertion;
+  }
+
+  /**
+   * Create Playback Performance tests for given media formats across all
+   * playback speeds.
+   */
+  function createPlaybackPerfTestSuite(
+      mediaFormats, category, stopPlayback, isHFR, drmScheme) {
+    for (var s in playbackSpeeds) {
+      for (var formatIdx in mediaFormats) {
+        createPlaybackPerfTest(
+            mediaFormats[formatIdx],
+            playbackSpeeds[s],
+            category,
+            stopPlayback,
+            getTestAssertion(playbackSpeeds[s], isHFR),
+            drmScheme);
+      }
     }
   }
 
-  // HFR.
-  for (var s in playbackSpeeds) {
-    for (var formatIdx in mediaFormatsHfr) {
-      createPlaybackPerfTest(
-          mediaFormatsHfr[formatIdx],
-          playbackSpeeds[s],
+  switch (subgroup) {
+    case 'sfr-vp9':
+      createPlaybackPerfTestSuite(
+          mediaFormatsVP9,
+          'VP9 SFR Playback Performance',
+          shouldStopPlayback,
+          false);
+      break;
+    case 'sfr-h264':
+      createPlaybackPerfTestSuite(
+          mediaFormatsH264,
+          'H264 SFR Playback Performance',
+          shouldStopPlayback,
+          false);
+      break;
+    case 'hfr':
+      createPlaybackPerfTestSuite(
+          mediaFormatsHfr,
           'HFR Playback Performance',
           shouldStopPlayback,
-          playbackSpeeds[s] <= 1
-              ? defaultTestAssertion : HFRHighSpeedPlaybackTestAssertion);
-    }
-  }
-
-  // Widevine SFR.
-  for (var s in playbackSpeeds) {
-    for (var formatIdx in widevineMediaFormats) {
-      createPlaybackPerfTest(
-          widevineMediaFormats[formatIdx],
-          playbackSpeeds[s],
-          'Widevine Playback Performance',
+          true);
+      break;
+    case 'widevine-sfr-vp9':
+      createPlaybackPerfTestSuite(
+          widevineMediaFormatsVP9,
+          'VP9 Widevine SFR Playback Performance',
           shouldStopDrmPlayback,
-          defaultTestAssertion,
+          false,
           LicenseManager.WIDEVINE);
-    }
-  }
-
-  // Widevine HFR.
-  for (var s in playbackSpeeds) {
-    for (var formatIdx in widevineMediaFormatsHfr) {
-      createPlaybackPerfTest(
-          widevineMediaFormatsHfr[formatIdx],
-          playbackSpeeds[s],
-          'Widevine Playback Performance',
+      break;
+    case 'widevine-sfr-h264':
+      createPlaybackPerfTestSuite(
+          widevineMediaFormatsH264,
+          'H264 Widevine SFR Playback Performance',
           shouldStopDrmPlayback,
-          playbackSpeeds[s] <= 1
-              ? defaultTestAssertion : HFRHighSpeedPlaybackTestAssertion,
+          false,
           LicenseManager.WIDEVINE);
-    }
+      break;
+    case 'widevine-hfr':
+      createPlaybackPerfTestSuite(
+          widevineMediaFormatsHfr,
+          'Widevine HFR Playback Performance',
+          shouldStopDrmPlayback,
+          true,
+          LicenseManager.WIDEVINE);
+      break;
   }
 
   return {
