@@ -828,29 +828,6 @@ createCurrentTimePausedAccuracyTest(
     Media.VP9.Webgl720p60fps, Media.AAC.AudioNormal, 'HFR');
 
 /**
- * Validate specified mimetype is supported.
- */
-var createSupportTest = function(mimetype, desc) {
-  var test = createConformanceTest(desc + 'Support', 'MSE Formats');
-  test.prototype.title =
-      'Test if we support ' + desc + ' with mimetype: ' + mimetype;
-  test.prototype.onsourceopen = function() {
-    try {
-      this.log('Trying format ' + mimetype);
-      var src = this.ms.addSourceBuffer(mimetype);
-    } catch (e) {
-      return this.runner.fail(e);
-    }
-    this.runner.succeed();
-  };
-};
-
-createSupportTest(Media.AAC.mimetype, 'AAC');
-createSupportTest(Media.H264.mimetype, 'H264');
-createSupportTest(Media.VP9.mimetype, 'VP9');
-createSupportTest(Media.Opus.mimetype, 'Opus');
-
-/**
  * Ensure AudioContext is supported.
  */
 var testWAAContext = createConformanceTest('WAAPresence', 'MSE Web Audio API');
@@ -969,40 +946,6 @@ testFrameOverlaps.prototype.title = 'Test media with frame durations of ' +
     '23.976FPS but segment timing corresponding to 24FPS';
 testFrameOverlaps.prototype.filename = Media.H264.FrameOverlap.src;
 testFrameOverlaps.prototype.onsourceopen = frameTestOnSourceOpen;
-
-/**
- * Test different audio codec with 5.1 surround sound (six channel surround
- * sound audio system).
- */
-var createAudio51Test = function(audioStream) {
-  var test = createConformanceTest(audioStream.codec + '5.1', 'Media');
-  test.prototype.title = 'Test 5.1-channel ' + audioStream.codec;
-  test.prototype.onsourceopen = function() {
-    var runner = this.runner;
-    var media = this.video;
-    var videoStream = Media.VP9.VideoNormal;
-    var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
-    var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
-    var xhr = runner.XHRManager.createRequest(audioStream.src, function(e) {
-      audioSb.appendBuffer(xhr.getResponseData());
-      var xhr2 = runner.XHRManager.createRequest(videoStream.src, function(e) {
-          videoSb.appendBuffer(xhr2.getResponseData());
-          media.play();
-          media.addEventListener('timeupdate', function(e) {
-            if (!media.paused && media.currentTime > 2) {
-              runner.succeed();
-            }
-          });
-        }, 0, 3000000);
-      xhr2.send();
-    });
-    xhr.send();
-  }
-}
-
-
-createAudio51Test(Media.Opus.Audio51);
-createAudio51Test(Media.AAC.Audio51);
 
 /**
  * Test playback of HE-AAC (High-Efficiency Advanced Audio Coding) with
