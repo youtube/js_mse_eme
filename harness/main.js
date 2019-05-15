@@ -23,8 +23,14 @@
 var loadTests = function(testType) {
   // We have to make it compatible to the legacy url format.
   var testName = testType.substr(0, testType.indexOf('-'));
-  testName = util.MakeCapitalName(testName) + 'Test';
-  return window[testName]();
+  if (testName == "playbackperf") {
+    var subgroup =
+      testType.substring(testType.indexOf('-') + 1, testType.lastIndexOf('-'));
+    return window['PlaybackperfTest'](subgroup)
+  } else {
+    testName = util.MakeCapitalName(testName) + 'Test';
+    return window[testName]();
+  }
 };
 
 var parseParam = function(param, defaultValue) {

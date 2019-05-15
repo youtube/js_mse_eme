@@ -40,10 +40,35 @@
       title: 'Web Graphics Library Performance Tests',
       heading: 'WebGL Performance Tests'
     },
-    'playbackperf-test': {
-      name: 'Playback Performance Tests',
-      title: 'Tests for performance of video playback and decoding',
-      heading: 'Playback Performance Tests'
+    'playbackperf-sfr-vp9-test': {
+      name: 'VP9 SFR Tests',
+      title: 'Tests for performance of VP9 SFR video playback and decoding',
+      heading: 'VP9 SFR Tests'
+    },
+    'playbackperf-sfr-h264-test': {
+      name: 'H264 SFR Tests',
+      title: 'Tests for performance of H264 SFR video playback and decoding',
+      heading: 'H264 SFR Tests'
+    },
+    'playbackperf-hfr-test': {
+      name: 'HFR Tests',
+      title: 'Tests for performance of HFR video playback and decoding',
+      heading: 'HFR Tests'
+    },
+    'playbackperf-widevine-sfr-vp9-test': {
+      name: 'VP9 Widevine SFR Tests',
+      title: 'Tests for performance of VP9 DRM video playback and decoding',
+      heading: 'VP9 Widevine SFR Tests'
+    },
+    'playbackperf-widevine-sfr-h264-test': {
+      name: 'H264 Widevine SFR Tests',
+      title: 'Tests for performance of H264 DRM video playback and decoding',
+      heading: 'H264 Widevine SFR Tests'
+    },
+    'playbackperf-widevine-hfr-test': {
+      name: 'Widevine HFR Tests',
+      title: 'Tests for performance of HFR video playback and decoding',
+      heading: 'Widevine HFR Tests'
     },
     'sphericalOnCobalt-test': {
       name: 'Cobalt Spherical Tests',
@@ -60,7 +85,12 @@
         'webgl-test',
         'sphericalOnCobalt-test',
         'progressive-test',
-        'playbackperf-test',
+        'playbackperf-sfr-vp9-test',
+        'playbackperf-sfr-h264-test',
+        'playbackperf-hfr-test',
+        'playbackperf-widevine-sfr-vp9-test',
+        'playbackperf-widevine-sfr-h264-test',
+        'playbackperf-widevine-hfr-test',
       ],
       'config' : {
         'defaultTestSuite': 'conformance-test',
