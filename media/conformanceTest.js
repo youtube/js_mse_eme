@@ -470,6 +470,78 @@ testStartPlayWithoutData.prototype.onsourceopen = function() {
 };
 
 /**
+ * Ensure we can start playback from a non-zero position.
+ */
+var createStartPlayAtNonZeroPositionTest = function(
+    audioStream, audioSegments, videoStream, videoSegments, startAtSec) {
+  var test = createConformanceTest(
+      `StartPlayAtTimeGt0${videoStream.codec}+${audioStream.codec}`,
+      'MSE Core');
+  test.prototype.title =
+      'Test if we can start playback from time > 0.';
+  test.prototype.onsourceopen = function() {
+    var runner = this.runner;
+    var video = this.video;
+    var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
+    var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
+
+    var fetchStream = function(stream, callBack, start, end) {
+      var xhr =
+          runner.XHRManager.createRequest(stream.src, callBack, start, end);
+      xhr.send();
+    }
+    var appendLoop = function(stream, sourceBuffer, segments, playAndSeek) {
+      var parsedData;
+      var segmentIdx = 0;
+      var maxSegments = segments.length;
+
+      fetchStream(stream, function() {
+        if (stream.codec == 'H264' || stream.codec == 'AAC') {
+          parsedData = parseMp4(this.getResponseData());
+        } else if(stream.codec == 'VP9' || stream.codec == 'Opus') {
+          parsedData = parseWebM(this.getResponseData().buffer);
+        } else {
+          runner.fail('Unsupported codec in appendLoop.');
+        }
+        fetchStream(stream, function() {
+          sourceBuffer.addEventListener('updateend', function append() {
+            if (playAndSeek && segmentIdx == 0) {
+              video.play();
+            }
+            if (maxSegments - segmentIdx <= 0) {
+              sourceBuffer.removeEventListener('updateend', append);
+              if (playAndSeek) {
+                video.currentTime = playAndSeek;
+              }
+              return;
+            }
+            fetchStream(stream, function() {
+              sourceBuffer.appendBuffer(this.getResponseData());
+              segmentIdx += 1;
+            },
+            parsedData[segments[segmentIdx]].offset,
+            parsedData[segments[segmentIdx]].size);
+          });
+          sourceBuffer.appendBuffer(this.getResponseData());
+        }, 0, parsedData[0].offset); // Init segment.
+      }, 0, 32 * 1024); // Enough data to parse the stream.
+    };
+    video.addEventListener('timeupdate', function timeupdate() {
+      if (!video.paused && video.currentTime > startAtSec + 5) {
+        runner.succeed();
+      }
+    });
+    appendLoop(audioStream, audioSb, audioSegments);
+    appendLoop(videoStream, videoSb, videoSegments, startAtSec);
+  };
+};
+
+createStartPlayAtNonZeroPositionTest(
+    Media.AAC.AudioNormal, [1, 2], Media.H264.VideoNormal, [2, 3, 4], 12);
+createStartPlayAtNonZeroPositionTest(
+    Media.Opus.CarLow, [1, 2], Media.VP9.VideoNormal, [2, 3, 4], 12);
+
+/**
  * Ensure event timestamp is relative to the initial page load.
  */
 var testEventTimestamp = createConformanceTest('EventTimestamp', 'MSE Core');
