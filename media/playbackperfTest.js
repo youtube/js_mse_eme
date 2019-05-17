@@ -44,6 +44,9 @@ var createPerfTest = function(name, category, mandatory) {
   if (typeof mandatory === 'boolean') {
     t.prototype.mandatory = mandatory;
   }
+  t.prototype.dropped_frames = 0;
+  t.prototype.decoded_frames = 0;
+
   tests.push(t);
   return t;
 };
@@ -131,6 +134,8 @@ var createFrameDropValidationTest = function(videoStream1, videoStream2) {
         if (!video.paused && video.currentTime >= 15) {
           video.removeEventListener('timeupdate', onTimeUpdate);
           video.pause();
+          test.prototype.decoded_frames = totalDecodedFrames;
+          test.prototype.dropped_frames = totalDroppedFrames;
           if (totalDecodedFrames <= 0) {
             test.prototype.status = 'Fail';
             runner.fail('UserAgent was unable to render any frames.');
@@ -193,6 +198,8 @@ var createPlaybackPerfTest = function(
       if (!video.paused && video.currentTime >= 15) {
         video.removeEventListener('timeupdate', onTimeUpdate);
         video.pause();
+        test.prototype.decoded_frames = totalDecodedFrames;
+        test.prototype.dropped_frames = totalDroppedFrames;
         if (totalDecodedFrames <= 0) {
           test.prototype.status = 'Fail';
           runner.fail('UserAgent was unable to render any frames.');

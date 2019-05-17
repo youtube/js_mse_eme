@@ -296,6 +296,37 @@ TestExecutor.prototype.onfinished = function() {
       document.URL.indexOf('googleapis.com') >= 0) {
     this.sendTestReport(getTestResults());
   }
+
+  if (harnessConfig.is_raptor) {
+    function getRaptorTestResults(testStartId, testEndId) {
+      testStartId = testStartId || 0;
+      testEndId = testEndId || window.globalRunner.testList.length;
+
+      var results = {};
+      for (var i = testStartId; i < testEndId; ++i) {
+        var test = window.globalRunner.testList[i];
+        if (test) {
+          switch (harnessConfig.testType) {
+            case "playbackperf-test":
+              results[test.prototype.desc] = {
+                decodedFrames: test.prototype.decoded_frames,
+                droppedFrames: test.prototype.dropped_frames,
+              }
+            break;
+          }
+        }
+      }
+      return results;
+    };
+
+    let message = [
+      'raptor-benchmark',
+      'youtube-' + harnessConfig.testType,
+      getRaptorTestResults()
+    ];
+    this.log('sending youtube-' + harnessConfig.testType + ' results to Raptor');
+    window.postMessage(message, '*');
+  }
 };
 
 TestExecutor.prototype.sendTestReport = function(results) {
@@ -534,6 +565,4 @@ window.getTestResults = function(testStartId, testEndId) {
   }
   return results;
 };
-
-
 })();

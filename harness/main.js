@@ -50,6 +50,9 @@ var parseParams = function(testSuiteConfig) {
   config.testsMask = parseParam('tests_mask', '');
   config.testid = parseParam('testid', '');
 
+  // See: https://wiki.mozilla.org/Performance_sheriffing/Raptor
+  config.is_raptor = util.stringToBoolean(parseParam('raptor', false));
+
   config.is_cobalt = util.isCobalt();
   config.support_hdr = util.supportHdr();
   config.support_webgl = util.supportWebGL();
