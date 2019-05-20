@@ -626,30 +626,66 @@ testAppendWindowEnd.prototype.onsourceopen = function() {
   xhr.send();
 };
 
-var createSourceBufferChangeTypeTest = function(fromType, toType) {
+var createSourceBufferChangeTypeTest = function(fromStream, toStream) {
   var test = createConformanceTest(
-      `ChangeType.${fromType}.${toType}`,
+      `ChangeType.${fromStream.codec}.${toStream.codec}`,
       'MSE Core');
   test.prototype.title =
-      `Test SourceBuffer.changeType() from ${fromType} to ${toType}`;
+      `Test SourceBuffer.changeType() from ${fromStream.codec} ` +
+      `to ${toStream.codec}`;
   test.prototype.mandatory = false;
   test.prototype.onsourceopen = function() {
-    try {
-      var sb = this.ms.addSourceBuffer(Media[fromType].mimetype);
-      sb.changeType(Media[toType].mimetype);
-      this.runner.succeed();
-    } catch (e) {
-      this.runner.fail(e);
+    var video = this.video;
+    var ms = this.ms;
+    var runner = this.runner;
+    var videoStreams = [fromStream, toStream];
+    function feedVideoElement(streamIndex) {
+      var secondsToBuffer = 2;
+      if (streamIndex == videoStreams.length) {
+        ms.endOfStream();
+        video.addEventListener('timeupdate', function(e) {
+          if (!video.paused && video.currentTime >= secondsToBuffer * 2) {
+            runner.succeed();
+          }
+        });
+        video.play();
+        return;
+      }
+
+      try {
+        var sourceBuffer;
+        var videoStream = videoStreams[streamIndex];
+
+        if (ms.sourceBuffers.length == 0) {
+          sourceBuffer = ms.addSourceBuffer(videoStream.mimetype);
+          sourceBuffer.mode = 'sequence';
+        } else {
+          sourceBuffer = ms.sourceBuffers[0];
+          sourceBuffer.changeType(videoStream.mimetype);
+        }
+
+        var xhr = runner.XHRManager.createRequest(videoStream.src, function(e) {
+          sourceBuffer.appendBuffer(this.getResponseData());
+          sourceBuffer.addEventListener('updateend', function() {
+            feedVideoElement(++streamIndex);
+          }, { once: true });
+        }, 0, videoStream.bps * secondsToBuffer);
+        xhr.send();
+
+      } catch(error) {
+        runner.fail(error);
+      }
     }
+    feedVideoElement(0);
   }
 }
 
-createSourceBufferChangeTypeTest('H264', 'VP9');
-createSourceBufferChangeTypeTest('H264', 'AV1');
-createSourceBufferChangeTypeTest('VP9', 'H264');
-createSourceBufferChangeTypeTest('VP9', 'AV1');
-createSourceBufferChangeTypeTest('AV1', 'H264');
-createSourceBufferChangeTypeTest('AV1', 'VP9');
+createSourceBufferChangeTypeTest(Media.H264.VideoTiny, Media.VP9.VideoTiny);
+createSourceBufferChangeTypeTest(Media.H264.VideoTiny, Media.AV1.VideoUltraLow);
+createSourceBufferChangeTypeTest(Media.VP9.VideoTiny, Media.H264.VideoTiny);
+createSourceBufferChangeTypeTest(Media.VP9.VideoTiny, Media.AV1.VideoUltraLow);
+createSourceBufferChangeTypeTest(Media.AV1.VideoUltraLow, Media.H264.VideoTiny);
+createSourceBufferChangeTypeTest(Media.AV1.VideoUltraLow, Media.VP9.VideoTiny);
 
 /**
  * Creates a MSE currentTime Accuracy test to validate if the media.currentTime
