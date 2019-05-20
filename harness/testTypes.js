@@ -55,6 +55,11 @@
       title: 'Tests for performance of H264 SFR video playback and decoding',
       heading: 'H264 SFR Tests'
     },
+    'playbackperf-sfr-av1-test': {
+      name: 'AV1 SFR Tests',
+      title: 'Tests for performance of AV1 SFR video playback and decoding',
+      heading: 'AV1 SFR Tests',
+    },
     'playbackperf-hfr-test': {
       name: 'HFR Tests',
       title: 'Tests for performance of HFR video playback and decoding',
@@ -93,6 +98,7 @@
         'progressive-test',
         'playbackperf-sfr-vp9-test',
         'playbackperf-sfr-h264-test',
+        'playbackperf-sfr-av1-test',
         'playbackperf-hfr-test',
         'playbackperf-widevine-sfr-vp9-test',
         'playbackperf-widevine-sfr-h264-test',

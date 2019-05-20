@@ -57,10 +57,11 @@ var createCodecTest = function(name, category, mandatory) {
  * However, sometimes the update happens so fast that the second append manage
  * as well.
  */
-var createAppendTest = function(stream, unused_stream) {
+var createAppendTest = function(stream, unused_stream, mandatory) {
   var test = createCodecTest(
       'Append' + stream.codec + util.MakeCapitalName(stream.mediatype),
-      'MSE (' + stream.codec + ')');
+      'MSE (' + stream.codec + ')',
+      mandatory);
   test.prototype.title = 'Test if we can append a whole ' +
       stream.mediatype + ' file whose size is 1MB.';
   test.prototype.onsourceopen = function() {
@@ -111,10 +112,11 @@ var createAppendTest = function(stream, unused_stream) {
 /**
  * Ensure sourceBuffer can abort current segment and end up with correct value.
  */
-var createAbortTest = function(stream, unused_stream) {
+var createAbortTest = function(stream, unused_stream, mandatory) {
   var test = createCodecTest(
       'Abort' + stream.codec + util.MakeCapitalName(stream.mediatype),
-      'MSE (' + stream.codec + ')');
+      'MSE (' + stream.codec + ')',
+      mandatory);
   test.prototype.title = 'Test if we can abort the current segment.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
@@ -147,11 +149,12 @@ var createAbortTest = function(stream, unused_stream) {
 /**
  * Ensure timestamp offset can be set.
  */
-var createTimestampOffsetTest = function(stream, unused_stream) {
+var createTimestampOffsetTest = function(stream, unused_stream, mandatory) {
   var test = createCodecTest(
       'TimestampOffset' + stream.codec +
           util.MakeCapitalName(stream.mediatype),
-      'MSE (' + stream.codec + ')');
+      'MSE (' + stream.codec + ')',
+      mandatory);
   test.prototype.title = 'Test if we can set timestamp offset.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
@@ -176,9 +179,10 @@ var createTimestampOffsetTest = function(stream, unused_stream) {
  * Test the sourceBuffer DASH switch latency.
  * Validate it's less than 1 second.
  */
-var createDASHLatencyTest = function(videoStream, audioStream) {
+var createDASHLatencyTest = function(videoStream, audioStream, mandatory) {
   var test = createCodecTest('DASHLatency' + videoStream.codec,
-      'MSE (' + videoStream.codec + ')');
+      'MSE (' + videoStream.codec + ')',
+      mandatory);
   test.prototype.title = 'Test SourceBuffer DASH switch latency';
   test.prototype.onsourceopen = function() {
     var self = this;
@@ -256,11 +260,12 @@ var createDASHLatencyTest = function(videoStream, audioStream) {
 /**
  * Ensure valid duration change after append buffer by halving the duration.
  */
-var createDurationAfterAppendTest = function(stream, unused_stream) {
+var createDurationAfterAppendTest = function(stream, unused_stream, mandatory) {
   var test = createCodecTest(
       'DurationAfterAppend' + stream.codec +
           util.MakeCapitalName(stream.mediatype),
-      'MSE (' + stream.codec + ')');
+      'MSE (' + stream.codec + ')',
+      mandatory);
   test.prototype.title = 'Test if the duration expands after appending data.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
@@ -326,11 +331,12 @@ var createDurationAfterAppendTest = function(stream, unused_stream) {
 /**
  * Test pause state before or after appending data to sourceBuffer.
  */
-var createPausedTest = function(stream) {
+var createPausedTest = function(stream, mandatory) {
   var test = createCodecTest(
       'PausedStateWith' + stream.codec +
           util.MakeCapitalName(stream.mediatype),
-      'MSE (' + stream.codec + ')');
+      'MSE (' + stream.codec + ')',
+      mandatory);
   test.prototype.title = 'Test if the paused state is correct before or ' +
       ' after appending data.';
   test.prototype.onsourceopen = function() {
@@ -358,9 +364,10 @@ var createPausedTest = function(stream) {
 /**
  * Test if video dimension is correct before or after appending data.
  */
-var createVideoDimensionTest = function(videoStream, audioStream) {
+var createVideoDimensionTest = function(videoStream, audioStream, mandatory) {
   var test = createCodecTest('VideoDimension' + videoStream.codec,
-      'MSE (' + videoStream.codec + ')');
+      'MSE (' + videoStream.codec + ')',
+      mandatory);
   test.prototype.title =
       'Test if video dimension is correct before or after appending data.';
   test.prototype.onsourceopen = function() {
@@ -404,9 +411,10 @@ var createVideoDimensionTest = function(videoStream, audioStream) {
 /**
  * Test if the playback state transition is correct.
  */
-var createPlaybackStateTest = function(stream) {
+var createPlaybackStateTest = function(stream, mandatory) {
   var test = createCodecTest('PlaybackState' + stream.codec,
-      'MSE (' + stream.codec + ')');
+      'MSE (' + stream.codec + ')',
+      mandatory);
   test.prototype.title = 'Test if the playback state transition is correct.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
@@ -459,9 +467,10 @@ var createPlaybackStateTest = function(stream) {
 /**
  * Ensure we can play a partially appended video segment.
  */
-var createPlayPartialSegmentTest = function(stream) {
+var createPlayPartialSegmentTest = function(stream, mandatory) {
   var test = createCodecTest('PlayPartial' + stream.codec + 'Segment',
-      'MSE (' + stream.codec + ')');
+      'MSE (' + stream.codec + ')',
+      mandatory);
   test.prototype.title =
       'Test if we can play a partially appended video segment.';
   test.prototype.onsourceopen = function() {
@@ -556,9 +565,10 @@ var createAppendAudioOffsetTest = function(stream1, stream2) {
 /**
  * Ensure we can append video data with an explicit offset.
  */
-var createAppendVideoOffsetTest = function(stream1, stream2, audioStream) {
+var createAppendVideoOffsetTest = function(stream1, stream2, audioStream, mandatory) {
   var test = createCodecTest('Append' + stream1.codec + 'VideoOffset',
-      'MSE (' + stream1.codec + ')');
+      'MSE (' + stream1.codec + ')',
+      mandatory);
   test.prototype.title =
       'Test if we can append video data with an explicit offset.';
   test.prototype.onsourceopen = function() {
@@ -613,11 +623,12 @@ var createAppendVideoOffsetTest = function(stream1, stream2, audioStream) {
 /**
  * Ensure we can append multiple init segments.
  */
-var createAppendMultipleInitTest = function(stream, unused_stream) {
+var createAppendMultipleInitTest = function(stream, unused_stream, mandatory) {
   var test = createCodecTest(
       'AppendMultipleInit' + stream.codec +
           util.MakeCapitalName(stream.mediatype),
-      'MSE (' + stream.codec + ')');
+      'MSE (' + stream.codec + ')',
+      mandatory);
   test.prototype.title = 'Test if we can append multiple init segments.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
@@ -673,11 +684,12 @@ var createAppendMultipleInitTest = function(stream, unused_stream) {
 /**
  * Test appending segments out of order.
  */
-var createAppendOutOfOrderTest = function(stream, unused_stream) {
+var createAppendOutOfOrderTest = function(stream, unused_stream, mandatory) {
   var test = createCodecTest(
       'Append' + stream.codec + util.MakeCapitalName(stream.mediatype) +
           'OutOfOrder',
-      'MSE (' + stream.codec + ')');
+      'MSE (' + stream.codec + ')',
+      mandatory);
   test.prototype.title = 'Test appending segments out of order.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
@@ -732,10 +744,11 @@ var createAppendOutOfOrderTest = function(stream, unused_stream) {
 /**
  * Test SourceBuffer.buffered get updated correctly after feeding data.
  */
-var createBufferedRangeTest = function(stream, unused_stream) {
+var createBufferedRangeTest = function(stream, unused_stream, mandatory) {
   var test = createCodecTest(
       'BufferedRange' + stream.codec + util.MakeCapitalName(stream.mediatype),
-      'MSE (' + stream.codec + ')');
+      'MSE (' + stream.codec + ')',
+      mandatory);
   test.prototype.title =
       'Test SourceBuffer.buffered get updated correctly after feeding data.';
   test.prototype.onsourceopen = function() {
@@ -762,9 +775,11 @@ var createBufferedRangeTest = function(stream, unused_stream) {
 /**
  * Ensure the duration on MediaSource can be set and retrieved sucessfully.
  */
-var createMediaSourceDurationTest = function(videoStream, audioStream) {
+var createMediaSourceDurationTest =
+    function(videoStream, audioStream, mandatory) {
   var test = createCodecTest('MediaSourceDuration' + videoStream.codec,
-      'MSE (' + videoStream.codec + ')');
+      'MSE (' + videoStream.codec + ')',
+      mandatory);
   test.prototype.title = 'Test if the duration on MediaSource can be set ' +
       'and retrieved sucessfully.';
   test.prototype.onsourceopen = function() {
@@ -786,19 +801,25 @@ var createMediaSourceDurationTest = function(videoStream, audioStream) {
       runner.assert(isNaN(media.duration), 'Initial media duration not NaN');
       media.play();
       appendInit(media, videoSb, videoChain, 0, function() {
-        appendUntil(runner.timeouts, media, videoSb, videoChain, 10,
+        var halfDuration = 5;
+        var fullDuration = halfDuration * 2;
+        var eps = 0.5;
+        appendUntil(runner.timeouts, media, videoSb, videoChain, fullDuration,
             function() {
-          setDuration(5, ms, [videoSb, audioSb], function() {
-            runner.checkEq(ms.duration, 5, 'ms.duration');
-            runner.checkEq(media.duration, 5, 'media.duration');
-            runner.checkLE(videoSb.buffered.end(0), 5.1, 'Range end');
+          setDuration(halfDuration, ms, [videoSb, audioSb], function() {
+            runner.checkApproxEq(ms.duration, halfDuration, 'ms.duration', eps);
+            runner.checkApproxEq(media.duration, halfDuration, 'media.duration',
+                eps);
+            runner.checkLE(videoSb.buffered.end(0), halfDuration + 0.1,
+                'Range end');
             videoSb.abort();
             videoChain.seek(0);
             appendInit(media, videoSb, videoChain, 0, function() {
-              appendUntil(runner.timeouts, media, videoSb, videoChain, 10,
-                          function() {
-                runner.checkApproxEq(ms.duration, 10, 'ms.duration');
-                setDuration(5, ms, [videoSb, audioSb], function() {
+              appendUntil(runner.timeouts, media, videoSb, videoChain,
+                  fullDuration, function() {
+                runner.checkApproxEq(ms.duration, fullDuration, 'ms.duration',
+                    eps * 2);
+                setDuration(halfDuration, ms, [videoSb, audioSb], function() {
                   if (videoSb.updating) {
                     runner.fail(
                         'Source buffer is updating on duration change');
@@ -841,10 +862,11 @@ var createMediaSourceDurationTest = function(videoStream, audioStream) {
 /**
  * Validate media data with overlap is merged into one range.
  */
-var createOverlapTest = function(stream, unused_stream) {
+var createOverlapTest = function(stream, unused_stream, mandatory) {
   var test = createCodecTest(
       stream.codec + util.MakeCapitalName(stream.mediatype) + 'WithOverlap',
-      'MSE (' + stream.codec + ')');
+      'MSE (' + stream.codec + ')',
+      mandatory);
   test.prototype.title =
       'Test if media data with overlap will be merged into one range.';
   test.prototype.onsourceopen = function() {
@@ -891,10 +913,11 @@ var createOverlapTest = function(stream, unused_stream) {
  * Validate media data with a gap smaller than an media frame size is merged
  * into one buffered range.
  */
-var createSmallGapTest = function(stream, unused_stream) {
+var createSmallGapTest = function(stream, unused_stream, mandatory) {
   var test = createCodecTest(
       stream.codec + util.MakeCapitalName(stream.mediatype) + 'WithSmallGap',
-      'MSE (' + stream.codec + ')');
+      'MSE (' + stream.codec + ')',
+      mandatory);
   test.prototype.title =
       'Test if media data with a gap smaller than an media frame size ' +
       'will be merged into one buffered range.';
@@ -942,10 +965,11 @@ var createSmallGapTest = function(stream, unused_stream) {
  * Validate media data with a gap larger than an media frame size will not be
  * merged into one buffered range.
  */
-var createLargeGapTest = function(stream, unused_stream) {
+var createLargeGapTest = function(stream, unused_stream, mandatory) {
   var test = createCodecTest(
       stream.codec + util.MakeCapitalName(stream.mediatype) + 'WithLargeGap',
-      'MSE (' + stream.codec + ')');
+      'MSE (' + stream.codec + ')',
+      mandatory);
   test.prototype.title =
       'Test if media data with a gap larger than an media frame size ' +
       'will not be merged into one buffered range.';
@@ -992,9 +1016,10 @@ var createLargeGapTest = function(stream, unused_stream) {
  * properly supports seek operation fired immediately after another seek that
  * hasn't been completed.
  */
-var createSeekTest = function(videoStream) {
+var createSeekTest = function(videoStream, mandatory) {
   var test = createCodecTest('Seek' + videoStream.codec,
-      'MSE (' + videoStream.codec + ')');
+      'MSE (' + videoStream.codec + ')',
+      mandatory);
   test.prototype.title = 'Test if we can seek during playing. It' +
       ' also tests if the implementation properly supports seek operation' +
       ' fired immediately after another seek that hasn\'t been completed.';
@@ -1050,9 +1075,10 @@ var createSeekTest = function(videoStream) {
 /**
  * Seek into and out of a buffered region.
  */
-var createBufUnbufSeekTest = function(videoStream) {
+var createBufUnbufSeekTest = function(videoStream, mandatory) {
   var test = createCodecTest('BufUnbufSeek' + videoStream.codec,
-      'MSE (' + videoStream.codec + ')');
+      'MSE (' + videoStream.codec + ')',
+      mandatory);
   test.prototype.title = 'Seek into and out of a buffered region.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
@@ -1093,10 +1119,11 @@ var createBufUnbufSeekTest = function(videoStream) {
  * Ensure we can play properly when there is not enough audio or video data.
  * The play should resume once src data is appended.
  */
-var createDelayedTest = function(delayed, nonDelayed) {
+var createDelayedTest = function(delayed, nonDelayed, mandatory) {
   var test = createCodecTest(
       'Delayed' + delayed.codec + util.MakeCapitalName(delayed.mediatype),
-      'MSE (' + delayed.codec + ')');
+      'MSE (' + delayed.codec + ')',
+      mandatory);
   test.prototype.title = 'Test if we can play properly when there' +
       ' is not enough ' + delayed.mediatype +
       ' data. The play should resume once ' +
@@ -1153,10 +1180,11 @@ var createDelayedTest = function(delayed, nonDelayed) {
 /**
  * Test to check if audio-less or audio-only can be playback properly.
  */
-var createSingleSourceBufferPlaybackTest = function(stream) {
+var createSingleSourceBufferPlaybackTest = function(stream, mandatory) {
   var test = createCodecTest(
       'PlaybackOnly' + stream.codec + util.MakeCapitalName(stream.mediatype),
-      'MSE (' + stream.codec + ')');
+      'MSE (' + stream.codec + ')',
+      mandatory);
   test.prototype.title = 'Test if we can playback a single source buffer.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
@@ -1257,6 +1285,43 @@ createBufUnbufSeekTest(Media.H264.VideoNormal);
 createDelayedTest(Media.H264.VideoNormal, Media.AAC.AudioNormal);
 createSingleSourceBufferPlaybackTest(Media.H264.VideoTiny)
 
+// AV1 Specific tests.
+createAppendTest(Media.AV1.RoadtripUltraLow, Media.AAC.Audio1MB,
+    util.requireAV1());
+createAbortTest(Media.AV1.RoadtripUltraLow, Media.AAC.Audio1MB,
+    util.requireAV1());
+createTimestampOffsetTest(Media.AV1.RoadtripUltraLow, Media.AAC.Audio1MB,
+    util.requireAV1());
+createDASHLatencyTest(Media.AV1.RoadtripLow, Media.AAC.Audio1MB,
+    util.requireAV1());
+createDurationAfterAppendTest(Media.AV1.RoadtripUltraLow, Media.AAC.Audio1MB,
+    util.requireAV1());
+createPausedTest(Media.AV1.RoadtripUltraLow, util.requireAV1());
+createVideoDimensionTest(Media.AV1.RoadtripMedium, Media.AAC.Audio1MB,
+    util.requireAV1());
+createPlaybackStateTest(Media.AV1.RoadtripMedium, util.requireAV1());
+createPlayPartialSegmentTest(Media.AV1.RoadtripLow, util.requireAV1());
+createAppendVideoOffsetTest(Media.AV1.RoadtripMedium, Media.AV1.RoadtripLow,
+    Media.AAC.Audio1MB, util.requireAV1());
+createAppendMultipleInitTest(Media.AV1.RoadtripUltraLow, Media.AAC.Audio1MB,
+    util.requireAV1());
+createAppendOutOfOrderTest(Media.AV1.RoadtripMedium, Media.AAC.Audio1MB,
+    util.requireAV1());
+createBufferedRangeTest(Media.AV1.RoadtripMedium, Media.AAC.Audio1MB,
+    util.requireAV1());
+createMediaSourceDurationTest(Media.AV1.RoadtripMedium, Media.AAC.Audio1MB,
+    util.requireAV1());
+createOverlapTest(Media.AV1.RoadtripMedium, Media.AAC.Audio1MB,
+    util.requireAV1());
+createSmallGapTest(Media.AV1.RoadtripMedium, Media.AAC.Audio1MB,
+    util.requireAV1());
+createLargeGapTest(Media.AV1.RoadtripMedium, Media.AAC.Audio1MB,
+    util.requireAV1());
+createSeekTest(Media.AV1.RoadtripMedium, util.requireAV1());
+createBufUnbufSeekTest(Media.AV1.RoadtripMedium, util.requireAV1());
+createDelayedTest(Media.AV1.RoadtripMedium, Media.AAC.AudioNormal,
+    util.requireAV1());
+createSingleSourceBufferPlaybackTest(Media.AV1.RoadtripLow, util.requireAV1());
 
 return {tests: tests, info: info, fields: fields, viewType: 'default'};
 

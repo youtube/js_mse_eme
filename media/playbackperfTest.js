@@ -280,13 +280,23 @@ var PlaybackperfTest = function(subgroup) {
     Media.H264.Webgl2160p30fps
   ];
 
+  var mediaFormatsAV1 = [
+    Media.AV1.RoadtripUltraLow,
+    Media.AV1.RoadtripLow,
+    Media.AV1.RoadtripMedium,
+    Media.AV1.RoadtripHigh,
+    Media.AV1.Roadtrip720p,
+    Media.AV1.Roadtrip1080p,
+  ];
+
   var mediaFormatsHfr = [
     Media.VP9.Webgl720p60fps,
     Media.VP9.Webgl1080p60fps,
     Media.VP9.Webgl1440p60fps,
     Media.VP9.Webgl2160p60fps,
     Media.H264.Webgl720p60fps,
-    Media.H264.Webgl1080p60fps
+    Media.H264.Webgl1080p60fps,
+    // TODO add AV1 streams
   ];
 
   var widevineMediaFormatsVP9 = [
@@ -394,6 +404,13 @@ var PlaybackperfTest = function(subgroup) {
       createPlaybackPerfTestSuite(
           mediaFormatsH264,
           'H264 SFR Playback Performance',
+          shouldStopPlayback,
+          false);
+      break;
+    case 'sfr-av1':
+      createPlaybackPerfTestSuite(
+          mediaFormatsAV1,
+          'AV1 SFR Playback Performance',
           shouldStopPlayback,
           false);
       break;
