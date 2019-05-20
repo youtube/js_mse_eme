@@ -228,6 +228,38 @@ util.dlog = function(level) {
   }
 };
 
+/**
+ * Returns an AV1 codecs parameter string, e.g. "av01.0.05M.08"
+ * See https://aomediacodec.github.io/av1-isobmff/#codecsparam
+ *
+ * @param {?string} level from 2.0 to 7.3
+ * @param {?number} bitDepth 8 or 10
+ * @return {string}
+ */
+util.av1Codec = function(level = '2.0', bitDepth = 8) {
+  if (!/^[2-7]\.[0-3]$/.test(level)) {
+    throw `Invalid level: "${level}"`;
+  }
+  if (![8, 10].includes(bitDepth)) {
+    throw `Invalid bit depth: "${bitDepth}"`;
+  }
+  var zeroPad = n => {
+    // Returns a number (<100) formatted as a two-digit string.
+    return n < 10 ? `0${n}` : n.toString();
+  }
+  var fmtLevel = level => {
+    // Returns the value of seq_level_idx as defined in the spec.
+    var x_y = level.split('.');
+    var x = parseInt(x_y[0], 10);
+    var y = parseInt(x_y[1], 10);
+    var res = ((x - 2) * 4) + y;
+    return zeroPad(res);
+  };
+  var profile = 0; // Profile 0. No support for Profile 1 or Profile 2.
+  var tier = 'M'; // Main tier. No support yet for High tier.
+  return `av01.${profile}.${fmtLevel(level)}${tier}.${zeroPad(bitDepth)}`;
+};
+
 // return [width, height] of current window
 util.getMaxWindow = function() {
   return [
@@ -259,6 +291,36 @@ util.getMaxH264SupportedWindow = function() {
     return [1920, 1080];
   else
     return util.getMaxWindow();
+};
+
+util.getMaxAv1SupportedWindow = function() {
+  var checkSupport = spec => {
+    var type = [
+        'video/mp4',
+        `codecs="${util.av1Codec(spec.level)}"`,
+        `width=${spec.width}`,
+        `height=${spec.height}`,
+    ].join('; ');
+    return MediaSource.isTypeSupported(type);
+  };
+  if (checkSupport({level: '2.0', width: 9999, height: 9999})) {
+    // Invalid resolution, default to window size
+    return util.getMaxWindow();
+  }
+
+  var specs = [
+    {level: '6.0', width: 7680, height: 4320},
+    {level: '5.0', width: 3840, height: 2160},
+    {level: '4.0', width: 1920, height: 1080},
+  ];
+  for (var spec of specs) {
+    if (checkSupport(spec)) {
+      return [spec.width, spec.height];
+    }
+  }
+
+  // No valid resolutions, default to window size
+  return util.getMaxWindow();
 };
 
 util.is4k = function() {
@@ -303,29 +365,32 @@ util.createAudioFormatStr = function(audio, codec, suffix) {
       'audio/' + audio, codec, null, null, null, null, suffix);
 };
 
-util.supportHdr = function() {
-  var smpte2084Type = util.createVideoFormatStr(
-      'webm', 'vp9.2', 1280, 720, 30, null, 'eotf=smpte2084');
-  var smpte2084Supported = MediaSource.isTypeSupported(smpte2084Type);
-
-  var bt709Type = util.createVideoFormatStr(
-      'webm', 'vp9.2', 1280, 720, 30, null, 'eotf=bt709');
-  var bt709Supported = MediaSource.isTypeSupported(bt709Type);
-
-  var hlgType = util.createVideoFormatStr(
-      'webm', 'vp9.2', 1280, 720, 30, null, 'eotf=arib-std-b67');
-  var hlgSupported = MediaSource.isTypeSupported(hlgType);
-
-  var invalidEOTFType = util.createVideoFormatStr(
-      'webm', 'vp9.2', 1280, 720, 30, null, 'eotf=strobevision');
-  var invalidEOTFSupported = MediaSource.isTypeSupported(invalidEOTFType);
-
-  if (smpte2084Supported && bt709Supported &&
-      hlgSupported && !invalidEOTFSupported) {
+util.requireAV1 = function() {
+  if (util.isGt4K()) {
     return true;
-  } else {
+  }
+  return util.isGtFHD() && util.supportHdr();
+};
+
+util.supportHdr = function() {
+  var supportEotf = eotf => {
+    return MediaSource.isTypeSupported(
+        util.createVideoFormatStr(
+            'webm', 'vp9.2', 1280, 720, 30, null, `eotf=${eotf}`));
+  };
+
+  if (supportEotf('strobevision')) {
+    // Invalid EOTF supported: MediaSource.isTypeSupported must be broken.
     return false;
   }
+
+  var eotfs = ['smpte2084', 'bt709', 'arib-std-b67'];
+  for (var i = 0; i < eotfs.length; i++) {
+    if (!supportEotf(eotfs[i])) {
+      return false;
+    }
+  }
+  return true;
 };
 
 util.supportWebGL = function() {

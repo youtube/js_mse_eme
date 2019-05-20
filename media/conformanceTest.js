@@ -681,11 +681,15 @@ var createSourceBufferChangeTypeTest = function(fromStream, toStream) {
 }
 
 createSourceBufferChangeTypeTest(Media.H264.VideoTiny, Media.VP9.VideoTiny);
-createSourceBufferChangeTypeTest(Media.H264.VideoTiny, Media.AV1.VideoUltraLow);
+createSourceBufferChangeTypeTest(Media.H264.VideoTiny,
+    Media.AV1.RoadtripUltraLow);
 createSourceBufferChangeTypeTest(Media.VP9.VideoTiny, Media.H264.VideoTiny);
-createSourceBufferChangeTypeTest(Media.VP9.VideoTiny, Media.AV1.VideoUltraLow);
-createSourceBufferChangeTypeTest(Media.AV1.VideoUltraLow, Media.H264.VideoTiny);
-createSourceBufferChangeTypeTest(Media.AV1.VideoUltraLow, Media.VP9.VideoTiny);
+createSourceBufferChangeTypeTest(Media.VP9.VideoTiny,
+    Media.AV1.RoadtripUltraLow);
+createSourceBufferChangeTypeTest(Media.AV1.RoadtripUltraLow,
+    Media.H264.VideoTiny);
+createSourceBufferChangeTypeTest(Media.AV1.RoadtripUltraLow,
+    Media.VP9.VideoTiny);
 
 /**
  * Creates a MSE currentTime Accuracy test to validate if the media.currentTime
@@ -828,6 +832,30 @@ createCurrentTimePausedAccuracyTest(
     Media.VP9.Webgl720p60fps, Media.AAC.AudioNormal, 'HFR');
 
 /**
+ * Validate specified mimetype is supported.
+ */
+var createSupportTest = function(mimetype, desc, mandatory) {
+  var test = createConformanceTest(desc + 'Support', 'MSE Formats', mandatory);
+  test.prototype.title =
+      'Test if we support ' + desc + ' with mimetype: ' + mimetype;
+  test.prototype.onsourceopen = function() {
+    try {
+      this.log('Trying format ' + mimetype);
+      var src = this.ms.addSourceBuffer(mimetype);
+    } catch (e) {
+      return this.runner.fail(e);
+    }
+    this.runner.succeed();
+  };
+};
+
+createSupportTest(Media.AAC.mimetype, 'AAC');
+createSupportTest(Media.H264.mimetype, 'H264');
+createSupportTest(Media.VP9.mimetype, 'VP9');
+createSupportTest(Media.Opus.mimetype, 'Opus');
+createSupportTest(Media.AV1.mimetype, 'AV1', util.requireAV1());
+
+/**
  * Ensure AudioContext is supported.
  */
 var testWAAContext = createConformanceTest('WAAPresence', 'MSE Web Audio API');
@@ -912,8 +940,12 @@ var createCreateMESTest = function(audioStream, videoStream) {
 }
 
 createCreateMESTest(Media.Opus.CarLow, Media.VP9.VideoNormal);
+createCreateMESTest(Media.Opus.CarLow, Media.AV1.RoadtripMedium,
+    util.requireAV1());
 createCreateMESTest(Media.AAC.Audio1MB, Media.VP9.VideoNormal);
 createCreateMESTest(Media.AAC.Audio1MB, Media.H264.VideoNormal);
+createCreateMESTest(Media.AAC.Audio1MB, Media.AV1.RoadtripMedium,
+    util.requireAV1());
 
 /**
  * Test media with mismatched frame duration and segment timing.
