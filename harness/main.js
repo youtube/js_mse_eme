@@ -44,6 +44,7 @@ var parseParams = function(testSuiteConfig) {
       parseParam('stoponfailure', false));
   config.enablewebm = util.stringToBoolean(
       parseParam('enablewebm', testSuiteConfig.enablewebm));
+  config.muted = util.stringToBoolean(parseParam('muted', false));
   config.novp9 = util.stringToBoolean(parseParam('novp9', false));
   config.tests = parseParam('tests');
   config.exclude = parseParam('exclude');
@@ -155,6 +156,7 @@ var createRunner = function(testSuite, testSuiteVer, testsMask) {
       testarea.innerHTML = '';
       testarea.appendChild(util.createElement('video', vid, 'box-right'));
       document.getElementById(vid).controls = true;
+      document.getElementById(vid).muted = harnessConfig.muted;
     }
     return document.getElementById(vid);
   };
