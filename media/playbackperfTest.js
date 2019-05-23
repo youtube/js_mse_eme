@@ -221,9 +221,12 @@ var PlaybackperfTest = function(subgroup) {
       !isOptionalPlayBackPerfStream(videoStream)
           && isTypeSupported(videoStream);
 
-    var test = createPerfTest('PlaybackPerf' + '.' + videoStream.codec +
-        '.' + videoStream.get('resolution') + videoStream.get('fps') + '@' +
-        playbackRate + 'X', category, mandatory);
+    var test = createPerfTest(
+        `PlaybackPerf${videoStream.codec}${videoStream.get('resolution')}` +
+            `${videoStream.get('quality') ? videoStream.get('quality') : ''}` +
+            `${videoStream.get('fps')}fps@${playbackRate}X`,
+        category,
+        mandatory);
     test.prototype.title = 'Playback performance test';
     test.prototype.start = function(runner, video) {
       var testEmeHandler = this.emeHandler;
@@ -234,9 +237,6 @@ var PlaybackperfTest = function(subgroup) {
       }
       video.playbackRate = playbackRate;
       video.addEventListener('timeupdate', function onTimeUpdate(e) {
-        if (video.playbackRate != playbackRate) {
-          runner.fail('playbackRate is not set');
-        }
         if (video.currentTime > 0 && video.currentTime < 10) {
           video.currentTime = 10;
           return;
@@ -245,6 +245,9 @@ var PlaybackperfTest = function(subgroup) {
         if (stopPlayback(video, testEmeHandler)) {
           video.removeEventListener('timeupdate', onTimeUpdate);
           video.pause();
+          if (video.playbackRate != playbackRate) {
+            runner.fail('playbackRate is not set');
+          }
           assertTest(perfTestUtil);
           runner.succeed();
         }
@@ -343,7 +346,7 @@ var PlaybackperfTest = function(subgroup) {
 
   function HFRHighSpeedPlaybackTestAssertion(perfTestUtil) {
     perfTestUtil.assertAtLeastOneFrameDecoded();
-    perfTestUtil.assertMaxDroppedFramesRatio(0.45);
+    perfTestUtil.assertMaxDroppedFramesRatio(0.5);
   }
 
   function getTestAssertion(playbackSpeed, isHFR) {
@@ -359,8 +362,13 @@ var PlaybackperfTest = function(subgroup) {
    */
   function createPlaybackPerfTestSuite(
       mediaFormats, category, stopPlayback, isHFR, drmScheme) {
-    for (var s in playbackSpeeds) {
-      for (var formatIdx in mediaFormats) {
+    for (var formatIdx in mediaFormats) {
+      for (var s in playbackSpeeds) {
+        if (util.compareResolutions(
+            mediaFormats[formatIdx].get('resolution'), '720p') < 0
+            && playbackSpeeds[s] != 1) {
+          continue;
+        }
         createPlaybackPerfTest(
             mediaFormats[formatIdx],
             playbackSpeeds[s],
