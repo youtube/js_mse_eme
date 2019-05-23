@@ -129,11 +129,6 @@ var PlaybackperfTest = function(subgroup) {
       var videoSb;
       var audioSb;
       var perfTestUtil = new PerfTestUtil_(test, runner, video);
-      ms.addEventListener('sourceopen', function() {
-        videoSb = ms.addSourceBuffer(videoStream.mimetype);
-        audioSb = ms.addSourceBuffer(audioStream.mimetype);
-      });
-      video.src = window.URL.createObjectURL(ms);
 
       var videoXhr = runner.XHRManager.createRequest(
           videoStream.src, function(e) {
@@ -158,7 +153,14 @@ var PlaybackperfTest = function(subgroup) {
         audioSb.appendBuffer(this.getResponseData());
         videoXhr.send();
       }, 0, 131100); // audio is longer than video.
-      audioXhr.send();
+
+      ms.addEventListener('sourceopen', function() {
+        videoSb = ms.addSourceBuffer(videoStream.mimetype);
+        audioSb = ms.addSourceBuffer(audioStream.mimetype);
+        audioXhr.send();
+      });
+
+      video.src = window.URL.createObjectURL(ms);
     };
   };
 
