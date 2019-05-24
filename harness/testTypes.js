@@ -25,6 +25,11 @@
       title: 'Media Source and Media Conformance Tests',
       heading: 'MSE Conformance Tests'
     },
+    'msecodec-test': {
+      name: 'MSE Codec Tests',
+      title: 'Media Source and Media Conformance Tests for Codecs',
+      heading: 'MSE Codec Tests'
+    },
     'encryptedmedia-test': {
       name: 'EME Conformance Tests',
       title: 'Encrypted Media Extensions Conformance Tests',
@@ -81,6 +86,7 @@
     [testVersion] : {
       'testSuites' : [
         'conformance-test',
+        'msecodec-test',
         'encryptedmedia-test',
         'webgl-test',
         'sphericalOnCobalt-test',
