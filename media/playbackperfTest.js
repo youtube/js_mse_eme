@@ -75,7 +75,6 @@ var createTotalVideoFramesValidationTest = function(videoStream, frames) {
     });
     video.src = window.URL.createObjectURL(ms);
 
-<<<<<<< HEAD   (3910fa Add PR from github to allow muted playback.)
     var videoXhr = runner.XHRManager.createRequest(
         videoStream.src, function(e) {
       videoSb.appendBuffer(this.getResponseData());
@@ -85,96 +84,8 @@ var createTotalVideoFramesValidationTest = function(videoStream, frames) {
           runner.checkEq(
               totalDecodedFrames, frames, 'playbackQuality.totalVideoFrames');
           runner.succeed();
-=======
-  /**
-   * Helper class to update status and do assertion for the performance tests.
-   * @private
-   */
-  class PerfTestUtil_ {
-    constructor(test, runner, video) {
-      this.test_ = test;
-      this.runner_ = runner;
-      this.videoPerfMetrics_ = this.getVideoPerfMetrics(video);
-    }
-
-    getVideoPerfMetrics(video) {
-      var videoPerfMetrics = new VideoPerformanceMetrics(video);
-      if (!videoPerfMetrics.supportsVideoPerformanceMetrics()) {
-        this.runner_.fail(`UserAgent needs to support
-            'video.getVideoPlaybackQuality' or the combined
-            'video.webkitDecodedFrameCount'
-            and 'video.webkitDroppedFrameCount' to execute this test.`);
-      }
-      return videoPerfMetrics;
-    }
-
-    getTotalDecodedFrames() {
-      return this.videoPerfMetrics_.getTotalDecodedVideoFrames();
-    }
-
-    getTotalDroppedFrames() {
-      return this.videoPerfMetrics_.getDroppedVideoFrames();
-    }
-
-    updateVideoPerfMetricsStatus() {
-      this.test_.prototype.status =
-          `(${this.getTotalDroppedFrames()}/${this.getTotalDecodedFrames()})`;
-      this.runner_.updateStatus();
-    }
-
-    assertAtLeastOneFrameDecoded() {
-      if (this.getTotalDecodedFrames() <= 0) {
-        this.test_.prototype.status = 'Fail';
-        this.runner_.fail('UserAgent was unable to render any frames.');
-      }
-    }
-
-    assertMaxDroppedFrames(maxDroppedFrames) {
-      this.runner_.checkLE(
-          this.getTotalDroppedFrames(),
-          maxDroppedFrames,
-          'Total dropped frames');
-    }
-
-    assertMaxDroppedFramesRatio(maxRatio) {
-      this.runner_.checkLE(
-          this.getTotalDroppedFrames() / this.getTotalDecodedFrames(),
-          maxRatio,
-          'Total dropped frames / total decoded frames');
-    }
-  }
-
-  /**
-   * Creates a TotalVideoFrames test that validates whether the
-   * totalVideoFrames reported from VideoPlaybackQuality is correct by
-   * comparing it against the total frames in the video file.
-   */
-  var createTotalVideoFramesValidationTest = function(videoStream, frames) {
-    var test = createPerfTest('TotalVideoFrames', 'Media Playback Quality');
-    test.prototype.title = 'TotalVideoFrames Validation';
-    test.prototype.start = function(runner, video) {
-      var ms = new MediaSource();
-      var audioStream = Media.AAC.Audio1MB;
-      var videoSb;
-      var audioSb;
-      var perfTestUtil = new PerfTestUtil_(test, runner, video);
-
-      var videoXhr = runner.XHRManager.createRequest(
-          videoStream.src, function(e) {
-        videoSb.appendBuffer(this.getResponseData());
-        videoSb.addEventListener('updateend', function() {
-          ms.endOfStream();
-          video.addEventListener('ended', function() {
-            runner.checkEq(
-                perfTestUtil.getTotalDecodedFrames(),
-                frames,
-                'playbackQuality.totalVideoFrames');
-            runner.succeed();
-          });
->>>>>>> CHANGE (16313a - add if statement to switch source of test depending on VP9)
         });
       });
-<<<<<<< HEAD   (3910fa Add PR from github to allow muted playback.)
       video.addEventListener('timeupdate', function(e) {
           totalDecodedFrames = videoPerfMetrics.getTotalDecodedVideoFrames();
           test.prototype.status = '(' + totalDecodedFrames + ')';
@@ -188,22 +99,6 @@ var createTotalVideoFramesValidationTest = function(videoStream, frames) {
       videoXhr.send();
     }, 0, 131100); // audio is longer than video.
     audioXhr.send();
-=======
-      var audioXhr = runner.XHRManager.createRequest(
-          audioStream.src, function(e) {
-        audioSb.appendBuffer(this.getResponseData());
-        videoXhr.send();
-      }, 0, 131100); // audio is longer than video.
-
-      ms.addEventListener('sourceopen', function() {
-        videoSb = ms.addSourceBuffer(videoStream.mimetype);
-        audioSb = ms.addSourceBuffer(audioStream.mimetype);
-        audioXhr.send();
-      });
-
-      video.src = window.URL.createObjectURL(ms);
-    };
->>>>>>> CHANGE (16313a - add if statement to switch source of test depending on VP9)
   };
 };
 
