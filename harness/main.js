@@ -187,7 +187,8 @@ window.startMseTest = function(testSuiteVer) {
     throw 'Cannot find test type ' + harnessConfig.testType;
   }
   // This is a hack that will not work in all cases.
-  if (!!window.Media && harnessConfig.novp9) {
+  if (!!window.Media && harnessConfig.novp9 &&
+      harnessConfig.testType != 'playbackperf-test') {
     Media.VP9 = Media.H264;
   }
 

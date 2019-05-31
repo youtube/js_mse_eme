@@ -65,40 +65,42 @@ var createTotalVideoFramesValidationTest = function(videoStream, frames) {
     var videoPerfMetrics = new VideoPerformanceMetrics(video);
     if (!videoPerfMetrics.supportsVideoPerformanceMetrics()) {
       runner.fail('UserAgent needs to support ' +
-                  '\'video.getVideoPlaybackQuality\' or the combined ' +
-                  '\'video.webkitDecodedFrameCount\'' +
-                  'and video.webkitDroppedFrameCount to execute this test.');
+          '\'video.getVideoPlaybackQuality\' or the combined ' +
+          '\'video.webkitDecodedFrameCount\'' +
+          'and video.webkitDroppedFrameCount to execute this test.');
     }
-    ms.addEventListener('sourceopen', function() {
-      videoSb = ms.addSourceBuffer(videoStream.mimetype);
-      audioSb = ms.addSourceBuffer(audioStream.mimetype);
-    });
-    video.src = window.URL.createObjectURL(ms);
 
     var videoXhr = runner.XHRManager.createRequest(
         videoStream.src, function(e) {
-      videoSb.appendBuffer(this.getResponseData());
-      videoSb.addEventListener('updateend', function() {
-        ms.endOfStream();
-        video.addEventListener('ended', function() {
-          runner.checkEq(
-              totalDecodedFrames, frames, 'playbackQuality.totalVideoFrames');
-          runner.succeed();
+          videoSb.appendBuffer(this.getResponseData());
+          videoSb.addEventListener('updateend', function() {
+            ms.endOfStream();
+            video.addEventListener('ended', function() {
+              runner.checkEq(
+                  totalDecodedFrames, frames, 'playbackQuality.totalVideoFrames');
+              runner.succeed();
+            });
+          });
+          video.addEventListener('timeupdate', function(e) {
+            totalDecodedFrames = videoPerfMetrics.getTotalDecodedVideoFrames();
+            test.prototype.status = '(' + totalDecodedFrames + ')';
+            runner.updateStatus();
+          });
+          video.play();
         });
-      });
-      video.addEventListener('timeupdate', function(e) {
-          totalDecodedFrames = videoPerfMetrics.getTotalDecodedVideoFrames();
-          test.prototype.status = '(' + totalDecodedFrames + ')';
-          runner.updateStatus();
-      });
-      video.play();
-    });
     var audioXhr = runner.XHRManager.createRequest(
         audioStream.src, function(e) {
-      audioSb.appendBuffer(this.getResponseData());
-      videoXhr.send();
-    }, 0, 131100); // audio is longer than video.
-    audioXhr.send();
+          audioSb.appendBuffer(this.getResponseData());
+          videoXhr.send();
+        }, 0, 131100); // audio is longer than video.
+
+    ms.addEventListener('sourceopen', function() {
+      videoSb = ms.addSourceBuffer(videoStream.mimetype);
+      audioSb = ms.addSourceBuffer(audioStream.mimetype);
+      audioXhr.send();
+    });
+
+    video.src = window.URL.createObjectURL(ms);
   };
 };
 
