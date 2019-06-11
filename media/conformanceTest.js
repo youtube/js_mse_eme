@@ -1860,7 +1860,11 @@ createPlayPartialSegmentTest(Media.VP9.VideoTiny);
 createAppendVideoOffsetTest(Media.VP9.VideoNormal, Media.VP9.VideoTiny,
                             Media.AAC.AudioNormal);
 createAppendMultipleInitTest(Media.VP9.Video1MB, Media.AAC.Audio1MB);
-createAppendOutOfOrderTest(Media.VP9.VideoNormal, Media.AAC.AudioNormal);
+if (harnessConfig.novp9) {
+  createAppendOutOfOrderTest(Media.H264.CarMedium, Media.AAC.Audio1MB);
+} else {
+  createAppendOutOfOrderTest(Media.VP9.VideoNormal, Media.AAC.AudioNormal);
+}
 createBufferedRangeTest(Media.VP9.VideoNormal, Media.AAC.AudioNormal);
 createMediaSourceDurationTest(Media.VP9.VideoNormal, Media.AAC.AudioNormal);
 createOverlapTest(Media.VP9.VideoNormal, Media.AAC.AudioNormal);
