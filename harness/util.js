@@ -20,6 +20,7 @@
 (function() {
 
 const MEDIA_PATH = 'test-materials/media/';
+const CERT_PATH = 'test-materials/cert/';
 
 if (!Function.prototype.bind) {
   Function.prototype.bind = function(oThis) {
@@ -440,6 +441,10 @@ util.compareResolutions = function(r1, r2) {
 
 util.getMediaPath = function(filename) {
   return MEDIA_PATH + filename;
+};
+
+util.getCertificatePath = function(filename) {
+  return CERT_PATH + filename;
 };
 
 window.util = util;

@@ -22,8 +22,24 @@ limitations under the License.
   <body>
     <div id="testArea" style="display: none"></div>
     <script type="text/javascript" async defer>
+      // Set global variable before loading closure scripts.
+      var goog = goog || {};
+      goog.global = this || self;
+      goog.global.CLOSURE_NO_DEPS = true;
+
       // Do NOT Change order of script sources!
       var scriptSources = [
+        "third_party/closure-library/closure-library/closure/goog/base.js",
+        "closure_library_deps.js",
+        "third_party/protocolbuffers/protobuf/js/binary/constants.js",
+        "third_party/protocolbuffers/protobuf/js/binary/utils.js",
+        "third_party/protocolbuffers/protobuf/js/binary/arith.js",
+        "third_party/protocolbuffers/protobuf/js/binary/decoder.js",
+        "third_party/protocolbuffers/protobuf/js/binary/encoder.js",
+        "third_party/protocolbuffers/protobuf/js/binary/reader.js",
+        "third_party/protocolbuffers/protobuf/js/binary/writer.js",
+        "third_party/protocolbuffers/protobuf/js/map.js",
+        "third_party/protocolbuffers/protobuf/js/message.js",
         "harness/util.js",
         "harness/constants.js",
         "harness/key.js",
@@ -41,6 +57,7 @@ limitations under the License.
         "lib/mse/msutil.js",
         "lib/mse/mediaSourcePortability.js",
         "lib/mse/videoPerformance.js",
+        "lib/eme/licenseRequestReader.js",
         "lib/eme/encryptedMediaPortability.js",
         "lib/eme/licenseManager.js",
         "lib/eme/emeManager.js",
