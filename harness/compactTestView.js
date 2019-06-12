@@ -30,6 +30,7 @@ function CompactTestView(fields, style) {
     this.addSwitch('Loop: ', 'loop');
     this.addSwitch('Stop on failure: ', 'stoponfailure');
     this.addSwitch('Log: ', 'logging');
+    this.addSwitch('Mute: ', 'muted');
     if (harnessConfig.controlMediaFormatSelection) {
       this.addSwitch('WebM/VP9: ', 'enablewebm');
     }
