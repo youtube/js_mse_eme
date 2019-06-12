@@ -1,0 +1,6 @@
+[submodule "third_party/protocolbuffers/protobuf"]
+	path = third_party/protocolbuffers/protobuf
+	url = https://github.com/protocolbuffers/protobuf.git
+[submodule "third_party/closure-library/closure-library"]
+	path = third_party/closure-library/closure-library
+	url = https://github.com/google/closure-library.git
