@@ -691,10 +691,17 @@ var createCurrentTimePausedAccuracyTest =
   };
 };
 
-createCurrentTimePausedAccuracyTest(
-    Media.VP9.Webgl720p30fps, Media.AAC.AudioNormal, 'SFR');
-createCurrentTimePausedAccuracyTest(
-    Media.VP9.Webgl720p60fps, Media.AAC.AudioNormal, 'HFR');
+  if (harnessConfig.novp9) {
+    createCurrentTimePausedAccuracyTest(
+        Media.H264.Webgl720p30fps, Media.AAC.AudioNormal, 'SFR');
+    createCurrentTimePausedAccuracyTest(
+        Media.H264.Webgl720p60fps, Media.AAC.AudioNormal, 'HFR');
+  } else {
+    createCurrentTimePausedAccuracyTest(
+        Media.VP9.Webgl720p30fps, Media.AAC.AudioNormal, 'SFR');
+    createCurrentTimePausedAccuracyTest(
+        Media.VP9.Webgl720p60fps, Media.AAC.AudioNormal, 'HFR');
+  }
 
 /**
  * Validate specified mimetype is supported.
