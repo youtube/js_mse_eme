@@ -599,10 +599,17 @@ var createCurrentTimeAccuracyTest =
   };
 };
 
-createCurrentTimeAccuracyTest(
-    Media.VP9.Webgl720p30fps, Media.AAC.AudioNormal, 'SFR');
-createCurrentTimeAccuracyTest(
-    Media.VP9.Webgl720p60fps, Media.AAC.AudioNormal, 'HFR');
+if (harnessConfig.novp9) {
+  createCurrentTimeAccuracyTest(
+      Media.H264.Webgl720p30fps, Media.AAC.AudioNormal, 'SFR');
+  createCurrentTimeAccuracyTest(
+      Media.H264.Webgl720p60fps, Media.AAC.AudioNormal, 'HFR');
+} else {
+  createCurrentTimeAccuracyTest(
+      Media.VP9.Webgl720p30fps, Media.AAC.AudioNormal, 'SFR');
+  createCurrentTimeAccuracyTest(
+      Media.VP9.Webgl720p60fps, Media.AAC.AudioNormal, 'HFR');
+}
 
 /**
  * Creates a MSE currentTime PausedAccuracy test to validate if
