@@ -35,16 +35,23 @@ info += ' | Default Timeout: ' + TestBase.timeout + 'ms';
 
 var fields = ['passes', 'failures', 'timeouts'];
 
-var createConformanceTest = function(name, category, mandatory) {
+/**
+ * @param {!string} name
+ * @param {?string} category
+ * @param {?boolean} mandatory
+ * @param {?Array<Object>} streams If any stream is unsupported, test is marked
+ *     optional and fails.
+ */
+var createConformanceTest =
+    function(name, category = 'General', mandatory = true, streams = []) {
   var t = createMSTest(name);
   t.prototype.index = tests.length;
   t.prototype.passes = 0;
   t.prototype.failures = 0;
   t.prototype.timeouts = 0;
-  t.prototype.category = category || 'General';
-  if (typeof mandatory === 'boolean') {
-    t.prototype.mandatory = mandatory;
-  }
+  t.prototype.category = category;
+  t.prototype.mandatory = mandatory;
+  t.prototype.setStreams(streams);
   tests.push(t);
   return t;
 };
@@ -476,7 +483,9 @@ var createStartPlayAtNonZeroPositionTest = function(
     audioStream, audioSegments, videoStream, videoSegments, startAtSec) {
   var test = createConformanceTest(
       `StartPlayAtTimeGt0${videoStream.codec}+${audioStream.codec}`,
-      'MSE Core');
+      'MSE Core',
+      true,
+      [videoStream, audioStream]);
   test.prototype.title =
       'Test if we can start playback from time > 0.';
   test.prototype.onsourceopen = function() {
@@ -701,7 +710,9 @@ testAppendWindowEnd.prototype.onsourceopen = function() {
 var createSourceBufferChangeTypeTest = function(fromStream, toStream) {
   var test = createConformanceTest(
       `ChangeType.${fromStream.codec}.${toStream.codec}`,
-      'MSE Core');
+      'MSE Core',
+      true,
+      [fromStream, toStream]);
   test.prototype.title =
       `Test SourceBuffer.changeType() from ${fromStream.codec} ` +
       `to ${toStream.codec}`;
@@ -813,17 +824,10 @@ var createCurrentTimeAccuracyTest =
   };
 };
 
-if (harnessConfig.novp9) {
-  createCurrentTimeAccuracyTest(
-      Media.H264.Webgl720p30fps, Media.AAC.AudioNormal, 'SFR');
-  createCurrentTimeAccuracyTest(
-      Media.H264.Webgl720p60fps, Media.AAC.AudioNormal, 'HFR');
-} else {
-  createCurrentTimeAccuracyTest(
-      Media.VP9.Webgl720p30fps, Media.AAC.AudioNormal, 'SFR');
-  createCurrentTimeAccuracyTest(
-      Media.VP9.Webgl720p60fps, Media.AAC.AudioNormal, 'HFR');
-}
+createCurrentTimeAccuracyTest(
+    Media.H264.Webgl720p30fps, Media.AAC.AudioNormal, 'SFR');
+createCurrentTimeAccuracyTest(
+    Media.H264.Webgl720p60fps, Media.AAC.AudioNormal, 'HFR');
 
 /**
  * Creates a MSE currentTime PausedAccuracy test to validate if
@@ -959,7 +963,8 @@ var createCreateMESTest = function(audioStream, videoStream) {
   var test = createConformanceTest(
       audioStream.codec + '/' + videoStream.codec + 'CreateMediaElementSource',
       'MSE Web Audio API (Optional)',
-      false);
+      false,
+      [audioStream, videoStream]);
   test.prototype.title =
       'Test if AudioContext#createMediaElementSource supports mimetype ' +
       audioStream.mimetype + '/' + videoStream.mimetype;
@@ -1071,7 +1076,7 @@ var createHeAacTest = function(audioStream) {
     var runner = this.runner;
     var media = this.video;
     var ms = this.ms;
-    var videoStream = Media.VP9.Video1MB;
+    var videoStream = Media.H264.Video1MB;
     var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
     var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
     var xhr = runner.XHRManager.createRequest(audioStream.src, function(e) {

@@ -83,6 +83,16 @@ TestBase.dump = function() {
   }
 };
 
+TestBase.setStreams = function(streams) {
+  this.streams = streams;
+  streams.forEach(stream => {
+    if (!isTypeSupported(stream)) {
+      // If any stream codecs are unsupported, make the test optional
+      this.mandatory = false;
+    }
+  });
+};
+
 TestBase.timeout = 30000;
 
 window.createTest = function(name) {
@@ -367,6 +377,12 @@ TestExecutor.prototype.startNextTest = function() {
     }
   };
 
+  if (this.currentTest.streams) {
+    this.currentTest.streams.forEach(stream => {
+      this.failIfTypeUnsupported(stream);
+    });
+  }
+
   this.currentTest.start(this, this.currentTest.video);
 };
 
@@ -425,6 +441,19 @@ TestExecutor.prototype.fail = function(msg) {
       this.currentTest.desc + ' FAILED');
   this.error(msg, false);
 };
+
+TestExecutor.prototype.failIfTypeUnsupported = function(stream) {
+  if (!isTypeSupported(stream)) {
+    var mimeType = createMimeTypeStr(
+      stream.mimetype,
+      null,
+      stream.get("width"),
+      stream.get("height"),
+      stream.get("fps"),
+      stream.get("spherical"));
+    this.fail(`Stream type unsupported: ${mimeType}`);
+  }
+}
 
 TestExecutor.prototype.timeout = function() {
   var isTestTimedOut = false;

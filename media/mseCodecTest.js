@@ -35,16 +35,23 @@ info += ' | Default Timeout: ' + TestBase.timeout + 'ms';
 
 var fields = ['passes', 'failures', 'timeouts'];
 
-var createCodecTest = function(name, category, mandatory) {
+/**
+ * @param {!string} name
+ * @param {?string} category
+ * @param {?boolean} mandatory
+ * @param {?Array<Object>} streams If any stream is unsupported, test is marked
+ *     optional and fails.
+ */
+var createCodecTest =
+    function(name, category = 'General', mandatory = true, streams = []) {
   var t = createMSTest(name);
   t.prototype.index = tests.length;
   t.prototype.passes = 0;
   t.prototype.failures = 0;
   t.prototype.timeouts = 0;
-  t.prototype.category = category || 'General';
-  if (typeof mandatory === 'boolean') {
-    t.prototype.mandatory = mandatory;
-  }
+  t.prototype.category = category;
+  t.prototype.mandatory = mandatory;
+  t.prototype.setStreams(streams);
   tests.push(t);
   return t;
 };
@@ -61,7 +68,8 @@ var createAppendTest = function(stream, unused_stream, mandatory) {
   var test = createCodecTest(
       'Append' + stream.codec + util.MakeCapitalName(stream.mediatype),
       'MSE (' + stream.codec + ')',
-      mandatory);
+      mandatory,
+      [stream]);
   test.prototype.title = 'Test if we can append a whole ' +
       stream.mediatype + ' file whose size is 1MB.';
   test.prototype.onsourceopen = function() {
@@ -116,7 +124,8 @@ var createAbortTest = function(stream, unused_stream, mandatory) {
   var test = createCodecTest(
       'Abort' + stream.codec + util.MakeCapitalName(stream.mediatype),
       'MSE (' + stream.codec + ')',
-      mandatory);
+      mandatory,
+      [stream]);
   test.prototype.title = 'Test if we can abort the current segment.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
@@ -154,7 +163,8 @@ var createTimestampOffsetTest = function(stream, unused_stream, mandatory) {
       'TimestampOffset' + stream.codec +
           util.MakeCapitalName(stream.mediatype),
       'MSE (' + stream.codec + ')',
-      mandatory);
+      mandatory,
+      [stream]);
   test.prototype.title = 'Test if we can set timestamp offset.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
@@ -182,7 +192,8 @@ var createTimestampOffsetTest = function(stream, unused_stream, mandatory) {
 var createDASHLatencyTest = function(videoStream, audioStream, mandatory) {
   var test = createCodecTest('DASHLatency' + videoStream.codec,
       'MSE (' + videoStream.codec + ')',
-      mandatory);
+      mandatory,
+      [videoStream, audioStream]);
   test.prototype.title = 'Test SourceBuffer DASH switch latency';
   test.prototype.onsourceopen = function() {
     var self = this;
@@ -265,7 +276,8 @@ var createDurationAfterAppendTest = function(stream, unused_stream, mandatory) {
       'DurationAfterAppend' + stream.codec +
           util.MakeCapitalName(stream.mediatype),
       'MSE (' + stream.codec + ')',
-      mandatory);
+      mandatory,
+      [stream]);
   test.prototype.title = 'Test if the duration expands after appending data.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
@@ -336,7 +348,8 @@ var createPausedTest = function(stream, mandatory) {
       'PausedStateWith' + stream.codec +
           util.MakeCapitalName(stream.mediatype),
       'MSE (' + stream.codec + ')',
-      mandatory);
+      mandatory,
+      [stream]);
   test.prototype.title = 'Test if the paused state is correct before or ' +
       ' after appending data.';
   test.prototype.onsourceopen = function() {
@@ -367,7 +380,8 @@ var createPausedTest = function(stream, mandatory) {
 var createVideoDimensionTest = function(videoStream, audioStream, mandatory) {
   var test = createCodecTest('VideoDimension' + videoStream.codec,
       'MSE (' + videoStream.codec + ')',
-      mandatory);
+      mandatory,
+      [videoStream, audioStream]);
   test.prototype.title =
       'Test if video dimension is correct before or after appending data.';
   test.prototype.onsourceopen = function() {
@@ -414,7 +428,8 @@ var createVideoDimensionTest = function(videoStream, audioStream, mandatory) {
 var createPlaybackStateTest = function(stream, mandatory) {
   var test = createCodecTest('PlaybackState' + stream.codec,
       'MSE (' + stream.codec + ')',
-      mandatory);
+      mandatory,
+      [stream]);
   test.prototype.title = 'Test if the playback state transition is correct.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
@@ -470,7 +485,8 @@ var createPlaybackStateTest = function(stream, mandatory) {
 var createPlayPartialSegmentTest = function(stream, mandatory) {
   var test = createCodecTest('PlayPartial' + stream.codec + 'Segment',
       'MSE (' + stream.codec + ')',
-      mandatory);
+      mandatory,
+      [stream]);
   test.prototype.title =
       'Test if we can play a partially appended video segment.';
   test.prototype.onsourceopen = function() {
@@ -504,7 +520,9 @@ var createPlayPartialSegmentTest = function(stream, mandatory) {
  */
 var createIncrementalAudioTest = function(stream) {
   var test = createCodecTest('Incremental' + stream.codec + 'Audio',
-      'MSE (' + stream.codec + ')');
+      'MSE (' + stream.codec + ')',
+      true,
+      [stream]);
   test.prototype.title =
       'Test if we can play a partially appended audio segment.';
   test.prototype.onsourceopen = function() {
@@ -530,7 +548,9 @@ var createIncrementalAudioTest = function(stream) {
  */
 var createAppendAudioOffsetTest = function(stream1, stream2) {
   var test = createCodecTest('Append' + stream1.codec + 'AudioOffset',
-      'MSE (' + stream1.codec + ')');
+      'MSE (' + stream1.codec + ')',
+      true,
+      [stream1, stream2]);
   test.prototype.title =
       'Test if we can append audio data with an explicit offset.';
   test.prototype.onsourceopen = function() {
@@ -568,7 +588,8 @@ var createAppendAudioOffsetTest = function(stream1, stream2) {
 var createAppendVideoOffsetTest = function(stream1, stream2, audioStream, mandatory) {
   var test = createCodecTest('Append' + stream1.codec + 'VideoOffset',
       'MSE (' + stream1.codec + ')',
-      mandatory);
+      mandatory,
+      [stream1, stream2]);
   test.prototype.title =
       'Test if we can append video data with an explicit offset.';
   test.prototype.onsourceopen = function() {
@@ -628,7 +649,8 @@ var createAppendMultipleInitTest = function(stream, unused_stream, mandatory) {
       'AppendMultipleInit' + stream.codec +
           util.MakeCapitalName(stream.mediatype),
       'MSE (' + stream.codec + ')',
-      mandatory);
+      mandatory,
+      [stream]);
   test.prototype.title = 'Test if we can append multiple init segments.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
@@ -689,7 +711,8 @@ var createAppendOutOfOrderTest = function(stream, unused_stream, mandatory) {
       'Append' + stream.codec + util.MakeCapitalName(stream.mediatype) +
           'OutOfOrder',
       'MSE (' + stream.codec + ')',
-      mandatory);
+      mandatory,
+      [stream]);
   test.prototype.title = 'Test appending segments out of order.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
@@ -748,7 +771,8 @@ var createBufferedRangeTest = function(stream, unused_stream, mandatory) {
   var test = createCodecTest(
       'BufferedRange' + stream.codec + util.MakeCapitalName(stream.mediatype),
       'MSE (' + stream.codec + ')',
-      mandatory);
+      mandatory,
+      [stream]);
   test.prototype.title =
       'Test SourceBuffer.buffered get updated correctly after feeding data.';
   test.prototype.onsourceopen = function() {
@@ -779,7 +803,8 @@ var createMediaSourceDurationTest =
     function(videoStream, audioStream, mandatory) {
   var test = createCodecTest('MediaSourceDuration' + videoStream.codec,
       'MSE (' + videoStream.codec + ')',
-      mandatory);
+      mandatory,
+      [videoStream, audioStream]);
   test.prototype.title = 'Test if the duration on MediaSource can be set ' +
       'and retrieved sucessfully.';
   test.prototype.onsourceopen = function() {
@@ -866,7 +891,8 @@ var createOverlapTest = function(stream, unused_stream, mandatory) {
   var test = createCodecTest(
       stream.codec + util.MakeCapitalName(stream.mediatype) + 'WithOverlap',
       'MSE (' + stream.codec + ')',
-      mandatory);
+      mandatory,
+      [stream]);
   test.prototype.title =
       'Test if media data with overlap will be merged into one range.';
   test.prototype.onsourceopen = function() {
@@ -917,7 +943,8 @@ var createSmallGapTest = function(stream, unused_stream, mandatory) {
   var test = createCodecTest(
       stream.codec + util.MakeCapitalName(stream.mediatype) + 'WithSmallGap',
       'MSE (' + stream.codec + ')',
-      mandatory);
+      mandatory,
+      [stream]);
   test.prototype.title =
       'Test if media data with a gap smaller than an media frame size ' +
       'will be merged into one buffered range.';
@@ -969,7 +996,8 @@ var createLargeGapTest = function(stream, unused_stream, mandatory) {
   var test = createCodecTest(
       stream.codec + util.MakeCapitalName(stream.mediatype) + 'WithLargeGap',
       'MSE (' + stream.codec + ')',
-      mandatory);
+      mandatory,
+      [stream]);
   test.prototype.title =
       'Test if media data with a gap larger than an media frame size ' +
       'will not be merged into one buffered range.';
@@ -1019,7 +1047,8 @@ var createLargeGapTest = function(stream, unused_stream, mandatory) {
 var createSeekTest = function(videoStream, mandatory) {
   var test = createCodecTest('Seek' + videoStream.codec,
       'MSE (' + videoStream.codec + ')',
-      mandatory);
+      mandatory,
+      [videoStream]);
   test.prototype.title = 'Test if we can seek during playing. It' +
       ' also tests if the implementation properly supports seek operation' +
       ' fired immediately after another seek that hasn\'t been completed.';
@@ -1078,7 +1107,8 @@ var createSeekTest = function(videoStream, mandatory) {
 var createBufUnbufSeekTest = function(videoStream, mandatory) {
   var test = createCodecTest('BufUnbufSeek' + videoStream.codec,
       'MSE (' + videoStream.codec + ')',
-      mandatory);
+      mandatory,
+      [videoStream]);
   test.prototype.title = 'Seek into and out of a buffered region.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
@@ -1123,7 +1153,8 @@ var createDelayedTest = function(delayed, nonDelayed, mandatory) {
   var test = createCodecTest(
       'Delayed' + delayed.codec + util.MakeCapitalName(delayed.mediatype),
       'MSE (' + delayed.codec + ')',
-      mandatory);
+      mandatory,
+      [delayed, nonDelayed]);
   test.prototype.title = 'Test if we can play properly when there' +
       ' is not enough ' + delayed.mediatype +
       ' data. The play should resume once ' +
@@ -1184,7 +1215,8 @@ var createSingleSourceBufferPlaybackTest = function(stream, mandatory) {
   var test = createCodecTest(
       'PlaybackOnly' + stream.codec + util.MakeCapitalName(stream.mediatype),
       'MSE (' + stream.codec + ')',
-      mandatory);
+      mandatory,
+      [stream]);
   test.prototype.title = 'Test if we can playback a single source buffer.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
