@@ -44,13 +44,8 @@ var fields = ['passes', 'failures', 'timeouts'];
  */
 var createCodecTest =
     function(name, category = 'General', mandatory = true, streams = []) {
-  var t = createMSTest(name);
+  var t = createMSTest(name, category, mandatory);
   t.prototype.index = tests.length;
-  t.prototype.passes = 0;
-  t.prototype.failures = 0;
-  t.prototype.timeouts = 0;
-  t.prototype.category = category;
-  t.prototype.mandatory = mandatory;
   t.prototype.setStreams(streams);
   tests.push(t);
   return t;

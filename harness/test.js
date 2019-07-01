@@ -95,19 +95,22 @@ TestBase.setStreams = function(streams) {
 
 TestBase.timeout = 30000;
 
-window.createTest = function(name) {
+window.createTest = function(name, category = '', mandatory = true) {
   var t = function() {};
-  t.prototype.__proto__ = TestBase;
+  t.prototype = Object.create(TestBase);
   t.prototype.desc = name;
   t.prototype.running = false;
-  t.prototype.category = '';
-  t.prototype.mandatory = true;
+  t.prototype.passes = 0;
+  t.prototype.failures = 0;
+  t.prototype.timeouts = 0;
+  t.prototype.category = category;
+  t.prototype.mandatory = mandatory;
 
   return t;
 };
 
-window.createMSTest = function(name) {
-  var t = createTest(name);
+window.createMSTest = function(name, category = '', mandatory = true) {
+  var t = createTest(name, category, mandatory);
   t.prototype.start = function(runner, video) {
     this.ms = new MediaSource();
     this.ms.addEventListener('sourceopen', this.onsourceopen.bind(this));

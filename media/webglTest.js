@@ -33,18 +33,9 @@ info += ' | Default Timeout: ' + TestBase.timeout + 'ms';
 
 var fields = ['passes', 'failures', 'timeouts'];
 
-var createWebglTest = function(name, category, mandatory) {
-  var t = createTest(name);
+var createWebglTest = function(name, category = 'WebGL', mandatory = true) {
+  var t = createTest(name, category, mandatory && harnessConfig.support_webgl);
   t.prototype.index = tests.length;
-  t.prototype.passes = 0;
-  t.prototype.failures = 0;
-  t.prototype.timeouts = 0;
-  t.prototype.category = category || 'WebGL';
-  if (typeof mandatory === 'boolean') {
-    t.prototype.mandatory = mandatory;
-  } else {
-    t.prototype.mandatory = harnessConfig.support_webgl;
-  }
   tests.push(t);
   return t;
 };

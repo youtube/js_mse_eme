@@ -28,16 +28,9 @@ var info = 'Default Timeout: ' + TestBase.timeout + 'ms';
 
 var fields = ['passes', 'failures', 'timeouts'];
 
-var createProgressiveTest = function(category, name, mandatory) {
-  var t = createTest(name);
-  t.prototype.category = category;
+var createProgressiveTest = function(category, name, mandatory = true) {
+  var t = createTest(name, category, mandatory);
   t.prototype.index = tests.length;
-  t.prototype.passes = 0;
-  t.prototype.failures = 0;
-  t.prototype.timeouts = 0;
-  t.prototype.mandatory = true;
-  if (typeof mandatory == 'boolean' && !mandatory)
-    t.prototype.mandatory = false;
   tests.push(t);
   return t;
 };

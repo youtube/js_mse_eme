@@ -35,16 +35,9 @@ info += ' | Default Timeout: ' + TestBase.timeout + 'ms';
 
 var fields = ['passes', 'failures', 'timeouts'];
 
-var createEmeTest = function(name, category, mandatory) {
-  var t = createTest(name);
+var createEmeTest = function(name, category = 'EME', mandatory = true) {
+  var t = createTest(name, category, mandatory);
   t.prototype.index = tests.length;
-  t.prototype.passes = 0;
-  t.prototype.failures = 0;
-  t.prototype.timeouts = 0;
-  t.prototype.category = category || 'EME';
-  if (typeof mandatory === 'boolean') {
-    t.prototype.mandatory = mandatory;
-  }
   t.prototype.emeHandler = new EMEHandler();
   t.prototype.baseTearDown = t.prototype.teardown;
   t.prototype.teardown = function(testSuiteVer, cb) {

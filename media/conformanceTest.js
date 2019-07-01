@@ -44,13 +44,8 @@ var fields = ['passes', 'failures', 'timeouts'];
  */
 var createConformanceTest =
     function(name, category = 'General', mandatory = true, streams = []) {
-  var t = createMSTest(name);
+  var t = createMSTest(name, category, mandatory);
   t.prototype.index = tests.length;
-  t.prototype.passes = 0;
-  t.prototype.failures = 0;
-  t.prototype.timeouts = 0;
-  t.prototype.category = category;
-  t.prototype.mandatory = mandatory;
   t.prototype.setStreams(streams);
   tests.push(t);
   return t;
@@ -711,12 +706,11 @@ var createSourceBufferChangeTypeTest = function(fromStream, toStream) {
   var test = createConformanceTest(
       `ChangeType.${fromStream.codec}.${toStream.codec}`,
       'MSE Core',
-      true,
+      false,
       [fromStream, toStream]);
   test.prototype.title =
       `Test SourceBuffer.changeType() from ${fromStream.codec} ` +
       `to ${toStream.codec}`;
-  test.prototype.mandatory = false;
   test.prototype.onsourceopen = function() {
     var video = this.video;
     var ms = this.ms;
