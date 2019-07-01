@@ -35,16 +35,10 @@ var PlaybackperfTest = function(subgroup) {
 
   var fields = ['passes', 'failures', 'timeouts'];
 
-  var createPerfTest = function(name, category, mandatory) {
-    var t = createTest(name);
+  var createPerfTest =
+      function(name, category = 'Playback Performance', mandatory = true) {
+    var t = createTest(name, category, mandatory);
     t.prototype.index = tests.length;
-    t.prototype.passes = 0;
-    t.prototype.failures = 0;
-    t.prototype.timeouts = 0;
-    t.prototype.category = category || 'Playback Performance';
-    if (typeof mandatory === 'boolean') {
-      t.prototype.mandatory = mandatory;
-    }
     t.prototype.emeHandler = new EMEHandler();
     t.prototype.baseTearDown = t.prototype.teardown;
     t.prototype.teardown = function(testSuiteVer, cb) {
