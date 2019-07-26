@@ -218,7 +218,7 @@ var PlaybackperfTest = function(subgroup) {
           && isTypeSupported(videoStream);
 
     var test = createPerfTest(
-        `PlaybackPerf${videoStream.codec}${videoStream.get('resolution')}` +
+        `PlaybackPerf${videoStream.codec}.${videoStream.get('resolution')}` +
             `${videoStream.get('quality') ? videoStream.get('quality') : ''}` +
             `${videoStream.get('fps')}fps@${playbackRate}X`,
         category,
