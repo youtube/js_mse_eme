@@ -275,12 +275,14 @@ var PlaybackperfTest = function(subgroup) {
   ];
 
   var mediaFormatsAV1 = [
-    Media.AV1.RoadtripUltraLow,
-    Media.AV1.RoadtripLow,
-    Media.AV1.RoadtripMedium,
-    Media.AV1.RoadtripHigh,
-    Media.AV1.Roadtrip720p,
-    Media.AV1.Roadtrip1080p,
+    Media.AV1.Bunny144p30fps,
+    Media.AV1.Bunny240p30fps,
+    Media.AV1.Bunny360p30fps,
+    Media.AV1.Bunny480p30fps,
+    Media.AV1.Bunny720p30fps,
+    Media.AV1.Bunny1080p30fps,
+    Media.AV1.Bunny1440p30fps,
+    Media.AV1.Bunny2160p30fps,
   ];
 
   var mediaFormatsHfr = [
@@ -290,7 +292,10 @@ var PlaybackperfTest = function(subgroup) {
     Media.VP9.Webgl2160p60fps,
     Media.H264.Webgl720p60fps,
     Media.H264.Webgl1080p60fps,
-    // TODO add AV1 streams
+    Media.AV1.Bunny720p60fps,
+    Media.AV1.Bunny1080p60fps,
+    Media.AV1.Bunny1440p60fps,
+    Media.AV1.Bunny2160p60fps,
   ];
 
   var widevineMediaFormatsVP9 = [

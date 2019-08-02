@@ -759,13 +759,13 @@ var createSourceBufferChangeTypeTest = function(fromStream, toStream) {
 
 createSourceBufferChangeTypeTest(Media.H264.VideoTiny, Media.VP9.VideoTiny);
 createSourceBufferChangeTypeTest(Media.H264.VideoTiny,
-    Media.AV1.RoadtripUltraLow);
+    Media.AV1.Bunny144p30fps);
 createSourceBufferChangeTypeTest(Media.VP9.VideoTiny, Media.H264.VideoTiny);
 createSourceBufferChangeTypeTest(Media.VP9.VideoTiny,
-    Media.AV1.RoadtripUltraLow);
-createSourceBufferChangeTypeTest(Media.AV1.RoadtripUltraLow,
+    Media.AV1.Bunny144p30fps);
+createSourceBufferChangeTypeTest(Media.AV1.Bunny144p30fps,
     Media.H264.VideoTiny);
-createSourceBufferChangeTypeTest(Media.AV1.RoadtripUltraLow,
+createSourceBufferChangeTypeTest(Media.AV1.Bunny144p30fps,
     Media.VP9.VideoTiny);
 
 /**
@@ -1018,11 +1018,11 @@ var createCreateMESTest = function(audioStream, videoStream) {
 }
 
 createCreateMESTest(Media.Opus.CarLow, Media.VP9.VideoNormal);
-createCreateMESTest(Media.Opus.CarLow, Media.AV1.RoadtripMedium,
+createCreateMESTest(Media.Opus.CarLow, Media.AV1.Bunny360p30fps,
     util.requireAV1());
 createCreateMESTest(Media.AAC.Audio1MB, Media.VP9.VideoNormal);
 createCreateMESTest(Media.AAC.Audio1MB, Media.H264.VideoNormal);
-createCreateMESTest(Media.AAC.Audio1MB, Media.AV1.RoadtripMedium,
+createCreateMESTest(Media.AAC.Audio1MB, Media.AV1.Bunny360p30fps,
     util.requireAV1());
 
 /**
