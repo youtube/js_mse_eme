@@ -17,4 +17,4 @@
 
 'use strict';
 
-var testVersion = 'Test-In-Progress';
+var testVersion = '2020';
