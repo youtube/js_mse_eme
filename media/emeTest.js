@@ -37,9 +37,9 @@ info += ' | Default Timeout: ' + TestBase.timeout + 'ms';
 
 var fields = ['passes', 'failures', 'timeouts'];
 
-var createEmeTest =
-    function(name, category = 'EME', mandatory = true, streams = []) {
-  var t = createTest(name, category, mandatory);
+var createEmeTest = function(
+    testId, name, category = 'EME', mandatory = true, streams = []) {
+  var t = createTest(name, category, mandatory, testId, 'EME Conformance Tests');
   t.prototype.setStreams(streams);
   t.prototype.index = tests.length;
   t.prototype.emeHandler = new EMEHandler();
@@ -57,12 +57,13 @@ var createEmeTest =
 /**
  * Ensure encrypted video or audio could be played.
  */
-var createEncryptedCodecTest =
-    function(encStream, otherStream, keySystem, mandatory = true, desc = '') {
+var createEncryptedCodecTest = function(
+    testId, encStream, otherStream, keySystem, mandatory = true, desc = '') {
   var keySystemTitle = goog.string.toTitleCase(keySystem);
   var videoStream = encStream.mediatype == 'video' ? encStream : otherStream;
   var audioStream = encStream.mediatype == 'audio' ? encStream : otherStream;
   var test = createEmeTest(
+      testId,
       `${keySystemTitle}${encStream.codec}${desc}` +
           `${goog.string.toTitleCase(encStream.mediatype)}`,
       `${keySystemTitle}${mandatory ? '' : ' (Optional)'}`,
@@ -88,15 +89,19 @@ var createEncryptedCodecTest =
 };
 
 createEncryptedCodecTest(
-    Media.H264.VideoSmallCenc, Media.AAC.AudioNormal, LicenseManager.WIDEVINE);
+    '3.1.1.1', Media.H264.VideoSmallCenc, Media.AAC.AudioNormal,
+    LicenseManager.WIDEVINE);
 createEncryptedCodecTest(
-    Media.AAC.AudioSmallCenc, Media.H264.VideoNormal, LicenseManager.WIDEVINE);
+    '3.1.2.1', Media.AAC.AudioSmallCenc, Media.H264.VideoNormal,
+    LicenseManager.WIDEVINE);
 createEncryptedCodecTest(
-    Media.Opus.SintelEncrypted, Media.VP9.VideoNormal, LicenseManager.WIDEVINE);
+    '3.1.3.1', Media.Opus.SintelEncrypted, Media.VP9.VideoNormal,
+    LicenseManager.WIDEVINE);
 createEncryptedCodecTest(
-    Media.VP9.VideoHighEnc, Media.Opus.CarMed, LicenseManager.WIDEVINE);
+    '3.1.4.1', Media.VP9.VideoHighEnc, Media.Opus.CarMed,
+    LicenseManager.WIDEVINE);
 createEncryptedCodecTest(
-    Media.VP9.VideoHighSubSampleEnc, Media.Opus.CarMed,
+    '3.1.5.1', Media.VP9.VideoHighSubSampleEnc, Media.Opus.CarMed,
     LicenseManager.WIDEVINE, true, 'Subsample');
 
 /**
@@ -108,6 +113,7 @@ var createWidevineH264MultiMediaKeySessionsTest = function() {
   var audioStream = Media.AAC.AudioNormal;
 
   var test = createEmeTest(
+      '3.1.6.1',
       'WidevineH264MultiMediaKeySessions',
       'Widevine',
       true,
@@ -129,7 +135,8 @@ var createWidevineH264MultiMediaKeySessionsTest = function() {
           !testEmeHandler.keyUnusable) {
         video.removeEventListener('timeupdate', onTimeUpdate);
         runner.checkGE(video.currentTime, 15, 'currentTime');
-        runner.checkEq(testEmeHandler.keySessions.length, 16, 'keySessionCount');
+        runner.checkEq(
+            testEmeHandler.keySessions.length, 16, 'keySessionCount');
         runner.checkEq(testEmeHandler.keyCount, 256, 'keyCount');
         runner.succeed();
       }
@@ -144,15 +151,17 @@ createWidevineH264MultiMediaKeySessionsTest();
  * Ensure Widevine encrypted video could be played with no clear start and
  * a 5 seconds license delay.
  */
-var createWidevineLicenseDelayTest = function(videoStream) {
+var createWidevineLicenseDelayTest = function(testId, videoStream) {
   var audioStream = Media.AAC.AudioNormal;
 
   var test = createEmeTest(
+      testId,
       `WidevineLicenseDelay${videoStream.codec}Video`,
       'Widevine',
       true,
       [videoStream, audioStream]);
-  test.prototype.title = 'Test if we can play video encrypted with Widevine ' +
+  test.prototype.title =
+      'Test if we can play video encrypted with Widevine ' +
       'encryption with no clear start and 5 seconds license delay.';
   test.prototype.start = function(runner, video) {
     var testEmeHandler = this.emeHandler;
@@ -173,18 +182,19 @@ var createWidevineLicenseDelayTest = function(videoStream) {
 };
 
 
-createWidevineLicenseDelayTest(Media.H264.VideoStreamYTCenc);
-createWidevineLicenseDelayTest(Media.VP9.VideoHighSubSampleEnc);
+createWidevineLicenseDelayTest('3.1.7.1', Media.H264.VideoStreamYTCenc);
+createWidevineLicenseDelayTest('3.1.8.1', Media.VP9.VideoHighSubSampleEnc);
 
 /**
  * Ensure setServerCertificate() is implemented properly.
  */
 var createSetServerCertificateTest = function(
-    testName, assertion, certificateSrc) {
+    testId, testName, assertion, certificateSrc) {
   var videoStream = Media.VP9.DrmL3NoHDCP360p30fpsEnc;
   var audioStream = Media.AAC.AudioNormal;
 
   var test = createEmeTest(
+      testId,
       testName,
       'Widevine',
       true,
@@ -209,42 +219,33 @@ var createSetServerCertificateTest = function(
 };
 
 createSetServerCertificateTest(
-    'CertificateRequestByServer',
-    function(runner, emeHandler) {
+    '3.1.9.1', 'CertificateRequestByServer', function(runner, emeHandler) {
       runner.assert(
           emeHandler.serverCertificateRequest,
           'No certificate request generated by server')
-      runner.assert(
-          emeHandler.messageEncrypted, 'Message is not encrypted');
-    }
-);
+      runner.assert(emeHandler.messageEncrypted, 'Message is not encrypted');
+    });
 createSetServerCertificateTest(
-    'setServerCertificate',
-    function(runner, emeHandler) {
+    '3.1.10.1', 'setServerCertificate', function(runner, emeHandler) {
       runner.assert(
           !emeHandler.setServerCertificateResult,
           emeHandler.setServerCertificateResult);
-      runner.assert(
-          emeHandler.messageEncrypted, 'Message is not encrypted');
-    },
-    util.getCertificatePath('valid_widevine_cert.bin')
-);
+      runner.assert(emeHandler.messageEncrypted, 'Message is not encrypted');
+    }, util.getCertificatePath('valid_widevine_cert.bin'));
 createSetServerCertificateTest(
-    'setServerCertificateWithInvalidCert',
-    function(runner, emeHandler) {
+    '3.1.11.1',
+    'setServerCertificateWithInvalidCert', function(runner, emeHandler) {
       runner.assert(
           emeHandler.setServerCertificateResult,
           'setServerCertificate() succeeded with invalid certificate');
-    },
-    util.getCertificatePath('invalid_widevine_cert.bin')
-);
+    }, util.getCertificatePath('invalid_widevine_cert.bin'));
 
 createEncryptedCodecTest(
-    Media.H264.VideoSmallCenc, Media.AAC.AudioNormal, LicenseManager.PLAYREADY,
-    false);
+    '3.2.1.1', Media.H264.VideoSmallCenc, Media.AAC.AudioNormal,
+    LicenseManager.PLAYREADY, false);
 createEncryptedCodecTest(
-    Media.AAC.AudioSmallCenc, Media.H264.VideoNormal, LicenseManager.PLAYREADY,
-    false);
+    '3.2.2.1', Media.AAC.AudioSmallCenc, Media.H264.VideoNormal,
+    LicenseManager.PLAYREADY, false);
 
 /**
  * Test encrypted event data contains all expected pssh atoms in the initData
@@ -254,7 +255,7 @@ var createEncryptedEventDataTest = function() {
   var videoStream = Media.H264.VideoSmallCenc;
 
   var test = createEmeTest(
-      'EncryptedEventData', 'General', true, [videoStream]);
+      '3.3.1.1', 'EncryptedEventData', 'General', true, [videoStream]);
   test.prototype.title =
       'Test encrypted event data contains all expected pssh atoms in the ' +
       'initData and a null keySystem.';
@@ -272,7 +273,7 @@ var createEncryptedEventDataTest = function() {
       });
       setupEme(
           runner, testEmeHandler, video, videoStream, LicenseManager.WIDEVINE);
-    } catch(err) {
+    } catch (err) {
       runner.fail(err);
     }
     video.play();
@@ -285,12 +286,12 @@ createEncryptedEventDataTest();
  * Validate AudioContext#createMediaElementSource succeeds and sends audio
  * data for specified mime type.
  */
-var createWidevineCreateMESTest = function(encStream, otherStream) {
+var createWidevineCreateMESTest = function(testId, encStream, otherStream) {
   var videoStream = encStream.mediatype == 'video' ? encStream : otherStream;
   var audioStream = encStream.mediatype == 'audio' ? encStream : otherStream;
   var test = createEmeTest(
-      'Widevine' + encStream.codec +
-          util.MakeCapitalName(encStream.mediatype) +
+      testId,
+      'Widevine' + encStream.codec + util.MakeCapitalName(encStream.mediatype) +
           'CreateMediaElementSource',
       'Web Audio API (Optional)',
       false,
@@ -300,8 +301,7 @@ var createWidevineCreateMESTest = function(encStream, otherStream) {
   test.prototype.start = function(runner, video) {
     var testEmeHandler = this.emeHandler;
     setupMse(video, runner, videoStream, audioStream);
-    setupEme(
-        runner, testEmeHandler, video, encStream, LicenseManager.WIDEVINE);
+    setupEme(runner, testEmeHandler, video, encStream, LicenseManager.WIDEVINE);
     var Ctor = window.AudioContext || window.webkitAudioContext;
     var ctx = new Ctor();
 
@@ -325,11 +325,22 @@ var createWidevineCreateMESTest = function(encStream, otherStream) {
   };
 }
 
-createWidevineCreateMESTest(Media.H264.VideoSmallCenc, Media.AAC.AudioNormal);
-createWidevineCreateMESTest(Media.AAC.AudioSmallCenc, Media.H264.VideoNormal);
-createWidevineCreateMESTest(Media.Opus.SintelEncrypted, Media.VP9.VideoNormal);
-createWidevineCreateMESTest(Media.VP9.VideoHighEnc, Media.Opus.CarMed);
+createWidevineCreateMESTest(
+    '3.4.1.1', Media.H264.VideoSmallCenc, Media.AAC.AudioNormal);
+createWidevineCreateMESTest(
+    '3.4.2.1', Media.AAC.AudioSmallCenc, Media.H264.VideoNormal);
+createWidevineCreateMESTest(
+    '3.4.3.1', Media.Opus.SintelEncrypted, Media.VP9.VideoNormal);
+createWidevineCreateMESTest(
+    '3.4.4.1', Media.VP9.VideoHighEnc, Media.Opus.CarMed);
 
 return {tests: tests, info: info, fields: fields, viewType: 'default'};
 
 };
+
+try {
+  exports.getTest = EncryptedmediaTest;
+} catch (e) {
+  // do nothing, this function is not supposed to work for browser, but it's for
+  // Node js to generate json file instead.
+}

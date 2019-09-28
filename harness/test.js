@@ -95,9 +95,16 @@ TestBase.setStreams = function(streams) {
 
 TestBase.timeout = 30000;
 
-window.createTest = function(name, category = '', mandatory = true) {
+window.createTest = function (name, category = '', mandatory = true, id = '',
+    suite = '', title = '', passingCriteria = '', instruction = '',
+    is_manual = false, href = '', description = '') {
   var t = function() {};
   t.prototype = Object.create(TestBase);
+  t.prototype.name = name;
+  t.prototype.title = title;
+  t.prototype.passingCriteria = passingCriteria;
+  t.prototype.instruction = instruction;
+  t.prototype.id = id;
   t.prototype.desc = name;
   t.prototype.running = false;
   t.prototype.passes = 0;
@@ -109,8 +116,9 @@ window.createTest = function(name, category = '', mandatory = true) {
   return t;
 };
 
-window.createMSTest = function(name, category = '', mandatory = true) {
-  var t = createTest(name, category, mandatory);
+window.createMSTest = function (testId, name, category = '', mandatory = true,
+    suite = "") {
+  var t = createTest(name, category, mandatory, testId, suite);
   t.prototype.start = function(runner, video) {
     this.ms = new MediaSource();
     this.ms.addEventListener('sourceopen', this.onsourceopen.bind(this));
@@ -297,7 +305,7 @@ TestExecutor.prototype.onfinished = function() {
     for (var i = 0; i < window.globalRunner.testList.length; i++) {
       var test =  window.globalRunner.testList[i];
       if (test.prototype.failures > 0) {
-        this.log((test.prototype.index + 1) + ':' + test.prototype.desc +
+        this.log((test.prototype.index + 1) + ':' + test.prototype.name +
            ': Failed with "' + test.prototype.lastError.message + '"');
       }
     }
@@ -415,8 +423,8 @@ TestExecutor.prototype.error = function(msg, isTimeout) {
   } catch (e) {
   }
 
-  this.log('Test ' + (this.currentTest.index + 1) + ':' +
-      this.testList[this.currentTestIdx].prototype.desc +
+  this.log('Test ' + this.testList[this.currentTestIdx].prototype.id + ':' +
+      this.testList[this.currentTestIdx].prototype.name +
       ' threw an error: ' + msg);
   var stack = '';
 
@@ -552,7 +560,7 @@ window.getTestResults = function(testStartId, testEndId) {
     if (window.globalRunner.testList[i]) {
       var test = window.globalRunner.testList[i];
       var category = test.prototype.category;
-      var name = test.prototype.desc;
+      var name = test.prototype.name;
       if (test.prototype.failures > 0) {
         if (!failResults[category]) {
           failResults[category] = [];
@@ -571,3 +579,12 @@ window.getTestResults = function(testStartId, testEndId) {
 
 
 })();
+
+try {
+  exports.TestBase = window.TestBase;
+  exports.createTest = window.createTest;
+  exports.createMSTest = window.createMSTest;
+} catch (e) {
+  // do nothing, this function is not supposed to work for browser, but it's for
+  // Node js to generate json file instead.
+}

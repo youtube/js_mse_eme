@@ -33,8 +33,10 @@ info += ' | Default Timeout: ' + TestBase.timeout + 'ms';
 
 var fields = ['passes', 'failures', 'timeouts'];
 
-var createWebglTest = function(name, category = 'WebGL', mandatory = true) {
-  var t = createTest(name, category, mandatory && harnessConfig.support_webgl);
+var createWebglTest = function(
+    testId, name, category = 'WebGL', mandatory = true) {
+  var t = createTest(name, category, mandatory && harnessConfig.support_webgl,
+      testId, 'WebGL Performance Tests');
   t.prototype.index = tests.length;
   tests.push(t);
   return t;
@@ -55,9 +57,11 @@ function setupWebglTest(video, runner, videoStream) {
  * Ensure WebGL performance of given video format by comparing the playback
  * frame rate with threshold values.
  */
-var createWebglPerformanceTest = function(videoStream) {
-  var test = createWebglTest('WebGLPerformance' + '.' + videoStream.codec +
-      '.' + videoStream.get('resolution') + videoStream.get('fps'),
+var createWebglPerformanceTest = function(testId, videoStream) {
+  var test = createWebglTest(
+      testId,
+      'WebGLPerformance' + '.' + videoStream.codec + '.' +
+          videoStream.get('resolution') + videoStream.get('fps'),
       'WebGL Performance ' + videoStream.codec);
   test.prototype.title = 'Test WebGL performance.';
   test.prototype.start = function(runner, video) {
@@ -100,29 +104,29 @@ var createWebglPerformanceTest = function(videoStream) {
   };
 };
 
-createWebglPerformanceTest(Media.VP9.Webgl144p30fps);
-createWebglPerformanceTest(Media.VP9.Webgl240p30fps);
-createWebglPerformanceTest(Media.VP9.Webgl360p30fps);
-createWebglPerformanceTest(Media.VP9.Webgl480p30fps);
-createWebglPerformanceTest(Media.VP9.Webgl720p30fps);
-createWebglPerformanceTest(Media.VP9.Webgl720p60fps);
-createWebglPerformanceTest(Media.VP9.Webgl1080p30fps);
-createWebglPerformanceTest(Media.VP9.Webgl1080p60fps);
-createWebglPerformanceTest(Media.VP9.Webgl1440p30fps);
-createWebglPerformanceTest(Media.VP9.Webgl1440p60fps);
-createWebglPerformanceTest(Media.VP9.Webgl2160p30fps);
-createWebglPerformanceTest(Media.VP9.Webgl2160p60fps);
+createWebglPerformanceTest('4.1.1.1', Media.VP9.Webgl144p30fps);
+createWebglPerformanceTest('4.1.2.1', Media.VP9.Webgl240p30fps);
+createWebglPerformanceTest('4.1.3.1', Media.VP9.Webgl360p30fps);
+createWebglPerformanceTest('4.1.4.1', Media.VP9.Webgl480p30fps);
+createWebglPerformanceTest('4.1.5.1', Media.VP9.Webgl720p30fps);
+createWebglPerformanceTest('4.1.6.1', Media.VP9.Webgl720p60fps);
+createWebglPerformanceTest('4.1.7.1', Media.VP9.Webgl1080p30fps);
+createWebglPerformanceTest('4.1.8.1', Media.VP9.Webgl1080p60fps);
+createWebglPerformanceTest('4.1.9.1', Media.VP9.Webgl1440p30fps);
+createWebglPerformanceTest('4.1.10.1', Media.VP9.Webgl1440p60fps);
+createWebglPerformanceTest('4.1.11.1', Media.VP9.Webgl2160p30fps);
+createWebglPerformanceTest('4.1.12.1', Media.VP9.Webgl2160p60fps);
 
-createWebglPerformanceTest(Media.H264.Webgl144p15fps);
-createWebglPerformanceTest(Media.H264.Webgl240p30fps);
-createWebglPerformanceTest(Media.H264.Webgl360p30fps);
-createWebglPerformanceTest(Media.H264.Webgl480p30fps);
-createWebglPerformanceTest(Media.H264.Webgl720p30fps);
-createWebglPerformanceTest(Media.H264.Webgl720p60fps);
-createWebglPerformanceTest(Media.H264.Webgl1080p30fps);
-createWebglPerformanceTest(Media.H264.Webgl1080p60fps);
-createWebglPerformanceTest(Media.H264.Webgl1440p30fps);
-createWebglPerformanceTest(Media.H264.Webgl2160p30fps);
+createWebglPerformanceTest('4.2.1.1', Media.H264.Webgl144p15fps);
+createWebglPerformanceTest('4.2.2.1', Media.H264.Webgl240p30fps);
+createWebglPerformanceTest('4.2.3.1', Media.H264.Webgl360p30fps);
+createWebglPerformanceTest('4.2.4.1', Media.H264.Webgl480p30fps);
+createWebglPerformanceTest('4.2.5.1', Media.H264.Webgl720p30fps);
+createWebglPerformanceTest('4.2.6.1', Media.H264.Webgl720p60fps);
+createWebglPerformanceTest('4.2.7.1', Media.H264.Webgl1080p30fps);
+createWebglPerformanceTest('4.2.8.1', Media.H264.Webgl1080p60fps);
+createWebglPerformanceTest('4.2.9.1', Media.H264.Webgl1440p30fps);
+createWebglPerformanceTest('4.2.10.1', Media.H264.Webgl2160p30fps);
 
 return {
   tests: tests,
@@ -132,3 +136,10 @@ return {
 };
 
 };
+
+try {
+  exports.getTest = WebglTest;
+} catch (e) {
+  // do nothing, this function is not supposed to work for browser, but it's for
+  // Node js to generate json file instead.
+}
