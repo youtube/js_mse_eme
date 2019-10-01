@@ -21,7 +21,7 @@
  * Playback Performance Test Suite.
  * @class
  */
-var PlaybackperfTest = function(subgroup) {
+var PlaybackperfTest = function(subgroup, suite) {
 
   var webkitPrefix = MediaSource.prototype.version.indexOf('webkit') >= 0;
   var tests = [];
@@ -35,9 +35,9 @@ var PlaybackperfTest = function(subgroup) {
 
   var fields = ['passes', 'failures', 'timeouts'];
 
-  var createPerfTest =
-      function(name, category = 'Playback Performance', mandatory = true) {
-    var t = createTest(name, category, mandatory);
+  var createPerfTest = function(
+      testId, name, category = 'Playback Performance', mandatory = true) {
+    var t = createTest(name, category, mandatory, testId, suite);
     t.prototype.index = tests.length;
     t.prototype.emeHandler = new EMEHandler();
     t.prototype.baseTearDown = t.prototype.teardown;
@@ -114,8 +114,10 @@ var PlaybackperfTest = function(subgroup) {
    * totalVideoFrames reported from VideoPlaybackQuality is correct by
    * comparing it against the total frames in the video file.
    */
-  var createTotalVideoFramesValidationTest = function(videoStream, frames) {
-    var test = createPerfTest('TotalVideoFrames', 'Media Playback Quality');
+  var createTotalVideoFramesValidationTest = function(
+      testId, videoStream, frames) {
+    var test =
+        createPerfTest(testId, 'TotalVideoFrames', 'Media Playback Quality');
     test.prototype.title = 'TotalVideoFrames Validation';
     test.prototype.start = function(runner, video) {
       var ms = new MediaSource();
@@ -158,14 +160,13 @@ var PlaybackperfTest = function(subgroup) {
     };
   };
 
-  createTotalVideoFramesValidationTest(Media.H264.Video1MB, 25);
-
   /**
    * Ensure that browser is able to detect frame drops by correctly
    * implementing the DroppedFrameCount API.
    */
-  var createFrameDropValidationTest = function(videoStream1, videoStream2) {
-    var test = createPerfTest('FrameDrop', 'Media Playback Quality');
+  var createFrameDropValidationTest = function(
+      testId, videoStream1, videoStream2) {
+    var test = createPerfTest(testId, 'FrameDrop', 'Media Playback Quality');
     test.prototype.title = 'Frame Drop Validation';
     test.prototype.start = function(runner, video) {
       var perfTestUtil = new PerfTestUtil_(test, runner, video);
@@ -196,15 +197,12 @@ var PlaybackperfTest = function(subgroup) {
     };
   };
 
-  createFrameDropValidationTest(
-      Media.H264.Webgl1080p60fps, Media.VP9.Webgl2160p60fps);
-
   /**
    * Ensure no dropped frame is encountered during playback of specified media
    * format in certain playback rate.
    */
   var createPlaybackPerfTest = function(
-      videoStream, playbackRate, category,
+      testId, videoStream, playbackRate, category,
       stopPlayback, assertTest, drmScheme, mandatory) {
     // H264 tests that are greater than 1080p are optional
     var isOptionalPlayBackPerfStream = function(videoStream) {
@@ -218,7 +216,8 @@ var PlaybackperfTest = function(subgroup) {
           && isTypeSupported(videoStream);
 
     var test = createPerfTest(
-        `PlaybackPerf${videoStream.codec}.${videoStream.get('resolution')}` +
+        testId,
+        `PlaybackPerf${videoStream.codec}${videoStream.get('resolution')}` +
             `${videoStream.get('quality') ? videoStream.get('quality') : ''}` +
             `${videoStream.get('fps')}fps@${playbackRate}X`,
         category,
@@ -372,7 +371,14 @@ var PlaybackperfTest = function(subgroup) {
    * playback speeds.
    */
   function createPlaybackPerfTestSuite(
-      mediaFormats, category, stopPlayback, isHFR, drmScheme) {
+      suiteId, mediaFormats, category, stopPlayback, isHFR, drmScheme) {
+    createTotalVideoFramesValidationTest(
+        `${suiteId}.1.1.1`, Media.H264.Video1MB, 25);
+    createFrameDropValidationTest(
+        `${suiteId}.1.2.1`,
+        Media.H264.Webgl1080p60fps,
+        Media.VP9.Webgl2160p60fps);
+    var testCaseId = 1;
     for (var formatIdx in mediaFormats) {
       for (var s in playbackSpeeds) {
         if (util.compareResolutions(
@@ -381,12 +387,14 @@ var PlaybackperfTest = function(subgroup) {
           continue;
         }
         createPlaybackPerfTest(
+            `${suiteId}.2.${testCaseId}.1`,
             mediaFormats[formatIdx],
             playbackSpeeds[s],
             category,
             stopPlayback,
             getTestAssertion(playbackSpeeds[s], isHFR),
             drmScheme);
+        testCaseId++;
       }
     }
   }
@@ -394,6 +402,7 @@ var PlaybackperfTest = function(subgroup) {
   switch (subgroup) {
     case 'sfr-vp9':
       createPlaybackPerfTestSuite(
+          '7',
           mediaFormatsVP9,
           'VP9 SFR Playback Performance',
           shouldStopPlayback,
@@ -401,6 +410,7 @@ var PlaybackperfTest = function(subgroup) {
       break;
     case 'sfr-h264':
       createPlaybackPerfTestSuite(
+          '8',
           mediaFormatsH264,
           'H264 SFR Playback Performance',
           shouldStopPlayback,
@@ -408,6 +418,7 @@ var PlaybackperfTest = function(subgroup) {
       break;
     case 'sfr-av1':
       createPlaybackPerfTestSuite(
+          '9',
           mediaFormatsAV1,
           'AV1 SFR Playback Performance',
           shouldStopPlayback,
@@ -415,6 +426,7 @@ var PlaybackperfTest = function(subgroup) {
       break;
     case 'hfr':
       createPlaybackPerfTestSuite(
+          '10',
           mediaFormatsHfr,
           'HFR Playback Performance',
           shouldStopPlayback,
@@ -422,6 +434,7 @@ var PlaybackperfTest = function(subgroup) {
       break;
     case 'widevine-sfr-vp9':
       createPlaybackPerfTestSuite(
+          '11',
           widevineMediaFormatsVP9,
           'VP9 Widevine SFR Playback Performance',
           shouldStopDrmPlayback,
@@ -430,6 +443,7 @@ var PlaybackperfTest = function(subgroup) {
       break;
     case 'widevine-sfr-h264':
       createPlaybackPerfTestSuite(
+          '12',
           widevineMediaFormatsH264,
           'H264 Widevine SFR Playback Performance',
           shouldStopDrmPlayback,
@@ -438,6 +452,7 @@ var PlaybackperfTest = function(subgroup) {
       break;
     case 'widevine-hfr':
       createPlaybackPerfTestSuite(
+          '13',
           widevineMediaFormatsHfr,
           'Widevine HFR Playback Performance',
           shouldStopDrmPlayback,
@@ -454,3 +469,20 @@ var PlaybackperfTest = function(subgroup) {
   };
 
 };
+
+var PlaybackperfTestAll = function() {
+  PlaybackperfTest('sfr-vp9', 'VP9 SFR Tests');
+  PlaybackperfTest('sfr-h264', 'H264 SFR Tests');
+  PlaybackperfTest('sfr-av1', 'AV1 SFR Tests');
+  PlaybackperfTest('hfr', 'HFR Tests');
+  PlaybackperfTest('widevine-sfr-vp9', 'VP9 Widevine SFR Tests');
+  PlaybackperfTest('widevine-sfr-h264', 'H264 Widevine SFR Tests');
+  PlaybackperfTest('widevine-hfr', 'Widevine HFR Tests');
+};
+
+try {
+  exports.getTest = PlaybackperfTestAll;
+} catch (e) {
+  // do nothing, this function is not supposed to work for browser, but it's for
+  // Node js to generate json file instead.
+}

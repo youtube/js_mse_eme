@@ -36,8 +36,8 @@ var SphericalOnCobaltTest = function() {
   var fields = ['passes', 'failures', 'timeouts'];
 
   var createSphericalTest =
-      function(name, category = 'Playback Performance', mandatory = true) {
-    var t = createTest(name, category, mandatory);
+      function(testId, name, category = 'Playback Performance', mandatory = true) {
+    var t = createTest(name, category, mandatory, testId, 'Cobalt Spherical Tests');
     t.prototype.index = tests.length;
     tests.push(t);
     return t;
@@ -91,9 +91,9 @@ var SphericalOnCobaltTest = function() {
    * Ensure performance of given spherical video format on Cobalt by
    * comparing the playback frame rate with threshold values.
    */
-  var createSphericalPerformanceTest = function(videoStream) {
+  var createSphericalPerformanceTest = function(testId, videoStream) {
     var test = createSphericalTest(
-        'SphericalPerformance' + '.' + videoStream.codec + '.' +
+        testId, 'SphericalPerformance' + '.' + videoStream.codec + '.' +
             videoStream.get('resolution') + videoStream.get('fps'),
         'Spherical Video Performance ' + videoStream.codec,
         isTypeSupported(videoStream) ? util.isCobalt() : false);
@@ -157,31 +157,31 @@ var SphericalOnCobaltTest = function() {
     };
   };
 
-  createSphericalPerformanceTest(Media.VP9.Spherical144s30fps);
-  createSphericalPerformanceTest(Media.VP9.Spherical240s30fps);
-  createSphericalPerformanceTest(Media.VP9.Spherical360s30fps);
-  createSphericalPerformanceTest(Media.VP9.Spherical480s30fps);
-  createSphericalPerformanceTest(Media.VP9.Spherical720s30fps);
-  createSphericalPerformanceTest(Media.VP9.Spherical720s60fps);
-  createSphericalPerformanceTest(Media.VP9.Spherical1080s30fps);
-  createSphericalPerformanceTest(Media.VP9.Spherical1080s60fps);
-  createSphericalPerformanceTest(Media.VP9.Spherical1440s30fps);
-  createSphericalPerformanceTest(Media.VP9.Spherical1440s60fps);
-  createSphericalPerformanceTest(Media.VP9.Spherical2160s30fps);
-  createSphericalPerformanceTest(Media.VP9.Spherical2160s60fps);
+  createSphericalPerformanceTest('5.1.1.1', Media.VP9.Spherical144s30fps);
+  createSphericalPerformanceTest('5.1.2.1', Media.VP9.Spherical240s30fps);
+  createSphericalPerformanceTest('5.1.3.1', Media.VP9.Spherical360s30fps);
+  createSphericalPerformanceTest('5.1.4.1', Media.VP9.Spherical480s30fps);
+  createSphericalPerformanceTest('5.1.5.1', Media.VP9.Spherical720s30fps);
+  createSphericalPerformanceTest('5.1.6.1', Media.VP9.Spherical720s60fps);
+  createSphericalPerformanceTest('5.1.7.1', Media.VP9.Spherical1080s30fps);
+  createSphericalPerformanceTest('5.1.8.1', Media.VP9.Spherical1080s60fps);
+  createSphericalPerformanceTest('5.1.9.1', Media.VP9.Spherical1440s30fps);
+  createSphericalPerformanceTest('5.1.10.1', Media.VP9.Spherical1440s60fps);
+  createSphericalPerformanceTest('5.1.11.1', Media.VP9.Spherical2160s30fps);
+  createSphericalPerformanceTest('5.1.12.1', Media.VP9.Spherical2160s60fps);
 
-  createSphericalPerformanceTest(Media.H264.Spherical144s30fps);
-  createSphericalPerformanceTest(Media.H264.Spherical240s30fps);
-  createSphericalPerformanceTest(Media.H264.Spherical360s30fps);
-  createSphericalPerformanceTest(Media.H264.Spherical480s30fps);
-  createSphericalPerformanceTest(Media.H264.Spherical720s30fps);
-  createSphericalPerformanceTest(Media.H264.Spherical720s60fps);
-  createSphericalPerformanceTest(Media.H264.Spherical1080s30fps);
-  createSphericalPerformanceTest(Media.H264.Spherical1080s60fps);
-  createSphericalPerformanceTest(Media.H264.Spherical1440s30fps);
-  createSphericalPerformanceTest(Media.H264.Spherical1440s60fps);
-  createSphericalPerformanceTest(Media.H264.Spherical2160s30fps);
-  createSphericalPerformanceTest(Media.H264.Spherical2160s60fps);
+  createSphericalPerformanceTest('5.2.1.1', Media.H264.Spherical144s30fps);
+  createSphericalPerformanceTest('5.2.2.1', Media.H264.Spherical240s30fps);
+  createSphericalPerformanceTest('5.2.3.1', Media.H264.Spherical360s30fps);
+  createSphericalPerformanceTest('5.2.4.1', Media.H264.Spherical480s30fps);
+  createSphericalPerformanceTest('5.2.5.1', Media.H264.Spherical720s30fps);
+  createSphericalPerformanceTest('5.2.6.1', Media.H264.Spherical720s60fps);
+  createSphericalPerformanceTest('5.2.7.1', Media.H264.Spherical1080s30fps);
+  createSphericalPerformanceTest('5.2.8.1', Media.H264.Spherical1080s60fps);
+  createSphericalPerformanceTest('5.2.9.1', Media.H264.Spherical1440s30fps);
+  createSphericalPerformanceTest('5.2.10.1', Media.H264.Spherical1440s60fps);
+  createSphericalPerformanceTest('5.2.11.1', Media.H264.Spherical2160s30fps);
+  createSphericalPerformanceTest('5.2.12.1', Media.H264.Spherical2160s60fps);
 
   return {
     tests: tests,
@@ -191,3 +191,10 @@ var SphericalOnCobaltTest = function() {
   };
 
 };
+
+try {
+  exports.getTest = SphericalOnCobaltTest;
+} catch (e) {
+  // do nothing, this function is not supposed to work for browser, but it's for
+  // Node js to generate json file instead.
+}

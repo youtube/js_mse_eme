@@ -28,8 +28,8 @@ var info = 'Default Timeout: ' + TestBase.timeout + 'ms';
 
 var fields = ['passes', 'failures', 'timeouts'];
 
-var createProgressiveTest = function(category, name, mandatory = true) {
-  var t = createTest(name, category, mandatory);
+var createProgressiveTest = function(testId, category, name, mandatory = true) {
+  var t = createTest(name, category, mandatory, testId, 'Progressive Tests');
   t.prototype.index = tests.length;
   tests.push(t);
   return t;
@@ -38,8 +38,8 @@ var createProgressiveTest = function(category, name, mandatory = true) {
 /**
  * Test the inital state of a video element.
  */
-var createInitialMediaStateTest = function(state, value, check) {
-  var test = createProgressiveTest('state before initial', state);
+var createInitialMediaStateTest = function(testId, state, value, check) {
+  var test = createProgressiveTest(testId, 'state before initial', state);
 
   check = typeof(check) === 'undefined' ? 'checkEq' : check;
   test.prototype.title = 'Test if the state ' + state +
@@ -51,27 +51,29 @@ var createInitialMediaStateTest = function(state, value, check) {
   };
 };
 
-createInitialMediaStateTest('src', '');  // can actually be undefined
-createInitialMediaStateTest('currentSrc', '');
-createInitialMediaStateTest('defaultPlaybackRate', 1);
-createInitialMediaStateTest('playbackRate', 1);
-createInitialMediaStateTest('duration', NaN);
-createInitialMediaStateTest('paused', true);
-createInitialMediaStateTest('seeking', false);
-createInitialMediaStateTest('ended', false);
-createInitialMediaStateTest('videoWidth', 0);
-createInitialMediaStateTest('videoHeight', 0);
-createInitialMediaStateTest('buffered.length', 0);
-createInitialMediaStateTest('played.length', 0);
-createInitialMediaStateTest('seekable.length', 0);
-createInitialMediaStateTest('networkState', HTMLMediaElement.NETWORK_EMPTY);
-createInitialMediaStateTest('readyState', HTMLMediaElement.HAVE_NOTHING);
+createInitialMediaStateTest('6.1.1.1', 'src', '');  // can actually be undefined
+createInitialMediaStateTest('6.1.2.1', 'currentSrc', '');
+createInitialMediaStateTest('6.1.3.1', 'defaultPlaybackRate', 1);
+createInitialMediaStateTest('6.1.4.1', 'playbackRate', 1);
+createInitialMediaStateTest('6.1.5.1', 'duration', NaN);
+createInitialMediaStateTest('6.1.6.1', 'paused', true);
+createInitialMediaStateTest('6.1.7.1', 'seeking', false);
+createInitialMediaStateTest('6.1.8.1', 'ended', false);
+createInitialMediaStateTest('6.1.9.1', 'videoWidth', 0);
+createInitialMediaStateTest('6.1.10.1', 'videoHeight', 0);
+createInitialMediaStateTest('6.1.11.1', 'buffered.length', 0);
+createInitialMediaStateTest('6.1.12.1', 'played.length', 0);
+createInitialMediaStateTest('6.1.13.1', 'seekable.length', 0);
+createInitialMediaStateTest(
+    '6.1.14.1', 'networkState', HTMLMediaElement.NETWORK_EMPTY);
+createInitialMediaStateTest(
+    '6.1.15.1', 'readyState', HTMLMediaElement.HAVE_NOTHING);
 
 /**
  * Test the state when a src has been assigned to the video element.
  */
-var createMediaStateAfterSrcAssignedTest = function(state, value, check) {
-  var test = createProgressiveTest('state after src assigned', state);
+var createMediaStateAfterSrcAssignedTest = function(testId, state, value, check) {
+  var test = createProgressiveTest(testId, 'state after src assigned', state);
 
   check = typeof(check) === 'undefined' ? 'checkEq' : check;
   test.prototype.title = 'Test if the state ' + state +
@@ -85,16 +87,16 @@ var createMediaStateAfterSrcAssignedTest = function(state, value, check) {
 };
 
 createMediaStateAfterSrcAssignedTest(
-    'networkState', HTMLMediaElement.NETWORK_NO_SOURCE);
+    '6.2.1.1', 'networkState', HTMLMediaElement.NETWORK_NO_SOURCE);
 createMediaStateAfterSrcAssignedTest(
-    'readyState', HTMLMediaElement.HAVE_NOTHING);
-createMediaStateAfterSrcAssignedTest('src', '', 'checkNE');
+    '6.2.2.1', 'readyState', HTMLMediaElement.HAVE_NOTHING);
+createMediaStateAfterSrcAssignedTest('6.2.3.1', 'src', '', 'checkNE');
 
 /**
  * Test the state of video element when loadstart event is fired.
  */
-var createMediaStateInLoadStart = function(state, value, check) {
-  var test = createProgressiveTest('state in loadstart', state);
+var createMediaStateInLoadStart = function(testId, state, value, check) {
+  var test = createProgressiveTest(testId, 'state in loadstart', state);
 
   check = typeof(check) === 'undefined' ? 'checkEq' : check;
   test.prototype.title = 'Test if the state ' + state +
@@ -109,15 +111,15 @@ var createMediaStateInLoadStart = function(state, value, check) {
   };
 };
 
-createMediaStateInLoadStart('networkState', HTMLMediaElement.NETWORK_LOADING);
-createMediaStateInLoadStart('readyState', HTMLMediaElement.HAVE_NOTHING);
-createMediaStateInLoadStart('currentSrc', '', 'checkNE');
+createMediaStateInLoadStart('6.3.1.1', 'networkState', HTMLMediaElement.NETWORK_LOADING);
+createMediaStateInLoadStart('6.3.2.1', 'readyState', HTMLMediaElement.HAVE_NOTHING);
+createMediaStateInLoadStart('6.3.3.1', 'currentSrc', '', 'checkNE');
 
 /**
  * Test if there is progress event.
  */
-var createProgressTest = function() {
-  var test = createProgressiveTest('event', 'onprogress');
+var createProgressTest = function(testId) {
+  var test = createProgressiveTest(testId, 'event', 'onprogress');
 
   test.prototype.title = 'Test if there is progress event.';
   test.prototype.start = function(runner, video) {
@@ -130,13 +132,13 @@ var createProgressTest = function() {
   };
 };
 
-createProgressTest();
+createProgressTest('6.4.1.1');
 
 /**
  * Test timeupdate event of video element.
  */
-var createTimeUpdateTest = function() {
-  var test = createProgressiveTest('event', 'ontimeupdate');
+var createTimeUpdateTest = function(testId) {
+  var test = createProgressiveTest(testId, 'event', 'ontimeupdate');
 
   test.prototype.title = 'Test if there is timeupdate event.';
   test.prototype.start = function(runner, video) {
@@ -150,13 +152,13 @@ var createTimeUpdateTest = function() {
   };
 };
 
-createTimeUpdateTest();
+createTimeUpdateTest('6.4.2.1');
 
 /**
  * Test canplay event in video element.
  */
-var createCanPlayTest = function() {
-  var test = createProgressiveTest('event', 'canplay');
+var createCanPlayTest = function(testId) {
+  var test = createProgressiveTest(testId, 'event', 'canplay');
 
   test.prototype.title = 'Test if there is canplay event.';
   test.prototype.start = function(runner, video) {
@@ -169,13 +171,13 @@ var createCanPlayTest = function() {
   };
 };
 
-createCanPlayTest();
+createCanPlayTest('6.4.3.1');
 
 /**
  * Test the autoplay attribute in video element.
  */
-var createAutoPlayTest = function() {
-  var test = createProgressiveTest('control', 'autoplay');
+var createAutoPlayTest = function(testId) {
+  var test = createProgressiveTest(testId, 'control', 'autoplay');
 
   test.prototype.title = 'Test if autoplay works';
   test.prototype.start = function(runner, video) {
@@ -189,13 +191,13 @@ var createAutoPlayTest = function() {
   };
 };
 
-createAutoPlayTest();
+createAutoPlayTest('6.5.1.1');
 
 /**
  * Test the network states of video element.
  */
-var createNetworkStateTest = function() {
-  var test = createProgressiveTest('state', 'networkState');
+var createNetworkStateTest = function(testId) {
+  var test = createProgressiveTest(testId, 'state', 'networkState');
 
   test.prototype.title = 'Test if the network state is correct';
   test.prototype.start = function(runner, video) {
@@ -218,13 +220,13 @@ var createNetworkStateTest = function() {
   };
 };
 
-createNetworkStateTest();
+createNetworkStateTest('6.6.1.1');
 
 /**
  * Test video without valid source data. The video should pause.
  */
-var createPlayingWithoutDataPaused = function() {
-  var test = createProgressiveTest('play without data', 'paused');
+var createPlayingWithoutDataPaused = function(testId) {
+  var test = createProgressiveTest(testId, 'play without data', 'paused');
 
   test.prototype.title = 'Test if we can play without any data';
   test.prototype.start = function(runner, video) {
@@ -236,13 +238,13 @@ var createPlayingWithoutDataPaused = function() {
   };
 };
 
-createPlayingWithoutDataPaused();
+createPlayingWithoutDataPaused('6.7.1.1');
 
 /**
  * Test playing a video without valid source data. Waiting event should occur.
  */
-var createPlayingWithoutDataWaiting = function() {
-  var test = createProgressiveTest('play without data', 'onwaiting');
+var createPlayingWithoutDataWaiting = function(testId) {
+  var test = createProgressiveTest(testId, 'play without data', 'onwaiting');
 
   test.prototype.title = 'Test if we can play without any data';
   test.prototype.start = function(runner, video) {
@@ -255,14 +257,15 @@ var createPlayingWithoutDataWaiting = function() {
   };
 };
 
-createPlayingWithoutDataWaiting();
+createPlayingWithoutDataWaiting('6.7.2.1');
 
 /**
  * Test the maximum timupdate event granularity for different playbackRate.
  * It should be smaller than 0.26.
  */
-var createTimeUpdateMaxGranularity = function(playbackRate) {
-  var test = createProgressiveTest('timeupdate', 'maxGranularityPlaybackRate' +
+var createTimeUpdateMaxGranularity = function(testId, playbackRate) {
+  var test =
+      createProgressiveTest(testId, 'timeupdate', 'maxGranularityPlaybackRate' +
       parseFloat(playbackRate).toFixed(2));
 
   test.prototype.title = 'Test the time update granularity.';
@@ -293,19 +296,20 @@ var createTimeUpdateMaxGranularity = function(playbackRate) {
   };
 };
 
-createTimeUpdateMaxGranularity(0.25);
-createTimeUpdateMaxGranularity(0.50);
-createTimeUpdateMaxGranularity(1.00);
-createTimeUpdateMaxGranularity(1.25);
-createTimeUpdateMaxGranularity(1.50);
-createTimeUpdateMaxGranularity(2.0);
+createTimeUpdateMaxGranularity('6.8.1.1', 0.25);
+createTimeUpdateMaxGranularity('6.8.2.1', 0.50);
+createTimeUpdateMaxGranularity('6.8.3.1', 1.00);
+createTimeUpdateMaxGranularity('6.8.4.1', 1.25);
+createTimeUpdateMaxGranularity('6.8.5.1', 1.50);
+createTimeUpdateMaxGranularity('6.8.6.1', 2.0);
 
 /**
  * Test the minimum timupdate event granularity for different playbackRate.
  * It should be larger than 0.015.
  */
-var createTimeUpdateMinGranularity = function(playbackRate) {
-  var test = createProgressiveTest('timeupdate', 'minGranularityPlaybackRate' +
+var createTimeUpdateMinGranularity = function(testId, playbackRate) {
+  var test =
+      createProgressiveTest(testId, 'timeupdate', 'minGranularityPlaybackRate' +
       parseFloat(playbackRate).toFixed(2));
 
   test.prototype.title = 'Test the time update granularity.';
@@ -336,18 +340,18 @@ var createTimeUpdateMinGranularity = function(playbackRate) {
   };
 };
 
-createTimeUpdateMinGranularity(0.25);
-createTimeUpdateMinGranularity(0.50);
-createTimeUpdateMinGranularity(1.00);
-createTimeUpdateMinGranularity(1.25);
-createTimeUpdateMinGranularity(1.50);
-createTimeUpdateMinGranularity(2.0);
+createTimeUpdateMinGranularity('6.8.7.1', 0.25);
+createTimeUpdateMinGranularity('6.8.8.1', 0.50);
+createTimeUpdateMinGranularity('6.8.9.1', 1.00);
+createTimeUpdateMinGranularity('6.8.10.1', 1.25);
+createTimeUpdateMinGranularity('6.8.11.1', 1.50);
+createTimeUpdateMinGranularity('6.8.12.1', 2.0);
 
 /**
  * Test the timeupdate accuracy by video.currentTime.
  */
-var createTimeUpdateAccuracy = function() {
-  var test = createProgressiveTest('timeupdate', 'accuracy');
+var createTimeUpdateAccuracy = function(testId) {
+  var test = createProgressiveTest(testId, 'timeupdate', 'accuracy');
 
   test.prototype.title = 'Test the time update granularity.';
   test.prototype.start = function(runner, video) {
@@ -376,13 +380,13 @@ var createTimeUpdateAccuracy = function() {
   };
 };
 
-createTimeUpdateAccuracy();
+createTimeUpdateAccuracy('6.8.13.1');
 
 /**
  * Test if time updates progress when video is playing.
  */
-var createTimeUpdateProgressing = function() {
-  var test = createProgressiveTest('timeupdate', 'progressing');
+var createTimeUpdateProgressing = function(testId) {
+  var test = createProgressiveTest(testId, 'timeupdate', 'progressing');
 
   test.prototype.title = 'Test if the time updates progress.';
   test.prototype.start = function(runner, video) {
@@ -406,13 +410,14 @@ var createTimeUpdateProgressing = function() {
   };
 };
 
-createTimeUpdateProgressing();
+createTimeUpdateProgressing('6.8.14.1');
 
 /**
  * Test if time updates progress when video is playing with initial seek.
  */
-var createTimeUpdateProgressingWithInitialSeek = function() {
-  var test = createProgressiveTest('timeupdate', 'progressing after seek');
+var createTimeUpdateProgressingWithInitialSeek = function(testId) {
+  var test =
+      createProgressiveTest(testId, 'timeupdate', 'progressing after seek');
 
   test.prototype.title = 'Test if the time updates progress.';
   test.prototype.start = function(runner, video) {
@@ -441,13 +446,14 @@ var createTimeUpdateProgressingWithInitialSeek = function() {
   };
 };
 
-createTimeUpdateProgressingWithInitialSeek();
+createTimeUpdateProgressingWithInitialSeek('6.8.15.1');
 
 /**
  * Test if time updates progress when video is playing with duration check.
  */
-var createTimeUpdateProgressingWithDurationCheck = function() {
-  var test = createProgressiveTest('timeupdate', 'duration on timeupdate');
+var createTimeUpdateProgressingWithDurationCheck = function(testId) {
+  var test =
+      createProgressiveTest(testId, 'timeupdate', 'duration on timeupdate');
 
   test.prototype.title = 'Test if the duration is non-negative when time ' +
       'updates.';
@@ -463,13 +469,13 @@ var createTimeUpdateProgressingWithDurationCheck = function() {
   };
 };
 
-createTimeUpdateProgressingWithDurationCheck();
+createTimeUpdateProgressingWithDurationCheck('6.8.16.1');
 
 /**
  * Test if video plays at expected playback rate.
  */
-var createPlaybackRateTest = function(playbackRate) {
-  var test = createProgressiveTest('playbackRate', 'PlaybackRate' +
+var createPlaybackRateTest = function(testId, playbackRate) {
+  var test = createProgressiveTest(testId, 'playbackRate', 'PlaybackRate' +
       parseFloat(playbackRate).toFixed(2));
   test.prototype.title = 'Test playbackRate plays back at the expected rate.';
   test.prototype.start = function(runner, video) {
@@ -504,14 +510,21 @@ var createPlaybackRateTest = function(playbackRate) {
   };
 };
 
-createPlaybackRateTest(0.25);
-createPlaybackRateTest(0.50);
-createPlaybackRateTest(1.00);
-createPlaybackRateTest(1.25);
-createPlaybackRateTest(1.50);
-createPlaybackRateTest(2.0);
+createPlaybackRateTest('6.9.1.1', 0.25);
+createPlaybackRateTest('6.9.2.1', 0.50);
+createPlaybackRateTest('6.9.3.1', 1.00);
+createPlaybackRateTest('6.9.4.1', 1.25);
+createPlaybackRateTest('6.9.5.1', 1.50);
+createPlaybackRateTest('6.9.6.1', 2.0);
 
 
 return {tests: tests, info: info, fields: fields, viewType: 'default'};
 
 };
+
+try {
+  exports.getTest = ProgressiveTest;
+} catch (e) {
+  // do nothing, this function is not supposed to work for browser, but it's for
+  // Node js to generate json file instead.
+}

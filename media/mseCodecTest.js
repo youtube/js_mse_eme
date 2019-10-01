@@ -43,8 +43,8 @@ var fields = ['passes', 'failures', 'timeouts'];
  *     optional and fails.
  */
 var createCodecTest =
-    function(name, category = 'General', mandatory = true, streams = []) {
-  var t = createMSTest(name, category, mandatory);
+    function(testId, name, category = 'General', mandatory = true, streams = []) {
+  var t = createMSTest(testId, name, category, mandatory, 'MSE Codec Tests');
   t.prototype.index = tests.length;
   t.prototype.setStreams(streams);
   tests.push(t);
@@ -59,8 +59,9 @@ var createCodecTest =
  * However, sometimes the update happens so fast that the second append manage
  * as well.
  */
-var createAppendTest = function(stream, unused_stream, mandatory) {
+var createAppendTest = function(testId, stream, unused_stream, mandatory) {
   var test = createCodecTest(
+      testId,
       'Append' + stream.codec + util.MakeCapitalName(stream.mediatype),
       'MSE (' + stream.codec + ')',
       mandatory,
@@ -115,8 +116,9 @@ var createAppendTest = function(stream, unused_stream, mandatory) {
 /**
  * Ensure sourceBuffer can abort current segment and end up with correct value.
  */
-var createAbortTest = function(stream, unused_stream, mandatory) {
+var createAbortTest = function(testId, stream, unused_stream, mandatory) {
   var test = createCodecTest(
+      testId,
       'Abort' + stream.codec + util.MakeCapitalName(stream.mediatype),
       'MSE (' + stream.codec + ')',
       mandatory,
@@ -153,8 +155,10 @@ var createAbortTest = function(stream, unused_stream, mandatory) {
 /**
  * Ensure timestamp offset can be set.
  */
-var createTimestampOffsetTest = function(stream, unused_stream, mandatory) {
+var createTimestampOffsetTest = function(
+      testId, stream, unused_stream, mandatory) {
   var test = createCodecTest(
+      testId,
       'TimestampOffset' + stream.codec +
           util.MakeCapitalName(stream.mediatype),
       'MSE (' + stream.codec + ')',
@@ -184,8 +188,11 @@ var createTimestampOffsetTest = function(stream, unused_stream, mandatory) {
  * Test the sourceBuffer DASH switch latency.
  * Validate it's less than 1 second.
  */
-var createDASHLatencyTest = function(videoStream, audioStream, mandatory) {
-  var test = createCodecTest('DASHLatency' + videoStream.codec,
+var createDASHLatencyTest = function(
+    testId, videoStream, audioStream, mandatory) {
+  var test = createCodecTest(
+      testId,
+      'DASHLatency' + videoStream.codec,
       'MSE (' + videoStream.codec + ')',
       mandatory,
       [videoStream, audioStream]);
@@ -266,8 +273,10 @@ var createDASHLatencyTest = function(videoStream, audioStream, mandatory) {
 /**
  * Ensure valid duration change after append buffer by halving the duration.
  */
-var createDurationAfterAppendTest = function(stream, unused_stream, mandatory) {
+var createDurationAfterAppendTest = function(
+    testId, stream, unused_stream, mandatory) {
   var test = createCodecTest(
+      testId,
       'DurationAfterAppend' + stream.codec +
           util.MakeCapitalName(stream.mediatype),
       'MSE (' + stream.codec + ')',
@@ -338,8 +347,9 @@ var createDurationAfterAppendTest = function(stream, unused_stream, mandatory) {
 /**
  * Test pause state before or after appending data to sourceBuffer.
  */
-var createPausedTest = function(stream, mandatory) {
+var createPausedTest = function(testId, stream, mandatory) {
   var test = createCodecTest(
+      testId,
       'PausedStateWith' + stream.codec +
           util.MakeCapitalName(stream.mediatype),
       'MSE (' + stream.codec + ')',
@@ -372,8 +382,11 @@ var createPausedTest = function(stream, mandatory) {
 /**
  * Test if video dimension is correct before or after appending data.
  */
-var createVideoDimensionTest = function(videoStream, audioStream, mandatory) {
-  var test = createCodecTest('VideoDimension' + videoStream.codec,
+var createVideoDimensionTest = function(
+    testId, videoStream, audioStream, mandatory) {
+  var test = createCodecTest(
+      testId,
+      'VideoDimension' + videoStream.codec,
       'MSE (' + videoStream.codec + ')',
       mandatory,
       [videoStream, audioStream]);
@@ -420,8 +433,10 @@ var createVideoDimensionTest = function(videoStream, audioStream, mandatory) {
 /**
  * Test if the playback state transition is correct.
  */
-var createPlaybackStateTest = function(stream, mandatory) {
-  var test = createCodecTest('PlaybackState' + stream.codec,
+var createPlaybackStateTest = function(testId, stream, mandatory) {
+  var test = createCodecTest(
+      testId,
+      'PlaybackState' + stream.codec,
       'MSE (' + stream.codec + ')',
       mandatory,
       [stream]);
@@ -477,8 +492,10 @@ var createPlaybackStateTest = function(stream, mandatory) {
 /**
  * Ensure we can play a partially appended video segment.
  */
-var createPlayPartialSegmentTest = function(stream, mandatory) {
-  var test = createCodecTest('PlayPartial' + stream.codec + 'Segment',
+var createPlayPartialSegmentTest = function(testId, stream, mandatory) {
+  var test = createCodecTest(
+      testId,
+      'PlayPartial' + stream.codec + 'Segment',
       'MSE (' + stream.codec + ')',
       mandatory,
       [stream]);
@@ -513,8 +530,10 @@ var createPlayPartialSegmentTest = function(stream, mandatory) {
 /**
  * Ensure we can play a partially appended audio segment.
  */
-var createIncrementalAudioTest = function(stream) {
-  var test = createCodecTest('Incremental' + stream.codec + 'Audio',
+var createIncrementalAudioTest = function(testId, stream) {
+  var test = createCodecTest(
+      testId,
+      'Incremental' + stream.codec + 'Audio',
       'MSE (' + stream.codec + ')',
       true,
       [stream]);
@@ -541,8 +560,10 @@ var createIncrementalAudioTest = function(stream) {
 /**
  * Ensure we can append audio data with an explicit offset.
  */
-var createAppendAudioOffsetTest = function(stream1, stream2) {
-  var test = createCodecTest('Append' + stream1.codec + 'AudioOffset',
+var createAppendAudioOffsetTest = function(testId, stream1, stream2) {
+  var test = createCodecTest(
+      testId,
+      'Append' + stream1.codec + 'AudioOffset',
       'MSE (' + stream1.codec + ')',
       true,
       [stream1, stream2]);
@@ -580,8 +601,11 @@ var createAppendAudioOffsetTest = function(stream1, stream2) {
 /**
  * Ensure we can append video data with an explicit offset.
  */
-var createAppendVideoOffsetTest = function(stream1, stream2, audioStream, mandatory) {
-  var test = createCodecTest('Append' + stream1.codec + 'VideoOffset',
+var createAppendVideoOffsetTest = function(
+    testId, stream1, stream2, audioStream, mandatory) {
+  var test = createCodecTest(
+      testId,
+      'Append' + stream1.codec + 'VideoOffset',
       'MSE (' + stream1.codec + ')',
       mandatory,
       [stream1, stream2]);
@@ -639,8 +663,10 @@ var createAppendVideoOffsetTest = function(stream1, stream2, audioStream, mandat
 /**
  * Ensure we can append multiple init segments.
  */
-var createAppendMultipleInitTest = function(stream, unused_stream, mandatory) {
+var createAppendMultipleInitTest = function(
+    testId, stream, unused_stream, mandatory) {
   var test = createCodecTest(
+      testId,
       'AppendMultipleInit' + stream.codec +
           util.MakeCapitalName(stream.mediatype),
       'MSE (' + stream.codec + ')',
@@ -701,8 +727,10 @@ var createAppendMultipleInitTest = function(stream, unused_stream, mandatory) {
 /**
  * Test appending segments out of order.
  */
-var createAppendOutOfOrderTest = function(stream, unused_stream, mandatory) {
+var createAppendOutOfOrderTest = function(
+    testId, stream, unused_stream, mandatory) {
   var test = createCodecTest(
+      testId,
       'Append' + stream.codec + util.MakeCapitalName(stream.mediatype) +
           'OutOfOrder',
       'MSE (' + stream.codec + ')',
@@ -762,8 +790,9 @@ var createAppendOutOfOrderTest = function(stream, unused_stream, mandatory) {
 /**
  * Test SourceBuffer.buffered get updated correctly after feeding data.
  */
-var createBufferedRangeTest = function(stream, unused_stream, mandatory) {
+var createBufferedRangeTest = function(testId, stream, unused_stream, mandatory) {
   var test = createCodecTest(
+      testId,
       'BufferedRange' + stream.codec + util.MakeCapitalName(stream.mediatype),
       'MSE (' + stream.codec + ')',
       mandatory,
@@ -795,8 +824,10 @@ var createBufferedRangeTest = function(stream, unused_stream, mandatory) {
  * Ensure the duration on MediaSource can be set and retrieved sucessfully.
  */
 var createMediaSourceDurationTest =
-    function(videoStream, audioStream, mandatory) {
-  var test = createCodecTest('MediaSourceDuration' + videoStream.codec,
+    function(testId, videoStream, audioStream, mandatory) {
+  var test = createCodecTest(
+      testId,
+      'MediaSourceDuration' + videoStream.codec,
       'MSE (' + videoStream.codec + ')',
       mandatory,
       [videoStream, audioStream]);
@@ -882,8 +913,9 @@ var createMediaSourceDurationTest =
 /**
  * Validate media data with overlap is merged into one range.
  */
-var createOverlapTest = function(stream, unused_stream, mandatory) {
+var createOverlapTest = function(testId, stream, unused_stream, mandatory) {
   var test = createCodecTest(
+      testId,
       stream.codec + util.MakeCapitalName(stream.mediatype) + 'WithOverlap',
       'MSE (' + stream.codec + ')',
       mandatory,
@@ -934,8 +966,9 @@ var createOverlapTest = function(stream, unused_stream, mandatory) {
  * Validate media data with a gap smaller than an media frame size is merged
  * into one buffered range.
  */
-var createSmallGapTest = function(stream, unused_stream, mandatory) {
+var createSmallGapTest = function(testId, stream, unused_stream, mandatory) {
   var test = createCodecTest(
+      testId,
       stream.codec + util.MakeCapitalName(stream.mediatype) + 'WithSmallGap',
       'MSE (' + stream.codec + ')',
       mandatory,
@@ -987,8 +1020,9 @@ var createSmallGapTest = function(stream, unused_stream, mandatory) {
  * Validate media data with a gap larger than an media frame size will not be
  * merged into one buffered range.
  */
-var createLargeGapTest = function(stream, unused_stream, mandatory) {
+var createLargeGapTest = function(testId, stream, unused_stream, mandatory) {
   var test = createCodecTest(
+      testId,
       stream.codec + util.MakeCapitalName(stream.mediatype) + 'WithLargeGap',
       'MSE (' + stream.codec + ')',
       mandatory,
@@ -1039,8 +1073,10 @@ var createLargeGapTest = function(stream, unused_stream, mandatory) {
  * properly supports seek operation fired immediately after another seek that
  * hasn't been completed.
  */
-var createSeekTest = function(videoStream, mandatory) {
-  var test = createCodecTest('Seek' + videoStream.codec,
+var createSeekTest = function(testId, videoStream, mandatory) {
+  var test = createCodecTest(
+      testId,
+      'Seek' + videoStream.codec,
       'MSE (' + videoStream.codec + ')',
       mandatory,
       [videoStream]);
@@ -1099,8 +1135,10 @@ var createSeekTest = function(videoStream, mandatory) {
 /**
  * Seek into and out of a buffered region.
  */
-var createBufUnbufSeekTest = function(videoStream, mandatory) {
-  var test = createCodecTest('BufUnbufSeek' + videoStream.codec,
+var createBufUnbufSeekTest = function(testId, videoStream, mandatory) {
+  var test = createCodecTest(
+      testId,
+      'BufUnbufSeek' + videoStream.codec,
       'MSE (' + videoStream.codec + ')',
       mandatory,
       [videoStream]);
@@ -1144,8 +1182,9 @@ var createBufUnbufSeekTest = function(videoStream, mandatory) {
  * Ensure we can play properly when there is not enough audio or video data.
  * The play should resume once src data is appended.
  */
-var createDelayedTest = function(delayed, nonDelayed, mandatory) {
+var createDelayedTest = function(testId, delayed, nonDelayed, mandatory) {
   var test = createCodecTest(
+      testId,
       'Delayed' + delayed.codec + util.MakeCapitalName(delayed.mediatype),
       'MSE (' + delayed.codec + ')',
       mandatory,
@@ -1188,7 +1227,7 @@ var createDelayedTest = function(delayed, nonDelayed, mandatory) {
                   function() {
         var end = delayedSrc.buffered.end(0);
         self.log('Start play when there is only ' + end + ' seconds of ' +
-                 test.prototype.desc + ' data.');
+                 test.prototype.name + ' data.');
         media.play();
         media.addEventListener('timeupdate', ontimeupdate);
         waitUntil(runner.timeouts, media, end + 3, function() {
@@ -1206,8 +1245,9 @@ var createDelayedTest = function(delayed, nonDelayed, mandatory) {
 /**
  * Test to check if audio-less or audio-only can be playback properly.
  */
-var createSingleSourceBufferPlaybackTest = function(stream, mandatory) {
+var createSingleSourceBufferPlaybackTest = function(testId, stream, mandatory) {
   var test = createCodecTest(
+      testId,
       'PlaybackOnly' + stream.codec + util.MakeCapitalName(stream.mediatype),
       'MSE (' + stream.codec + ')',
       mandatory,
@@ -1231,125 +1271,165 @@ var createSingleSourceBufferPlaybackTest = function(stream, mandatory) {
 };
 
 // Opus Specific tests.
-createAppendTest(Media.Opus.SantaHigh, Media.VP9.Video1MB);
-createAbortTest(Media.Opus.SantaHigh, Media.VP9.Video1MB);
-createTimestampOffsetTest(Media.Opus.CarLow, Media.VP9.Video1MB);
-createDurationAfterAppendTest(Media.Opus.CarLow, Media.VP9.Video1MB);
-createPausedTest(Media.Opus.CarLow);
-createIncrementalAudioTest(Media.Opus.CarMed);
-createAppendAudioOffsetTest(Media.Opus.CarMed, Media.Opus.CarHigh);
-createAppendMultipleInitTest(Media.Opus.CarLow, Media.VP9.Video1MB);
-createAppendOutOfOrderTest(Media.Opus.CarMed, Media.VP9.Video1MB);
-createBufferedRangeTest(Media.Opus.CarMed, Media.VP9.Video1MB);
-createOverlapTest(Media.Opus.CarMed, Media.VP9.Video1MB);
-createSmallGapTest(Media.Opus.CarMed, Media.VP9.Video1MB);
-createLargeGapTest(Media.Opus.CarMed, Media.VP9.Video1MB);
-createDelayedTest(Media.Opus.CarMed, Media.VP9.VideoNormal);
-createSingleSourceBufferPlaybackTest(Media.Opus.SantaHigh)
+createAppendTest('2.1.1.1', Media.Opus.SantaHigh, Media.VP9.Video1MB);
+createAbortTest('2.1.2.1', Media.Opus.SantaHigh, Media.VP9.Video1MB);
+createTimestampOffsetTest('2.1.3.1', Media.Opus.CarLow, Media.VP9.Video1MB);
+createDurationAfterAppendTest('2.1.4.1', Media.Opus.CarLow, Media.VP9.Video1MB);
+createPausedTest('2.1.5.1', Media.Opus.CarLow);
+createIncrementalAudioTest('2.1.6.1', Media.Opus.CarMed);
+createAppendAudioOffsetTest('2.1.7.1', Media.Opus.CarMed, Media.Opus.CarHigh);
+createAppendMultipleInitTest('2.1.8.1', Media.Opus.CarLow, Media.VP9.Video1MB);
+createAppendOutOfOrderTest('2.1.9.1', Media.Opus.CarMed, Media.VP9.Video1MB);
+createBufferedRangeTest('2.1.10.1', Media.Opus.CarMed, Media.VP9.Video1MB);
+createOverlapTest('2.1.11.1', Media.Opus.CarMed, Media.VP9.Video1MB);
+createSmallGapTest('2.1.12.1', Media.Opus.CarMed, Media.VP9.Video1MB);
+createLargeGapTest('2.1.13.1', Media.Opus.CarMed, Media.VP9.Video1MB);
+createDelayedTest('2.1.14.1', Media.Opus.CarMed, Media.VP9.VideoNormal);
+createSingleSourceBufferPlaybackTest('2.1.15.1', Media.Opus.SantaHigh)
 
 // AAC Specific tests.
-createAppendTest(Media.AAC.Audio1MB, Media.H264.Video1MB);
-createAbortTest(Media.AAC.Audio1MB, Media.H264.Video1MB);
-createTimestampOffsetTest(Media.AAC.Audio1MB, Media.H264.Video1MB);
-createDurationAfterAppendTest(Media.AAC.Audio1MB, Media.H264.Video1MB);
-createPausedTest(Media.AAC.Audio1MB);
-createIncrementalAudioTest(Media.AAC.AudioNormal, Media.H264.Video1MB);
-createAppendAudioOffsetTest(Media.AAC.AudioNormal, Media.AAC.AudioHuge);
-createAppendMultipleInitTest(Media.AAC.Audio1MB, Media.H264.Video1MB);
-createAppendOutOfOrderTest(Media.AAC.AudioNormal, Media.H264.Video1MB);
-createBufferedRangeTest(Media.AAC.AudioNormal, Media.H264.Video1MB);
-createOverlapTest(Media.AAC.AudioNormal, Media.H264.Video1MB);
-createSmallGapTest(Media.AAC.AudioNormal, Media.H264.Video1MB);
-createLargeGapTest(Media.AAC.AudioNormal, Media.H264.Video1MB);
-createDelayedTest(Media.AAC.AudioNormal, Media.VP9.VideoNormal);
-createSingleSourceBufferPlaybackTest(Media.AAC.Audio1MB)
+createAppendTest('2.2.1.1', Media.AAC.Audio1MB, Media.H264.Video1MB);
+createAbortTest('2.2.2.1', Media.AAC.Audio1MB, Media.H264.Video1MB);
+createTimestampOffsetTest('2.2.3.1', Media.AAC.Audio1MB, Media.H264.Video1MB);
+createDurationAfterAppendTest(
+    '2.2.4.1', Media.AAC.Audio1MB, Media.H264.Video1MB);
+createPausedTest('2.2.5.1', Media.AAC.Audio1MB);
+createIncrementalAudioTest(
+    '2.2.6.1', Media.AAC.AudioNormal, Media.H264.Video1MB);
+createAppendAudioOffsetTest(
+    '2.2.7.1', Media.AAC.AudioNormal, Media.AAC.AudioHuge);
+createAppendMultipleInitTest(
+    '2.2.8.1', Media.AAC.Audio1MB, Media.H264.Video1MB);
+createAppendOutOfOrderTest(
+    '2.2.9.1', Media.AAC.AudioNormal, Media.H264.Video1MB);
+createBufferedRangeTest('2.2.10.1', Media.AAC.AudioNormal, Media.H264.Video1MB);
+createOverlapTest('2.2.11.1', Media.AAC.AudioNormal, Media.H264.Video1MB);
+createSmallGapTest('2.2.12.1', Media.AAC.AudioNormal, Media.H264.Video1MB);
+createLargeGapTest('2.2.13.1', Media.AAC.AudioNormal, Media.H264.Video1MB);
+createDelayedTest('2.2.14.1', Media.AAC.AudioNormal, Media.VP9.VideoNormal);
+createSingleSourceBufferPlaybackTest('2.2.15.1', Media.AAC.Audio1MB)
 
 // VP9 Specific tests.
-createAppendTest(Media.VP9.Video1MB, Media.AAC.Audio1MB);
-createAbortTest(Media.VP9.Video1MB, Media.AAC.Audio1MB);
-createTimestampOffsetTest(Media.VP9.Video1MB, Media.AAC.Audio1MB);
-createDASHLatencyTest(Media.VP9.VideoTiny, Media.AAC.Audio1MB);
-createDurationAfterAppendTest(Media.VP9.Video1MB, Media.AAC.Audio1MB);
-createPausedTest(Media.VP9.Video1MB);
-createVideoDimensionTest(Media.VP9.VideoNormal, Media.AAC.AudioNormal);
-createPlaybackStateTest(Media.VP9.VideoNormal);
-createPlayPartialSegmentTest(Media.VP9.VideoTiny);
-createAppendVideoOffsetTest(
+createAppendTest('2.3.1.1', Media.VP9.Video1MB, Media.AAC.Audio1MB);
+createAbortTest('2.3.2.1', Media.VP9.Video1MB, Media.AAC.Audio1MB);
+createTimestampOffsetTest('2.3.3.1', Media.VP9.Video1MB, Media.AAC.Audio1MB);
+createDASHLatencyTest('2.3.4.1', Media.VP9.VideoTiny, Media.AAC.Audio1MB);
+createDurationAfterAppendTest(
+    '2.3.5.1', Media.VP9.Video1MB, Media.AAC.Audio1MB);
+createPausedTest('2.3.6.1', Media.VP9.Video1MB);
+createVideoDimensionTest(
+    '2.3.7.1', Media.VP9.VideoNormal, Media.AAC.AudioNormal);
+createPlaybackStateTest('2.3.8.1', Media.VP9.VideoNormal);
+createPlayPartialSegmentTest('2.3.9.1', Media.VP9.VideoTiny);
+createAppendVideoOffsetTest('2.3.10.1',
     Media.VP9.VideoNormal, Media.VP9.VideoTiny, Media.AAC.AudioNormal);
-createAppendMultipleInitTest(Media.VP9.Video1MB, Media.AAC.Audio1MB);
-createAppendOutOfOrderTest(Media.VP9.VideoNormal, Media.AAC.AudioNormal);
-createBufferedRangeTest(Media.VP9.VideoNormal, Media.AAC.AudioNormal);
-createMediaSourceDurationTest(Media.VP9.VideoNormal, Media.AAC.AudioNormal);
-createOverlapTest(Media.VP9.VideoNormal, Media.AAC.AudioNormal);
-createSmallGapTest(Media.VP9.VideoNormal, Media.AAC.AudioNormal);
-createLargeGapTest(Media.VP9.VideoNormal, Media.AAC.AudioNormal);
-createSeekTest(Media.VP9.VideoNormal);
-createBufUnbufSeekTest(Media.VP9.VideoNormal);
-createDelayedTest(Media.VP9.VideoNormal, Media.AAC.AudioNormal);
-createSingleSourceBufferPlaybackTest(Media.VP9.VideoTiny)
+createAppendMultipleInitTest(
+    '2.3.11.1', Media.VP9.Video1MB, Media.AAC.Audio1MB);
+createAppendOutOfOrderTest(
+    '2.3.12.1', Media.VP9.VideoNormal, Media.AAC.AudioNormal);
+createBufferedRangeTest(
+    '2.3.13.1', Media.VP9.VideoNormal, Media.AAC.AudioNormal);
+createMediaSourceDurationTest(
+    '2.3.14.1', Media.VP9.VideoNormal, Media.AAC.AudioNormal);
+createOverlapTest('2.3.15.1', Media.VP9.VideoNormal, Media.AAC.AudioNormal);
+createSmallGapTest('2.3.16.1', Media.VP9.VideoNormal, Media.AAC.AudioNormal);
+createLargeGapTest('2.3.17.1', Media.VP9.VideoNormal, Media.AAC.AudioNormal);
+createSeekTest('2.3.18.1', Media.VP9.VideoNormal);
+createBufUnbufSeekTest('2.3.19.1', Media.VP9.VideoNormal);
+createDelayedTest('2.3.20.1', Media.VP9.VideoNormal, Media.AAC.AudioNormal);
+createSingleSourceBufferPlaybackTest('2.3.21.1', Media.VP9.VideoTiny)
 
 // H264 Specific tests.
-createAppendTest(Media.H264.Video1MB, Media.AAC.Audio1MB);
-createAbortTest(Media.H264.Video1MB, Media.AAC.Audio1MB);
-createTimestampOffsetTest(Media.H264.Video1MB, Media.AAC.Audio1MB);
-createDASHLatencyTest(Media.H264.VideoTiny, Media.AAC.Audio1MB);
-createDurationAfterAppendTest(Media.H264.Video1MB, Media.AAC.Audio1MB);
-createPausedTest(Media.H264.Video1MB);
-createVideoDimensionTest(Media.H264.VideoNormal, Media.AAC.Audio1MB);
-createPlaybackStateTest(Media.H264.VideoNormal);
-createPlayPartialSegmentTest(Media.H264.VideoTiny);
-createAppendVideoOffsetTest(
+createAppendTest('2.4.1.1', Media.H264.Video1MB, Media.AAC.Audio1MB);
+createAbortTest('2.4.2.1', Media.H264.Video1MB, Media.AAC.Audio1MB);
+createTimestampOffsetTest('2.4.3.1', Media.H264.Video1MB, Media.AAC.Audio1MB);
+createDASHLatencyTest('2.4.4.1', Media.H264.VideoTiny, Media.AAC.Audio1MB);
+createDurationAfterAppendTest(
+    '2.4.5.1', Media.H264.Video1MB, Media.AAC.Audio1MB);
+createPausedTest('2.4.6.1', Media.H264.Video1MB);
+createVideoDimensionTest('2.4.7.1', Media.H264.VideoNormal, Media.AAC.Audio1MB);
+createPlaybackStateTest('2.4.8.1', Media.H264.VideoNormal);
+createPlayPartialSegmentTest('2.4.9.1', Media.H264.VideoTiny);
+createAppendVideoOffsetTest('2.4.10.1',
     Media.H264.VideoNormal, Media.H264.VideoTiny, Media.AAC.Audio1MB);
-createAppendMultipleInitTest(Media.H264.Video1MB, Media.AAC.Audio1MB);
-createAppendOutOfOrderTest(Media.H264.CarMedium, Media.AAC.Audio1MB);
-createBufferedRangeTest(Media.H264.VideoNormal, Media.AAC.Audio1MB);
-createMediaSourceDurationTest(Media.H264.VideoNormal, Media.AAC.Audio1MB);
-createOverlapTest(Media.H264.VideoNormal, Media.AAC.Audio1MB);
-createSmallGapTest(Media.H264.VideoNormal, Media.AAC.Audio1MB);
-createLargeGapTest(Media.H264.VideoNormal, Media.AAC.Audio1MB);
-createSeekTest(Media.H264.VideoNormal);
-createBufUnbufSeekTest(Media.H264.VideoNormal);
-createDelayedTest(Media.H264.VideoNormal, Media.AAC.AudioNormal);
-createSingleSourceBufferPlaybackTest(Media.H264.VideoTiny)
+createAppendMultipleInitTest(
+    '2.4.11.1', Media.H264.Video1MB, Media.AAC.Audio1MB);
+createAppendOutOfOrderTest(
+    '2.4.12.1', Media.H264.CarMedium, Media.AAC.Audio1MB);
+createBufferedRangeTest('2.4.13.1', Media.H264.VideoNormal, Media.AAC.Audio1MB);
+createMediaSourceDurationTest(
+    '2.4.14.1', Media.H264.VideoNormal, Media.AAC.Audio1MB);
+createOverlapTest('2.4.15.1', Media.H264.VideoNormal, Media.AAC.Audio1MB);
+createSmallGapTest('2.4.16.1', Media.H264.VideoNormal, Media.AAC.Audio1MB);
+createLargeGapTest('2.4.17.1', Media.H264.VideoNormal, Media.AAC.Audio1MB);
+createSeekTest('2.4.18.1', Media.H264.VideoNormal);
+createBufUnbufSeekTest('2.4.19.1', Media.H264.VideoNormal);
+createDelayedTest('2.4.20.1', Media.H264.VideoNormal, Media.AAC.AudioNormal);
+createSingleSourceBufferPlaybackTest('2.4.21.1', Media.H264.VideoTiny)
 
 // AV1 Specific tests.
-createAppendTest(Media.AV1.Bunny144p30fps, Media.AAC.Audio1MB,
+createAppendTest('2.5.1.1', Media.AV1.Bunny144p30fps, Media.AAC.Audio1MB,
     util.requireAV1());
-createAbortTest(Media.AV1.Bunny144p30fps, Media.AAC.Audio1MB,
+createAbortTest('2.5.2.1', Media.AV1.Bunny144p30fps, Media.AAC.Audio1MB,
     util.requireAV1());
-createTimestampOffsetTest(Media.AV1.Bunny144p30fps, Media.AAC.Audio1MB,
+createTimestampOffsetTest(
+    '2.5.3.1', Media.AV1.Bunny144p30fps, Media.AAC.Audio1MB,
     util.requireAV1());
-createDASHLatencyTest(Media.AV1.Bunny240p30fps, Media.AAC.Audio1MB,
+createDASHLatencyTest(
+    '2.5.4.1', Media.AV1.Bunny240p30fps, Media.AAC.Audio1MB,
     util.requireAV1());
-createDurationAfterAppendTest(Media.AV1.Bunny144p30fps, Media.AAC.Audio1MB,
+createDurationAfterAppendTest(
+    '2.5.5.1', Media.AV1.Bunny144p30fps, Media.AAC.Audio1MB,
     util.requireAV1());
-createPausedTest(Media.AV1.Bunny144p30fps, util.requireAV1());
-createVideoDimensionTest(Media.AV1.Bunny360p30fps, Media.AAC.Audio1MB,
+createPausedTest(
+    '2.5.6.1', Media.AV1.Bunny144p30fps, util.requireAV1());
+createVideoDimensionTest(
+    '2.5.7.1', Media.AV1.Bunny360p30fps, Media.AAC.Audio1MB,
     util.requireAV1());
-createPlaybackStateTest(Media.AV1.Bunny360p30fps, util.requireAV1());
-createPlayPartialSegmentTest(Media.AV1.Bunny240p30fps, util.requireAV1());
-createAppendVideoOffsetTest(Media.AV1.Bunny360p30fps, Media.AV1.Bunny240p30fps,
+createPlaybackStateTest(
+    '2.5.8.1', Media.AV1.Bunny360p30fps, util.requireAV1());
+createPlayPartialSegmentTest(
+    '2.5.9.1', Media.AV1.Bunny240p30fps, util.requireAV1());
+createAppendVideoOffsetTest(
+    '2.5.10.1', Media.AV1.Bunny360p30fps, Media.AV1.Bunny240p30fps,
     Media.AAC.Audio1MB, util.requireAV1());
-createAppendMultipleInitTest(Media.AV1.Bunny144p30fps, Media.AAC.Audio1MB,
+createAppendMultipleInitTest(
+    '2.5.11.1', Media.AV1.Bunny144p30fps, Media.AAC.Audio1MB,
     util.requireAV1());
-createAppendOutOfOrderTest(Media.AV1.Bunny360p30fps, Media.AAC.Audio1MB,
+createAppendOutOfOrderTest(
+    '2.5.12.1', Media.AV1.Bunny360p30fps, Media.AAC.Audio1MB,
     util.requireAV1());
-createBufferedRangeTest(Media.AV1.Bunny360p30fps, Media.AAC.Audio1MB,
+createBufferedRangeTest(
+    '2.5.13.1', Media.AV1.Bunny360p30fps, Media.AAC.Audio1MB,
     util.requireAV1());
-createMediaSourceDurationTest(Media.AV1.Bunny360p30fps, Media.AAC.Audio1MB,
+createMediaSourceDurationTest(
+    '2.5.14.1', Media.AV1.Bunny360p30fps, Media.AAC.Audio1MB,
     util.requireAV1());
-createOverlapTest(Media.AV1.Bunny360p30fps, Media.AAC.Audio1MB,
+createOverlapTest(
+    '2.5.15.1', Media.AV1.Bunny360p30fps, Media.AAC.Audio1MB,
     util.requireAV1());
-createSmallGapTest(Media.AV1.Bunny360p30fps, Media.AAC.Audio1MB,
+createSmallGapTest(
+    '2.5.16.1', Media.AV1.Bunny360p30fps, Media.AAC.Audio1MB,
     util.requireAV1());
-createLargeGapTest(Media.AV1.Bunny360p30fps, Media.AAC.Audio1MB,
+createLargeGapTest(
+    '2.5.17.1', Media.AV1.Bunny360p30fps, Media.AAC.Audio1MB,
     util.requireAV1());
-createSeekTest(Media.AV1.Bunny360p30fps, util.requireAV1());
-createBufUnbufSeekTest(Media.AV1.Bunny360p30fps, util.requireAV1());
-createDelayedTest(Media.AV1.Bunny360p30fps, Media.AAC.AudioNormal,
+createSeekTest('2.5.18.1', Media.AV1.Bunny360p30fps, util.requireAV1());
+createBufUnbufSeekTest(
+    '2.5.19.1', Media.AV1.Bunny360p30fps, util.requireAV1());
+createDelayedTest(
+    '2.5.20.1', Media.AV1.Bunny360p30fps, Media.AAC.AudioNormal,
     util.requireAV1());
-createSingleSourceBufferPlaybackTest(Media.AV1.Bunny240p30fps, util.requireAV1());
+createSingleSourceBufferPlaybackTest(
+    '2.5.21.1', Media.AV1.Bunny240p30fps, util.requireAV1());
 
 return {tests: tests, info: info, fields: fields, viewType: 'default'};
 
 };
+
+try {
+  exports.getTest = MsecodecTest;
+} catch (e) {
+  // do nothing, this function is not supposed to work for browser, but it's for
+  // Node js to generate json file instead.
+}

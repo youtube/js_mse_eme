@@ -43,8 +43,9 @@ var fields = ['passes', 'failures', 'timeouts'];
  *     optional and fails.
  */
 var createConformanceTest =
-    function(name, category = 'General', mandatory = true, streams = []) {
-  var t = createMSTest(name, category, mandatory);
+    function (testId, name, category = 'General', mandatory = true,
+        streams = []) {
+  var t = createMSTest(testId, name, category, mandatory, 'MSE Conformance Tests');
   t.prototype.index = tests.length;
   t.prototype.setStreams(streams);
   tests.push(t);
@@ -55,8 +56,8 @@ var createConformanceTest =
  * Test if the value of video state is expected when onsourceopen
  * event happens.
  */
-var createInitialMediaStateTest = function(state, value, check) {
-  var test = createConformanceTest(
+var createInitialMediaStateTest = function (testId, state, value, check) {
+  var test = createConformanceTest(testId,
       'InitialMedia' + util.MakeCapitalName(state), 'Media Element Core');
   check = typeof(check) === 'undefined' ? 'checkEq' : check;
   test.prototype.title = 'Test if the state ' + state +
@@ -67,17 +68,17 @@ var createInitialMediaStateTest = function(state, value, check) {
   };
 };
 
-createInitialMediaStateTest('duration', NaN);
-createInitialMediaStateTest('videoWidth', 0);
-createInitialMediaStateTest('videoHeight', 0);
-createInitialMediaStateTest('readyState', HTMLMediaElement.HAVE_NOTHING);
-createInitialMediaStateTest('src', '', 'checkNE');
-createInitialMediaStateTest('currentSrc', '', 'checkNE');
+createInitialMediaStateTest('1.1.1.1', 'duration', NaN);
+createInitialMediaStateTest('1.1.2.1', 'videoWidth', 0);
+createInitialMediaStateTest('1.1.3.1', 'videoHeight', 0);
+createInitialMediaStateTest('1.1.4.1', 'readyState', HTMLMediaElement.HAVE_NOTHING);
+createInitialMediaStateTest('1.1.5.1', 'src', '', 'checkNE');
+createInitialMediaStateTest('1.1.6.1', 'currentSrc', '', 'checkNE');
 
 /**
  * Validate the XHR request can send Uint8Array.
  */
-var testXHRUint8Array = createConformanceTest('XHRUint8Array', 'XHR');
+var testXHRUint8Array = createConformanceTest('1.2.1.1', 'XHRUint8Array', 'XHR');
 testXHRUint8Array.prototype.title = 'Ensure that XHR can send an Uint8Array';
 testXHRUint8Array.prototype.timeout = 10000;
 testXHRUint8Array.prototype.start = function(runner, video) {
@@ -103,7 +104,7 @@ testXHRUint8Array.prototype.start = function(runner, video) {
  * Ensure that XHR aborts actually abort by issuing an absurd number of them
  * and then aborting all but one.
  */
-var testXHRAbort = createConformanceTest('XHRAbort', 'XHR');
+var testXHRAbort = createConformanceTest('1.2.2.1', 'XHRAbort', 'XHR');
 testXHRAbort.prototype.title = 'Ensure that XHR aborts actually abort by ' +
     'issuing an absurd number of them and then aborting all but one.';
 testXHRAbort.prototype.start = function(runner, video) {
@@ -131,7 +132,7 @@ testXHRAbort.prototype.start = function(runner, video) {
 /**
  * Ensure XMLHttpRequest.open does not reset XMLHttpRequest.responseType.
  */
-var testXHROpenState = createConformanceTest('XHROpenState', 'XHR');
+var testXHROpenState = createConformanceTest('1.2.3.1', 'XHROpenState', 'XHR');
 testXHROpenState.prototype.title = 'Ensure XMLHttpRequest.open does not ' +
     'reset XMLHttpRequest.responseType';
 testXHROpenState.prototype.start = function(runner, video) {
@@ -146,7 +147,7 @@ testXHROpenState.prototype.start = function(runner, video) {
 /**
  * Validate existence of MediaSource object.
  */
-var testPresence = createConformanceTest('Presence', 'MSE Core');
+var testPresence = createConformanceTest('1.3.1.1', 'Presence', 'MSE Core');
 testPresence.prototype.title = 'Test if MediaSource object is present.';
 testPresence.prototype.start = function(runner, video) {
   if (!window.MediaSource)
@@ -167,7 +168,7 @@ testPresence.prototype.start = function(runner, video) {
 /**
  * Ensure MediaSource object can be attached to video.
  */
-var testAttach = createConformanceTest('Attach', 'MSE Core');
+var testAttach = createConformanceTest('1.3.2.1', 'Attach', 'MSE Core');
 testAttach.prototype.timeout = 2000;
 testAttach.prototype.title =
     'Test if MediaSource object can be attached to video.';
@@ -183,7 +184,8 @@ testAttach.prototype.start = function(runner, video) {
 /**
  * Test addSourceBuffer is working correctly.
  */
-var testAddSourceBuffer = createConformanceTest('AddSourceBuffer', 'MSE Core');
+var testAddSourceBuffer = createConformanceTest('1.3.3.1', 'AddSourceBuffer',
+    'MSE Core');
 testAddSourceBuffer.prototype.title =
     'Test if we can add source buffer';
 testAddSourceBuffer.prototype.onsourceopen = function() {
@@ -206,7 +208,7 @@ testAddSourceBuffer.prototype.onsourceopen = function() {
  * Ensure add incorrect source buffer type will fire the correct exceptions.
  */
 var testAddSourceBufferException =
-    createConformanceTest('AddSBException', 'MSE Core');
+    createConformanceTest('1.3.4.1', 'AddSBException', 'MSE Core');
 testAddSourceBufferException.prototype.title = 'Test if add incorrect ' +
     'source buffer type will fire the correct exceptions.';
 testAddSourceBufferException.prototype.onsourceopen = function() {
@@ -227,7 +229,8 @@ testAddSourceBufferException.prototype.onsourceopen = function() {
 /**
  * Test addSourceBuffer and removeSourceBuffer are working correctly.
  */
-var testSourceRemove = createConformanceTest('RemoveSourceBuffer', 'MSE Core');
+var testSourceRemove = createConformanceTest('1.3.5.1', 'RemoveSourceBuffer',
+    'MSE Core');
 testSourceRemove.prototype.title = 'Test if we can add/remove source buffers';
 testSourceRemove.prototype.onsourceopen = function() {
   var sb = this.ms.addSourceBuffer(Media.AAC.mimetype);
@@ -253,9 +256,9 @@ testSourceRemove.prototype.onsourceopen = function() {
 /**
  * Ensure MediaSource state has the expected value when onsourceopen happens.
  */
-var createInitialMSStateTest = function(state, value, check) {
-  var test = createConformanceTest('InitialMS' + util.MakeCapitalName(state),
-                                   'MSE Core');
+var createInitialMSStateTest = function(testId, state, value, check) {
+  var test = createConformanceTest(testId,
+      'InitialMS' + util.MakeCapitalName(state), 'MSE Core');
 
   check = typeof(check) === 'undefined' ? 'checkEq' : check;
   test.prototype.title = 'Test if the state ' + state +
@@ -266,13 +269,13 @@ var createInitialMSStateTest = function(state, value, check) {
   };
 };
 
-createInitialMSStateTest('duration', NaN);
-createInitialMSStateTest('readyState', 'open');
+createInitialMSStateTest('1.3.6.1', 'duration', NaN);
+createInitialMSStateTest('1.3.7.1', 'readyState', 'open');
 
 /**
  * Ensure we can set MediaSource.duration.
  */
-var testDuration = createConformanceTest('Duration', 'MSE Core');
+var testDuration = createConformanceTest('1.3.8.1', 'Duration', 'MSE Core');
 testDuration.prototype.title =
     'Test if we can set duration.';
 testDuration.prototype.onsourceopen = function() {
@@ -285,7 +288,7 @@ testDuration.prototype.onsourceopen = function() {
  * Test events on the MediaElement.
  */
 var mediaElementEvents =
-    createConformanceTest('MediaElementEvents', 'MSE Core');
+    createConformanceTest('1.3.9.1', 'MediaElementEvents', 'MSE Core');
 mediaElementEvents.prototype.title = 'Test events on the MediaElement.';
 mediaElementEvents.prototype.onsourceopen = function() {
   var runner = this.runner;
@@ -333,7 +336,8 @@ mediaElementEvents.prototype.onsourceopen = function() {
 /**
  * Test if the events on MediaSource are correct.
  */
-var mediaSourceEvents = createConformanceTest('MediaSourceEvents', 'MSE Core');
+var mediaSourceEvents = createConformanceTest('1.3.10.1', 'MediaSourceEvents',
+    'MSE Core');
 mediaSourceEvents.prototype.title =
     'Test if the events on MediaSource are correct.';
 mediaSourceEvents.prototype.onsourceopen = function() {
@@ -379,7 +383,8 @@ mediaSourceEvents.prototype.onsourceopen = function() {
 /**
  * Append to buffer until exceeding the quota error.
  */
-var testBufferSize = createConformanceTest('VideoBufferSize', 'MSE Core');
+var testBufferSize = createConformanceTest('1.3.11.1', 'VideoBufferSize',
+    'MSE Core');
 testBufferSize.prototype.title = 'Determines video buffer sizes by ' +
     'appending incrementally until discard occurs, and tests that it meets ' +
     'the minimum requirements for streaming.';
@@ -441,8 +446,8 @@ testBufferSize.prototype.onsourceopen = function() {
  * Ensure we can start play before feeding any data. The play should
  * start automatically after data is appended.
  */
-var testStartPlayWithoutData = createConformanceTest('StartPlayWithoutData',
-                                                     'MSE Core');
+var testStartPlayWithoutData = createConformanceTest('1.3.12.1',
+    'StartPlayWithoutData', 'MSE Core');
 testStartPlayWithoutData.prototype.title =
     'Test if we can start play before feeding any data. The play should ' +
     'start automatically after data is appended';
@@ -475,12 +480,11 @@ testStartPlayWithoutData.prototype.onsourceopen = function() {
  * Ensure we can start playback from a non-zero position.
  */
 var createStartPlayAtNonZeroPositionTest = function(
-    audioStream, audioSegments, videoStream, videoSegments, startAtSec) {
-  var test = createConformanceTest(
-      `StartPlayAtTimeGt0${videoStream.codec}+${audioStream.codec}`,
-      'MSE Core',
-      true,
-      [videoStream, audioStream]);
+    testId, audioStream, audioSegments, videoStream, videoSegments, startAtSec) {
+  var test = createConformanceTest(testId,
+      `StartPlayAtTimeGt0${videoStream.codec}+${audioStream.codec}`, 'MSE Core',
+      true, [videoStream,
+        audioStream]);
   test.prototype.title =
       'Test if we can start playback from time > 0.';
   test.prototype.onsourceopen = function() {
@@ -541,14 +545,15 @@ var createStartPlayAtNonZeroPositionTest = function(
 };
 
 createStartPlayAtNonZeroPositionTest(
-    Media.AAC.AudioNormal, [1, 2], Media.H264.VideoNormal, [2, 3, 4], 12);
+    '1.3.13.1', Media.AAC.AudioNormal, [1, 2], Media.H264.VideoNormal, [2, 3, 4], 12);
 createStartPlayAtNonZeroPositionTest(
-    Media.Opus.CarLow, [1, 2], Media.VP9.VideoNormal, [2, 3, 4], 12);
+    '1.3.14.1', Media.Opus.CarLow, [1, 2], Media.VP9.VideoNormal, [2, 3, 4], 12);
 
 /**
  * Ensure event timestamp is relative to the initial page load.
  */
-var testEventTimestamp = createConformanceTest('EventTimestamp', 'MSE Core');
+var testEventTimestamp = createConformanceTest('1.3.15.1', 'EventTimestamp',
+    'MSE Core');
 testEventTimestamp.prototype.title = 'Test Event Timestamp is relative to ' +
     'the initial page load';
 testEventTimestamp.prototype.onsourceopen = function() {
@@ -585,7 +590,8 @@ testEventTimestamp.prototype.onsourceopen = function() {
 /**
  * Ensure timeupdate event fired with correct currentTime value after seeking.
  */
-var testSeekTimeUpdate = createConformanceTest('SeekTimeUpdate', 'MSE Core');
+var testSeekTimeUpdate = createConformanceTest('1.3.16.1', 'SeekTimeUpdate',
+    'MSE Core');
 testSeekTimeUpdate.prototype.title =
   'Timeupdate event fired with correct currentTime after seeking.';
 testSeekTimeUpdate.prototype.onsourceopen = function() {
@@ -629,7 +635,7 @@ testSeekTimeUpdate.prototype.onsourceopen = function() {
  * Test SourceBuffer.appendWindowStart can be correctly set and applied.
  */
 var testAppendWindowStart =
-  createConformanceTest('AppendWindowStart', 'MSE Core');
+  createConformanceTest('1.3.17.1', 'AppendWindowStart', 'MSE Core');
 testAppendWindowStart.prototype.title =
   'Test if SourceBuffer respects appendWindowStart for appending.';
 testAppendWindowStart.prototype.onsourceopen = function() {
@@ -670,7 +676,7 @@ testAppendWindowStart.prototype.onsourceopen = function() {
  * Test SourceBuffer.appendWindowEnd can be correctly set and applied.
  */
 var testAppendWindowEnd =
-  createConformanceTest('AppendWindowEnd', 'MSE Core');
+  createConformanceTest('1.3.18.1', 'AppendWindowEnd', 'MSE Core');
 testAppendWindowEnd.prototype.title =
   'Test if SourceBuffer respects appendWindowEnd for appending.';
 testAppendWindowEnd.prototype.onsourceopen = function() {
@@ -702,12 +708,10 @@ testAppendWindowEnd.prototype.onsourceopen = function() {
   xhr.send();
 };
 
-var createSourceBufferChangeTypeTest = function(fromStream, toStream) {
-  var test = createConformanceTest(
-      `ChangeType.${fromStream.codec}.${toStream.codec}`,
-      'MSE Core',
-      false,
-      [fromStream, toStream]);
+var createSourceBufferChangeTypeTest = function(testId, fromStream, toStream) {
+  var test = createConformanceTest(testId,
+      `ChangeType.${fromStream.codec}.${toStream.codec}`, 'MSE Core', false, [fromStream,
+        toStream]);
   test.prototype.title =
       `Test SourceBuffer.changeType() from ${fromStream.codec} ` +
       `to ${toStream.codec}`;
@@ -757,15 +761,15 @@ var createSourceBufferChangeTypeTest = function(fromStream, toStream) {
   }
 }
 
-createSourceBufferChangeTypeTest(Media.H264.VideoTiny, Media.VP9.VideoTiny);
-createSourceBufferChangeTypeTest(Media.H264.VideoTiny,
+createSourceBufferChangeTypeTest('1.3.19.1', Media.H264.VideoTiny, Media.VP9.VideoTiny);
+createSourceBufferChangeTypeTest('1.3.20.1', Media.H264.VideoTiny,
     Media.AV1.Bunny144p30fps);
-createSourceBufferChangeTypeTest(Media.VP9.VideoTiny, Media.H264.VideoTiny);
-createSourceBufferChangeTypeTest(Media.VP9.VideoTiny,
+createSourceBufferChangeTypeTest('1.3.21.1', Media.VP9.VideoTiny, Media.H264.VideoTiny);
+createSourceBufferChangeTypeTest('1.3.22.1', Media.VP9.VideoTiny,
     Media.AV1.Bunny144p30fps);
-createSourceBufferChangeTypeTest(Media.AV1.Bunny144p30fps,
+createSourceBufferChangeTypeTest('1.3.23.1', Media.AV1.Bunny144p30fps,
     Media.H264.VideoTiny);
-createSourceBufferChangeTypeTest(Media.AV1.Bunny144p30fps,
+createSourceBufferChangeTypeTest('1.3.24.1', Media.AV1.Bunny144p30fps,
     Media.VP9.VideoTiny);
 
 /**
@@ -774,9 +778,9 @@ createSourceBufferChangeTypeTest(Media.AV1.Bunny144p30fps,
  * be used for video features a standard frame rate or a high frame rate.
  */
 var createCurrentTimeAccuracyTest =
-    function(videoStream, audioStream, frameRate) {
-  var test = createConformanceTest(
-      frameRate + 'Accuracy', 'MSE currentTime');
+    function(testId, videoStream, audioStream, frameRate) {
+  var test = createConformanceTest(testId, frameRate + 'Accuracy',
+      'MSE currentTime');
   test.prototype.title = 'Test the currentTime granularity.';
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
@@ -819,9 +823,9 @@ var createCurrentTimeAccuracyTest =
 };
 
 createCurrentTimeAccuracyTest(
-    Media.H264.Webgl720p30fps, Media.AAC.AudioNormal, 'SFR');
+    '1.4.1.1', Media.H264.Webgl720p30fps, Media.AAC.AudioNormal, 'SFR');
 createCurrentTimeAccuracyTest(
-    Media.H264.Webgl720p60fps, Media.AAC.AudioNormal, 'HFR');
+    '1.4.2.1', Media.H264.Webgl720p60fps, Media.AAC.AudioNormal, 'HFR');
 
 /**
  * Creates a MSE currentTime PausedAccuracy test to validate if
@@ -832,9 +836,9 @@ createCurrentTimeAccuracyTest(
  * the pause, if either one meets the threshold, test passes.
  */
 var createCurrentTimePausedAccuracyTest =
-    function(videoStream, audioStream, frameRate) {
-  var test = createConformanceTest(
-      frameRate + 'PausedAccuracy', 'MSE currentTime', false);
+    function(testId, videoStream, audioStream, frameRate) {
+  var test = createConformanceTest(testId, frameRate + 'PausedAccuracy',
+      'MSE currentTime', false);
   test.prototype.title = 'Test the currentTime granularity when pause.';
   test.prototype.onsourceopen = function() {
     var maxDiffInS = 0.032;
@@ -904,15 +908,16 @@ var createCurrentTimePausedAccuracyTest =
 };
 
 createCurrentTimePausedAccuracyTest(
-    Media.VP9.Webgl720p30fps, Media.AAC.AudioNormal, 'SFR');
+    '1.4.3.1', Media.VP9.Webgl720p30fps, Media.AAC.AudioNormal, 'SFR');
 createCurrentTimePausedAccuracyTest(
-    Media.VP9.Webgl720p60fps, Media.AAC.AudioNormal, 'HFR');
+    '1.4.4.1', Media.VP9.Webgl720p60fps, Media.AAC.AudioNormal, 'HFR');
 
 /**
  * Validate specified mimetype is supported.
  */
-var createSupportTest = function(mimetype, desc, mandatory) {
-  var test = createConformanceTest(desc + 'Support', 'MSE Formats', mandatory);
+var createSupportTest = function(testId, mimetype, desc, mandatory) {
+  var test = createConformanceTest(testId, desc + 'Support', 'MSE Formats',
+      mandatory);
   test.prototype.title =
       'Test if we support ' + desc + ' with mimetype: ' + mimetype;
   test.prototype.onsourceopen = function() {
@@ -926,16 +931,17 @@ var createSupportTest = function(mimetype, desc, mandatory) {
   };
 };
 
-createSupportTest(Media.AAC.mimetype, 'AAC');
-createSupportTest(Media.H264.mimetype, 'H264');
-createSupportTest(Media.VP9.mimetype, 'VP9');
-createSupportTest(Media.Opus.mimetype, 'Opus');
-createSupportTest(Media.AV1.mimetype, 'AV1', util.requireAV1());
+createSupportTest('1.5.1.1', Media.AAC.mimetype, 'AAC');
+createSupportTest('1.5.2.1', Media.H264.mimetype, 'H264');
+createSupportTest('1.5.3.1', Media.VP9.mimetype, 'VP9');
+createSupportTest('1.5.4.1', Media.Opus.mimetype, 'Opus');
+createSupportTest('1.5.5.1', Media.AV1.mimetype, 'AV1', util.requireAV1());
 
 /**
  * Ensure AudioContext is supported.
  */
-var testWAAContext = createConformanceTest('WAAPresence', 'MSE Web Audio API');
+var testWAAContext = createConformanceTest('1.6.1.1', 'WAAPresence',
+    'MSE Web Audio API');
 testWAAContext.prototype.title = 'Test if AudioContext is supported';
 testWAAContext.prototype.start = function(runner, video) {
   var Ctor = window.AudioContext || window.webkitAudioContext;
@@ -953,12 +959,10 @@ testWAAContext.prototype.start = function(runner, video) {
  * Validate AudioContext#createMediaElementSource supports specified video and
  * audio mimetype.
  */
-var createCreateMESTest = function(audioStream, videoStream) {
-  var test = createConformanceTest(
-      audioStream.codec + '/' + videoStream.codec + 'CreateMediaElementSource',
-      'MSE Web Audio API (Optional)',
-      false,
-      [audioStream, videoStream]);
+var createCreateMESTest = function(testId, audioStream, videoStream) {
+  var test = createConformanceTest(testId, audioStream.codec + '/' + videoStream.codec
+      + 'CreateMediaElementSource', 'MSE Web Audio API (Optional)', false, [audioStream,
+    videoStream]);
   test.prototype.title =
       'Test if AudioContext#createMediaElementSource supports mimetype ' +
       audioStream.mimetype + '/' + videoStream.mimetype;
@@ -1017,12 +1021,12 @@ var createCreateMESTest = function(audioStream, videoStream) {
   }
 }
 
-createCreateMESTest(Media.Opus.CarLow, Media.VP9.VideoNormal);
-createCreateMESTest(Media.Opus.CarLow, Media.AV1.Bunny360p30fps,
+createCreateMESTest('1.7.1.1', Media.Opus.CarLow, Media.VP9.VideoNormal);
+createCreateMESTest('1.7.2.1', Media.Opus.CarLow, Media.AV1.Bunny360p30fps,
     util.requireAV1());
-createCreateMESTest(Media.AAC.Audio1MB, Media.VP9.VideoNormal);
-createCreateMESTest(Media.AAC.Audio1MB, Media.H264.VideoNormal);
-createCreateMESTest(Media.AAC.Audio1MB, Media.AV1.Bunny360p30fps,
+createCreateMESTest('1.7.3.1', Media.AAC.Audio1MB, Media.VP9.VideoNormal);
+createCreateMESTest('1.7.4.1', Media.AAC.Audio1MB, Media.H264.VideoNormal);
+createCreateMESTest('1.7.5.1', Media.AAC.Audio1MB, Media.AV1.Bunny360p30fps,
     util.requireAV1());
 
 /**
@@ -1044,14 +1048,15 @@ var frameTestOnSourceOpen = function() {
 };
 
 
-var testFrameGaps = createConformanceTest('H264FrameGaps', 'Media');
+var testFrameGaps = createConformanceTest('1.8.1.1', 'H264FrameGaps', 'Media');
 testFrameGaps.prototype.title = 'Test media with frame durations of 24FPS ' +
     'but segment timing corresponding to 23.976FPS';
 testFrameGaps.prototype.filename = Media.H264.FrameGap.src;
 testFrameGaps.prototype.onsourceopen = frameTestOnSourceOpen;
 
 
-var testFrameOverlaps = createConformanceTest('H264FrameOverlaps', 'Media');
+var testFrameOverlaps = createConformanceTest('1.8.2.1', 'H264FrameOverlaps',
+    'Media');
 testFrameOverlaps.prototype.title = 'Test media with frame durations of ' +
     '23.976FPS but segment timing corresponding to 24FPS';
 testFrameOverlaps.prototype.filename = Media.H264.FrameOverlap.src;
@@ -1061,8 +1066,8 @@ testFrameOverlaps.prototype.onsourceopen = frameTestOnSourceOpen;
  * Test playback of HE-AAC (High-Efficiency Advanced Audio Coding) with
  * specified type of SBR signaling.
  */
-var createHeAacTest = function(audioStream) {
-  var test = createConformanceTest('HE-AAC/' +
+var createHeAacTest = function(testId, audioStream) {
+  var test = createConformanceTest(testId, 'HE-AAC/' +
       audioStream.get('sbrSignaling') + 'SBR', 'Media');
   test.prototype.title = 'Test playback of HE-AAC with ' +
       audioStream.get('sbrSignaling') +  ' SBR signaling.';
@@ -1101,10 +1106,17 @@ var createHeAacTest = function(audioStream) {
 }
 
 
-createHeAacTest(Media.AAC.AudioLowExplicitHE);
-createHeAacTest(Media.AAC.AudioLowImplicitHE);
+createHeAacTest('1.8.3.1', Media.AAC.AudioLowExplicitHE);
+createHeAacTest('1.8.4.1', Media.AAC.AudioLowImplicitHE);
 
 
 return {tests: tests, info: info, fields: fields, viewType: 'default'};
 
 };
+
+try {
+  exports.getTest = ConformanceTest;
+} catch (e) {
+  // do nothing, this function is not supposed to work for browser, but it's for
+  // Node js to generate json file instead.
+}

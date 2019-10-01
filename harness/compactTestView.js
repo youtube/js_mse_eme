@@ -41,6 +41,59 @@ function CompactTestView(fields, style) {
       if (self.onrunselected)
         self.onrunselected.call(self, e);
     });
+    <!-- Begin non GitHub files -->
+    this.addCommand('Login', 'log-in', 'log in.', function(e) {
+      if (document.getElementById('login-pop-up') == null) {
+        var overlay = document.createElement('div');
+        overlay.id = 'login-pop-up';
+        overlay.classList.add('overlay');
+        overlay.style.display = "block";
+        document.body.appendChild(overlay);
+        var closebtn = document.createElement('a');
+        closebtn.classList.add('closebtn');
+        closebtn.classList.add('focusable');
+        closebtn.onclick = () => {
+          overlay.style.width = '0';
+          overlay.style.display = 'none';
+        }
+        closebtn.innerHTML = '&times;';
+        overlay.appendChild(closebtn);
+        var logincode = document.createElement('span');
+        logincode.id = "client-id";
+        overlay.appendChild(logincode);
+      }
+      var overlay = document.getElementById('login-pop-up');
+      overlay.style.display = "block";
+      overlay.style.width = "50%";
+
+
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", "/login");
+      xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      xhr.onreadystatechange = function() { // Call a function when the state changes.
+        if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+          var response = JSON.parse(this.responseText);
+          document.getElementById("client-id").innerText = response.user_code;
+          var interval = window.setInterval(()=>{
+            var pollXhr = new XMLHttpRequest();
+            pollXhr.open("GET", "/token");
+            pollXhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+            pollXhr.onreadystatechange = function() {
+              if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                util.isLogin = true;
+                document.getElementById("client-id").innerText = "logged in";
+                window.clearInterval(interval);
+              }
+            };
+            pollXhr.send();
+          },response.interval*1000);
+        }
+      };
+      xhr.send();
+
+    });
+    <!-- End non GitHub files -->
+
 
     this.addLink('Links', 'links.html');
     this.addLink('Instructions', 'instructions.html');

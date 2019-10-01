@@ -450,3 +450,10 @@ util.getCertificatePath = function(filename) {
 window.util = util;
 
 })();
+
+try {
+  exports.util = window.util;
+} catch (e) {
+  // do nothing, this function is not supposed to work for browser, but it's for
+  // Node js to generate json file instead.
+}
