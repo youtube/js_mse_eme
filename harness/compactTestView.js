@@ -27,6 +27,7 @@ function CompactTestView(fields, style) {
   this.initialize = function() {
     this.testList = createCompactTestList(style);
 
+    this.addSwitch('Fullscreen: ', 'fullscreen');
     this.addSwitch('Loop: ', 'loop');
     this.addSwitch('Stop on failure: ', 'stoponfailure');
     this.addSwitch('Log: ', 'logging');
