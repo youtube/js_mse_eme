@@ -45,6 +45,7 @@ var parseParams = function(testSuiteConfig) {
   config.command = parseParam('command', '');
   config.timeout = Number(parseParam('timeout', TestBase.timeout));
   config.logging = !util.stringToBoolean(parseParam('disable_log', false));
+  config.fullscreen = util.stringToBoolean(parseParam('fullscreen', false));
   config.loop = util.stringToBoolean(parseParam('loop', false));
   config.stoponfailure = util.stringToBoolean(
       parseParam('stoponfailure', false));
@@ -163,6 +164,13 @@ var createRunner = function(testSuite, testSuiteVer, testsMask) {
       testarea.appendChild(util.createElement('video', vid, 'box-right'));
       document.getElementById(vid).controls = true;
       document.getElementById(vid).muted = harnessConfig.muted;
+      if (harnessConfig.fullscreen) {
+        try {
+          document.getElementById(vid).requestFullscreen();
+        } catch(e) {
+          this.fail('Failed to start video in fullscreen mode: ' + e);
+        }
+      }
     }
     return document.getElementById(vid);
   };
