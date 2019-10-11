@@ -119,6 +119,27 @@ function TestView(testSuiteVer) {
     outputArea.appendChild(createElement('div', 'testarea'));
     div.appendChild(outputArea);
 
+    var overlay = document.createElement('div');
+    overlay.id = 'login-pop-up';
+    overlay.style.display = "none";
+    div.appendChild(overlay);
+    var closebtn = document.createElement('span');
+    closebtn.setAttribute('tabindex', '0');
+    closebtn.classList.add('closebtn');
+    closebtn.classList.add('focusable');
+    closebtn.onclick = () => {
+        overlay.style.width = '0';
+        overlay.style.display = 'none';
+    }
+    closebtn.innerHTML = '&times;';
+    overlay.appendChild(closebtn);
+    var logincode = document.createElement('div');
+    logincode.id = "client-id";
+    logincode.style.color = "black";
+    logincode.style.backgroundColor = "grey";
+    logincode.textContent = "pending";
+    overlay.appendChild(logincode);
+
     var switchDiv = document.getElementById('switches');
     for (var i = 0; i < switches.length; ++i) {
       var id = switches[i].id;

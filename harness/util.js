@@ -46,6 +46,86 @@ if (!Function.prototype.bind) {
 
 var util = {};
 
+// Begin non GitHub files
+// Initiate backend to grab user token to access API.
+util.getToken = function(onSuccess, interval) {
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", "/token?branch=" + testVersion);
+  xhr.setRequestHeader("Content-type",
+    "application/x-www-form-urlencoded");
+  xhr.onreadystatechange = function() {
+    if (this.readyState === XMLHttpRequest.DONE){
+      if (this.status === 200) {
+        onSuccess();
+        window.clearInterval(interval);
+      } else if (this.status != 428) {
+        // 428 means not ready, we can continue to call if it's not ready.
+        window.LOG(this, ["Login:", this.responseText]);
+        window.clearInterval(interval);
+      }
+    }
+  };
+  try {
+    xhr.send();
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+// Gets the login code from backend.
+util.login = function(onSuccess) {
+  var overlay = document.getElementById('login-pop-up');
+  overlay.style.display = "inline-block";
+  overlay.style.width = "50%";
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", "/login");
+  xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  xhr.onreadystatechange = function() {
+    if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
+      var response = JSON.parse(this.responseText);
+      document.getElementById("client-id").textContent = response.user_code;
+      var interval = window.setInterval(() => {
+        util.getToken(onSuccess, interval);
+      }, response.interval * 1050);
+    }
+  };
+  xhr.send();
+};
+
+// Uploads current test results to API
+util.uploadTestResult = function(callBack) {
+  for (var test of window.globalRunner.testList) {
+    if (test && test.prototype.outcome!=0){
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", "/uploadTest?branch=" + testVersion);
+      xhr.setRequestHeader("Content-type",
+        "application/json");
+      var params = JSON.stringify({
+        test_results: [
+          {
+            test_case_id: test.prototype.id,
+            test_result: {
+              result: test.prototype.outcome
+            }
+          }
+        ]
+      });
+      xhr.onreadystatechange = function() {
+        if (this.readyState === XMLHttpRequest.DONE) {
+          if (this.status != 200) {
+            window.LOG(this, ["upload error:", this.responseText]);
+          }
+        }
+      };
+      xhr.send(params);
+    }
+  }
+  callBack();
+}
+
+//End non GitHub files
+
+
 util.createElement = function(tag, id, class_, innerHTML) {
   var element = document.createElement(tag);
   if (id != null)
@@ -178,7 +258,6 @@ util.getAttr = function(obj, attr) {
   }
   return obj;
 };
-
 util.resize = function(str, newLength, fillValue) {
   if (typeof str != 'string')
     throw 'Only string is supported';
@@ -283,7 +362,6 @@ util.getMaxVp9SupportedWindow = function() {
   } else
     return util.getMaxWindow();
 };
-
 util.getMaxH264SupportedWindow = function() {
   if (MediaSource.isTypeSupported(
       'video/mp4; codecs="avc1.4d401e"; width=1920; height=1080;') &&
