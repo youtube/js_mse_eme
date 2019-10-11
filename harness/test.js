@@ -28,6 +28,14 @@ if (!window.LOG) {
 
 var TestBase = {};
 
+// YouTube Test result outcome, conforms with what inside API.
+var TestOutcome = {
+  UNKNOWN: 0,
+  PASSED: 1,
+  FAILED: 2,
+  OPTIONAL_FAILED: 3
+};
+
 TestBase.onsourceopen = function() {
   this.log('default onsourceopen()');
 };
@@ -110,6 +118,7 @@ window.createTest = function (name, category = '', mandatory = true, id = '',
   t.prototype.passes = 0;
   t.prototype.failures = 0;
   t.prototype.timeouts = 0;
+  t.prototype.outcome = TestOutcome.UNKNOWN;
   t.prototype.category = category;
   t.prototype.mandatory = mandatory;
 
@@ -403,6 +412,7 @@ TestExecutor.prototype.succeed = function() {
   this.blockTestResults = true;
   this.lastResult = 'pass';
   ++this.testList[this.currentTestIdx].prototype.passes;
+  this.testList[this.currentTestIdx].prototype.outcome = TestOutcome.PASSED;
   this.updateStatus();
   this.log('Test ' + (this.currentTest.index + 1) + ':' +
       this.currentTest.desc + ' PASSED.');
@@ -446,6 +456,12 @@ TestExecutor.prototype.error = function(msg, isTimeout) {
 
 TestExecutor.prototype.fail = function(msg) {
   ++this.testList[this.currentTestIdx].prototype.failures;
+  if (this.testList[this.currentTestIdx].prototype.mandatory) {
+    this.testList[this.currentTestIdx].prototype.outcome = TestOutcome.FAILED;
+  } else {
+    this.testList[this.currentTestIdx].prototype.outcome = TestOutcome.OPTIONAL_FAILED;
+  }
+
   this.updateStatus();
   this.log('Test ' + (this.currentTest.index + 1) + ':' +
       this.currentTest.desc + ' FAILED');
