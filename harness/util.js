@@ -394,17 +394,6 @@ util.supportHdr = function() {
   return true;
 };
 
-util.supportWebGL = function() {
-  try {
-    if (window.WebGLRenderingContext) {
-      var canvas = document.createElement('canvas');
-      var ctx = canvas.getContext('webgl');
-      return !!ctx;
-    }
-  } catch (e) {}
-  return false;
-};
-
 util.supportWebSpeech = function() {
   try {
     // check if WebSpeech API is supported.

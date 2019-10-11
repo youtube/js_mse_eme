@@ -60,7 +60,6 @@ var parseParams = function(testSuiteConfig) {
 
   config.is_cobalt = util.isCobalt();
   config.support_hdr = util.supportHdr();
-  config.support_webgl = util.supportWebGL();
   config.support_webspeech = util.supportWebSpeech();
 
   // Overloaded run command to support browsers that have limitations on extra
