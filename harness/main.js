@@ -57,6 +57,9 @@ var parseParams = function(testSuiteConfig) {
   config.exclude = parseParam('exclude');
   config.testsMask = parseParam('tests_mask', '');
   config.testid = parseParam('testid', '');
+  config.cert_scope = parseParam('cert_scope', null);
+  config.sig = parseParam('sig', null);
+  config.start_time = parseParam('start_time', null);
 
   config.is_cobalt = util.isCobalt();
   config.support_hdr = util.supportHdr();
