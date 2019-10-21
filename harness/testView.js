@@ -72,11 +72,20 @@ function TestView(testSuiteVer) {
   };
 
   this.addTestSuites = function(testSuites) {
+    var persist_params = {
+        cert_scope: harnessConfig.cert_scope,
+        sig: harnessConfig.sig,
+        start_time: harnessConfig.start_time
+    };
+
     for (var index in testSuites) {
       var testSuite = testSuites[index];
       var testSuiteName = testSuiteDescriptions[testSuite].name;
       if (testSuite !== harnessConfig.testType) {
-        this.addTestSuite(testSuiteName, '?test_type=' + testSuite);
+        persist_params['test_type'] = testSuite;
+        this.addTestSuite(testSuiteName, '?' +
+          Object.entries(persist_params).map(
+              function(kv) {return kv.join('=')}).join('&'));
       }
       else {
         this.addTestSuite(testSuiteName, null);
