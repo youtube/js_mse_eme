@@ -72,11 +72,14 @@ function TestView(testSuiteVer) {
   };
 
   this.addTestSuites = function(testSuites) {
-    var persist_params = {
+    var persist_params = {};
+    if (!!harnessConfig.cert_scope) {
+      persist_params = {
         cert_scope: harnessConfig.cert_scope,
         sig: harnessConfig.sig,
         start_time: harnessConfig.start_time
-    };
+      };
+    }
 
     for (var index in testSuites) {
       var testSuite = testSuites[index];
