@@ -557,6 +557,108 @@ var createIncrementalAudioTest = function(testId, stream) {
   };
 };
 
+var createLimitedAudioTest = function(testId, stream) {
+  var test = createCodecTest(
+      testId,
+      'Limited' + stream.codec + 'Audio',
+      'MSE (' + stream.codec + ')',
+      true,
+      [stream]);
+  test.prototype.title =
+      'Test if we can play an audio segment of only 0.5 seconds.';
+  test.prototype.onsourceopen = function() {
+    var runner = this.runner;
+    var video = this.video;
+    var videoStream = Media.H264.VideoNormal;
+    var audioStream = stream;
+    var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
+    var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
+    var videoXhr = runner.XHRManager.createRequest(
+        videoStream.src, function(e) {
+      videoSb.appendBuffer(this.getResponseData());
+      video.addEventListener('playing', function(e) {
+        if (!video.paused) {
+          video.pause();
+          runner.succeed();
+        }
+      });
+      video.play();
+    }, 0, 1500000);
+    var audioXhr = runner.XHRManager.createRequest(stream.src, function(e) {
+      audioSb.addEventListener('updateend', function() {
+        runner.checkEq(audioSb.buffered.length, 1, 'Source buffer number');
+        runner.checkEq(audioSb.buffered.start(0), 0, 'Range start');
+        runner.checkApproxEq(audioSb.buffered.end(0), 0.5, 'Range end', 0.02);
+      });
+      audioSb.appendBuffer(this.getResponseData());
+      videoXhr.send();
+    }, 0, stream.get('halfSecondRangeEnd'));
+    audioXhr.send();
+  };
+};
+
+var createIncrementalLimitedAudioTest = function(testId, stream) {
+  var test = createCodecTest(
+      testId,
+      'IncrementalLimited' + stream.codec + 'Audio',
+      'MSE (' + stream.codec + ')',
+      true,
+      [stream]);
+  test.prototype.title =
+      'Test if we can append and play 0.5s of audio at a time.';
+
+  test.prototype.onsourceopen = function() {
+    var runner = this.runner;
+    var video = this.video;
+    var videoStream = Media.H264.VideoNormal;
+    var audioStream = stream;
+    var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
+    var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
+    var ms = this.ms;
+
+    var videoPromise = new Promise(function(resolve, reject) {
+      var videoXhr = runner.XHRManager.createRequest(
+          videoStream.src, function(e) {
+        videoSb.appendBuffer(this.getResponseData());
+        video.addEventListener('timeupdate', function(e) {
+          if (!video.paused &&
+              video.currentTime >= stream.get('halfSecondDurationEnd')) {
+            runner.succeed();
+          }
+        });
+        resolve();
+      }, 0, 1500000);
+      videoXhr.send();
+    });
+
+    var audioPromise = new Promise(function(resolve, reject) {
+      var nextAudioXhr = function(byteIndex) {
+        var startBytes = audioStream.get('halfSecondBytes')[byteIndex];
+        var endBytes = audioStream.get('halfSecondBytes')[byteIndex + 1] - 1;
+        var bytesLength = endBytes - startBytes + 1;
+        var xhr = runner.XHRManager.createRequest(audioStream.src, function(e) {
+          audioSb.addEventListener('updateend', function callXhr() {
+            audioSb.removeEventListener('updateend', callXhr);
+            if (byteIndex < audioStream.get('halfSecondBytes').length - 2) {
+              resolve();
+              nextAudioXhr(byteIndex + 1);
+            } else {
+              ms.endOfStream();
+            }
+          });
+          audioSb.appendBuffer(this.getResponseData());
+        }, startBytes, bytesLength);
+        xhr.send();
+      };
+      nextAudioXhr(0);
+    });
+
+    Promise.all([videoPromise, audioPromise]).then(function() {
+      video.play();
+    });
+  };
+};
+
 /**
  * Ensure we can append audio data with an explicit offset.
  */
@@ -1277,6 +1379,8 @@ createTimestampOffsetTest('2.1.3.1', Media.Opus.CarLow, Media.VP9.Video1MB);
 createDurationAfterAppendTest('2.1.4.1', Media.Opus.CarLow, Media.VP9.Video1MB);
 createPausedTest('2.1.5.1', Media.Opus.CarLow);
 createIncrementalAudioTest('2.1.6.1', Media.Opus.CarMed);
+createLimitedAudioTest('2.1.6.2', Media.Opus.CarMed);
+createIncrementalLimitedAudioTest('2.1.6.3', Media.Opus.CarMed);
 createAppendAudioOffsetTest('2.1.7.1', Media.Opus.CarMed, Media.Opus.CarHigh);
 createAppendMultipleInitTest('2.1.8.1', Media.Opus.CarLow, Media.VP9.Video1MB);
 createAppendOutOfOrderTest('2.1.9.1', Media.Opus.CarMed, Media.VP9.Video1MB);
@@ -1296,6 +1400,8 @@ createDurationAfterAppendTest(
 createPausedTest('2.2.5.1', Media.AAC.Audio1MB);
 createIncrementalAudioTest(
     '2.2.6.1', Media.AAC.AudioNormal, Media.H264.Video1MB);
+createLimitedAudioTest('2.2.6.2', Media.AAC.AudioNormal);
+createIncrementalLimitedAudioTest('2.2.6.3', Media.AAC.AudioNormal);
 createAppendAudioOffsetTest(
     '2.2.7.1', Media.AAC.AudioNormal, Media.AAC.AudioHuge);
 createAppendMultipleInitTest(
