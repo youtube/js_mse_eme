@@ -85,10 +85,7 @@ function TestView(testSuiteVer) {
       var testSuite = testSuites[index];
       var testSuiteName = testSuiteDescriptions[testSuite].name;
       if (testSuite !== harnessConfig.testType) {
-        persist_params['test_type'] = testSuite;
-        this.addTestSuite(testSuiteName, '?' +
-          Object.entries(persist_params).map(
-              function(kv) {return kv.join('=')}).join('&'));
+        this.addTestSuite(testSuiteName, '?test_type=' + testSuite);
       }
       else {
         this.addTestSuite(testSuiteName, null);
