@@ -72,9 +72,9 @@ function TestView(testSuiteVer) {
   };
 
   this.addTestSuites = function(testSuites) {
-    var persist_params = {};
+    var auth_params = {};
     if (!!harnessConfig.cert_scope) {
-      persist_params = {
+      auth_params = {
         cert_scope: harnessConfig.cert_scope,
         sig: harnessConfig.sig,
         start_time: harnessConfig.start_time
@@ -85,7 +85,11 @@ function TestView(testSuiteVer) {
       var testSuite = testSuites[index];
       var testSuiteName = testSuiteDescriptions[testSuite].name;
       if (testSuite !== harnessConfig.testType) {
-        this.addTestSuite(testSuiteName, '?test_type=' + testSuite);
+        var url_param = '?test_type=' + testSuite;
+        for (var key in auth_params) {
+          url_param += '&' + key + '=' + auth_params[key];
+        }
+        this.addTestSuite(testSuiteName, url_param);
       }
       else {
         this.addTestSuite(testSuiteName, null);
