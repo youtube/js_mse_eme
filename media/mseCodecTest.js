@@ -66,8 +66,8 @@ var createAppendTest = function(testId, stream, unused_stream, mandatory) {
       'MSE (' + stream.codec + ')',
       mandatory,
       [stream]);
-  test.prototype.title = 'Test if we can append a whole ' +
-      stream.mediatype + ' file whose size is 1MB.';
+  test.prototype.title =
+    `Test if we can append 1MB of a ${stream.mediatype} file.`;
   test.prototype.onsourceopen = function() {
     var runner = this.runner;
     var sb = this.ms.addSourceBuffer(stream.mimetype);
@@ -108,7 +108,7 @@ var createAppendTest = function(testId, stream, unused_stream, mandatory) {
       }
       sb.addEventListener('updateend', updateEnd);
       sb.appendBuffer(data);
-    });
+    }, 0, stream.size);
     xhr.send();
   };
 };
@@ -1368,9 +1368,9 @@ createDelayedTest('2.4.20.1', Media.H264.VideoNormal, Media.AAC.AudioNormal);
 createSingleSourceBufferPlaybackTest('2.4.21.1', Media.H264.VideoTiny)
 
 // AV1 Specific tests.
-createAppendTest('2.5.1.1', Media.AV1.Bunny144p30fps, Media.AAC.Audio1MB,
+createAppendTest('2.5.1.1', Media.AV1.Video1MB, Media.AAC.Audio1MB,
     util.requireAV1());
-createAbortTest('2.5.2.1', Media.AV1.Bunny144p30fps, Media.AAC.Audio1MB,
+createAbortTest('2.5.2.1', Media.AV1.Video1MB, Media.AAC.Audio1MB,
     util.requireAV1());
 createTimestampOffsetTest(
     '2.5.3.1', Media.AV1.Bunny144p30fps, Media.AAC.Audio1MB,
