@@ -272,7 +272,7 @@ span:focus {
 
 @media screen and (min-height: 720px) and (max-height: 721px) {
   body {
-    font-size: 0.64em!important;
+    font-size: 0.6em!important;
     width: 1240px!important;
   }
   #output {
