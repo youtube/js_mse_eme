@@ -149,7 +149,6 @@ function TestView(testSuiteVer) {
     var logincode = document.createElement('div');
     logincode.id = "client-id";
     logincode.style.color = "black";
-    logincode.style.backgroundColor = "grey";
     logincode.textContent = "pending";
     overlay.appendChild(logincode);
 

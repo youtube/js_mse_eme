@@ -83,7 +83,8 @@ util.login = function(onSuccess) {
   xhr.onreadystatechange = function() {
     if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
       var response = JSON.parse(this.responseText);
-      document.getElementById("client-id").textContent = response.user_code;
+      document.getElementById("client-id").textContent =
+          `Enter code ${response.user_code} on youtube.com/activate to login.`;
       var interval = window.setInterval(() => {
         util.getToken(onSuccess, interval);
       }, response.interval * 1050);
