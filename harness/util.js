@@ -63,25 +63,30 @@ util.getToken = function(onSuccess, interval) {
       if (this.status === 200) {
         onSuccess();
         window.clearInterval(interval);
-      } else if (this.status != 428) {
-        // 428 means not ready, we can continue to call if it's not ready.
-        window.LOG(this, ["Login:", this.responseText]);
-        window.clearInterval(interval);
       }
     }
   };
-  try {
-    xhr.send();
-  } catch (e) {
-    console.log(e);
-  }
+  xhr.onerror = function() {
+    if (this.status != 428 || this.status != 403) {
+      // 428 means not ready, we can continue to call if it's not ready.
+      // 403 means slow down.
+      window.LOG(this, ["Login:", this.responseText]);
+      window.clearInterval(interval);
+    }
+  };
+  xhr.send();
 };
 
 // Gets the login code from backend.
 util.login = function(onSuccess) {
   var overlay = document.getElementById('login-pop-up');
-  overlay.style.display = "inline-block";
-  overlay.style.width = "50%";
+  if (overlay.style.display === 'inline-block')
+  {
+    // Disable this button if the overlay is already showing.
+    return;
+  }
+
+  overlay.style.display = 'inline-block';
   var xhr = new XMLHttpRequest();
   xhr.open("GET", "/login");
   xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -89,7 +94,7 @@ util.login = function(onSuccess) {
     if (this.readyState === XMLHttpRequest.DONE && this.status === 200) {
       var response = JSON.parse(this.responseText);
       document.getElementById("client-id").textContent =
-          `Enter code ${response.user_code} on youtube.com/activate to login.`;
+          `2) Enter this code\n${response.user_code}`;
       var interval = window.setInterval(() => {
         util.getToken(onSuccess, interval);
       }, response.interval * 1050);
@@ -127,7 +132,7 @@ util.uploadTestResult = function(callBack) {
     }
   }
   callBack();
-}
+};
 
 //End non GitHub files
 
