@@ -43,14 +43,14 @@ var compactTestView = (function() {
       // Begin non GitHub files
       this.addCommand('Login', 'login', 'login to get user token.', function(e) {
         util.login(() => {
-          if (document.getElementById("login-pop-up")) {
-            document.getElementById("login-pop-up").style.display = "none";
-            util.uploadTestResult(() => { window.LOG(this, ["Login:", "Successful"]); });
+          if (document.getElementById('login-pop-up')) {
+            document.getElementById('login-pop-up').style.display = 'none';
+            util.uploadTestResult(() => { window.LOG(this, ['Login:', 'Successful']); });
           }
         });
       });
       this.addCommand('Submit', 'submit', 'submit test results.', function(e) {
-        util.uploadTestResult(() => { window.LOG(this, ["TestResult:", "Submitted"]); });
+        util.uploadTestResult(() => { window.LOG(this, ['TestResult:', 'Sent']); });
       });
       //End non GitHub files
 

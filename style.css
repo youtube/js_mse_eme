@@ -205,6 +205,30 @@ div.container_hidden {
   display: inline-block;
 }
 
+#login-pop-up {
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 25%;
+  background-color: #282828;
+}
+
+#client-id-div {
+  top: 10em;
+  padding-top: 10em;
+  padding-left: 5em;
+  padding-right: 5em;
+}
+
+.step {
+  padding-bottom: 2rem;
+  font-size: 200%;
+  font-family: roboto-regular;
+  white-space: pre-wrap;
+  color: white
+}
+
 .desc-expl-popup {
   position: absolute;
   padding: 0.5em;

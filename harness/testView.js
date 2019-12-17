@@ -95,7 +95,7 @@ function TestView(testSuiteVer) {
         this.addTestSuite(testSuiteName, null);
       }
     }
-  }
+  };
 
   this.addLink = function(text, href) {
     links.push({text: text, href: href});
@@ -131,26 +131,6 @@ function TestView(testSuiteVer) {
     outputArea.appendChild(textAreaContainer);
     outputArea.appendChild(createElement('div', 'testarea'));
     div.appendChild(outputArea);
-
-    var overlay = document.createElement('div');
-    overlay.id = 'login-pop-up';
-    overlay.style.display = "none";
-    div.appendChild(overlay);
-    var closebtn = document.createElement('span');
-    closebtn.setAttribute('tabindex', '0');
-    closebtn.classList.add('closebtn');
-    closebtn.classList.add('focusable');
-    closebtn.onclick = () => {
-        overlay.style.width = '0';
-        overlay.style.display = 'none';
-    }
-    closebtn.innerHTML = '&times;';
-    overlay.appendChild(closebtn);
-    var logincode = document.createElement('div');
-    logincode.id = "client-id";
-    logincode.style.color = "black";
-    logincode.textContent = "pending";
-    overlay.appendChild(logincode);
 
     var switchDiv = document.getElementById('switches');
     for (var i = 0; i < switches.length; ++i) {
@@ -212,6 +192,15 @@ function TestView(testSuiteVer) {
         testSuitesDiv.lastChild.style.border = "solid #000000";
       }
     }
+
+    document.addEventListener('keyup', e => {
+      if (e.code === 'Esc') {
+        document.getElementById("login-pop-up").style.display = "none";
+        if (util.tokenInterval) {
+          window.clearInterval(util.tokenInterval);
+        }
+      }
+    });
 
     this.testList.generate(document.getElementById('testlist'));
   };
