@@ -210,10 +210,14 @@ var PlaybackperfTest = function(subgroup, suite) {
           (util.compareResolutions(
               videoStream.get('resolution'), '1080p') > 0);
     };
+    var isOptionalFramePlaybackRate = function(videoStream, playbackRate) {
+      return videoStream.get('fps') >= 60 && playbackRate > 1;
+    };
     mandatory = (typeof mandatory != 'undefined') ?
       mandatory :
       !isOptionalPlayBackPerfStream(videoStream)
-          && isTypeSupported(videoStream);
+          && isTypeSupported(videoStream)
+          && !isOptionalFramePlaybackRate(videoStream, playbackRate);
 
     var test = createPerfTest(
         testId,
