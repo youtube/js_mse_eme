@@ -939,8 +939,9 @@ var createMediaSourceDurationTest =
     var runner = this.runner;
     var media = this.video;
     var ms = this.ms;
-    var videoChain = new ResetInit(
-        new FileSource(videoStream.src, runner.XHRManager, runner.timeouts));
+    var videoFileSource = new FileSource(
+        videoStream.src, runner.XHRManager, runner.timeouts);
+    var videoChain = new ResetInit(videoFileSource);
     var videoSb = this.ms.addSourceBuffer(videoStream.mimetype);
     var audioSb = this.ms.addSourceBuffer(audioStream.mimetype);
     var self = this;
@@ -954,25 +955,25 @@ var createMediaSourceDurationTest =
       runner.assert(isNaN(media.duration), 'Initial media duration not NaN');
       media.play();
       appendInit(media, videoSb, videoChain, 0, function() {
-        var halfDuration = 5;
-        var fullDuration = halfDuration * 2;
-        var eps = 0.5;
-        appendUntil(runner.timeouts, media, videoSb, videoChain, fullDuration,
+        var duration1 = videoFileSource.segs[1].time;
+        var duration2 = videoFileSource.segs[2].time;
+        var eps = 0.01;
+        appendUntil(runner.timeouts, media, videoSb, videoChain, duration2,
             function() {
-          setDuration(halfDuration, ms, [videoSb, audioSb], function() {
-            runner.checkApproxEq(ms.duration, halfDuration, 'ms.duration', eps);
-            runner.checkApproxEq(media.duration, halfDuration, 'media.duration',
-                eps);
-            runner.checkLE(videoSb.buffered.end(0), halfDuration + 0.1,
-                'Range end');
+          setDuration(duration1, ms, [videoSb, audioSb], function() {
+            runner.checkApproxEq(ms.duration, duration1, 'ms.duration', eps);
+            runner.checkApproxEq(
+                media.duration, duration1, 'media.duration', eps);
+            runner.checkLE(
+                videoSb.buffered.end(0), duration1 + 0.1, 'Range end');
             videoSb.abort();
             videoChain.seek(0);
             appendInit(media, videoSb, videoChain, 0, function() {
               appendUntil(runner.timeouts, media, videoSb, videoChain,
-                  fullDuration, function() {
-                runner.checkApproxEq(ms.duration, fullDuration, 'ms.duration',
-                    eps * 2);
-                setDuration(halfDuration, ms, [videoSb, audioSb], function() {
+                  duration2, function() {
+                runner.checkApproxEq(
+                    ms.duration, duration2, 'ms.duration', eps);
+                setDuration(duration1, ms, [videoSb, audioSb], function() {
                   if (videoSb.updating) {
                     runner.fail(
                         'Source buffer is updating on duration change');
@@ -980,12 +981,13 @@ var createMediaSourceDurationTest =
                   }
                   var duration = videoSb.buffered.end(0);
                   ms.endOfStream();
-                  runner.checkApproxEq(ms.duration, duration, 'ms.duration',
-                                       0.01);
+                  runner.checkApproxEq(
+                      ms.duration, duration, 'ms.duration', eps);
                   ms.addEventListener('sourceended', function() {
-                    runner.checkApproxEq(ms.duration, duration, 'ms.duration',
-                                         0.01);
-                    runner.checkEq(media.duration, duration, 'media.duration');
+                    runner.checkApproxEq(
+                        ms.duration, duration, 'ms.duration', eps);
+                    runner.checkApproxEq(
+                        media.duration, duration, 'media.duration', eps);
                     ms.addEventListener('sourceclose', onsourceclose);
                     media.removeAttribute('src');
                     media.load();
