@@ -285,7 +285,7 @@ var PlaybackperfTest = function(subgroup, suite) {
     Media.AV1.Bunny720p30fps,
     Media.AV1.Bunny1080p30fps,
     Media.AV1.Bunny1440p30fps,
-    Media.AV1.Bunny2160p30fps,
+    Media.AV1.Sports2160p30fps,
   ];
 
   var mediaFormatsHfr = [
@@ -298,7 +298,6 @@ var PlaybackperfTest = function(subgroup, suite) {
     Media.AV1.Bunny720p60fps,
     Media.AV1.Bunny1080p60fps,
     Media.AV1.Bunny1440p60fps,
-    Media.AV1.Bunny2160p60fps,
   ];
 
   var widevineMediaFormatsVP9 = [
