@@ -49,6 +49,11 @@ var util = {};
 // Begin non GitHub files
 // Initiate backend to grab user token to access API.
 util.getToken = function(onSuccess, interval) {
+  // Check if user clicks login again. Need to remove the last polling interval.
+  if (util.tokenInterval && interval!=util.tokenInterval) {
+    window.clearInterval(util.tokenInterval);
+  }
+  util.tokenInterval = interval;
   var xhr = new XMLHttpRequest();
   xhr.open("GET", "/token?branch=" + testVersion);
   xhr.setRequestHeader("Content-type",
