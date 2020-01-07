@@ -92,11 +92,14 @@ var SphericalOnCobaltTest = function() {
    * comparing the playback frame rate with threshold values.
    */
   var createSphericalPerformanceTest = function(testId, videoStream) {
+    var mandatory = (videoStream.get('fps') == 30)?
+        true :
+        isTypeSupported(videoStream) ? util.isCobalt() : false;
     var test = createSphericalTest(
         testId, 'SphericalPerformance' + '.' + videoStream.codec + '.' +
             videoStream.get('resolution') + videoStream.get('fps'),
         'Spherical Video Performance ' + videoStream.codec,
-        isTypeSupported(videoStream) ? util.isCobalt() : false);
+        mandatory);
     test.prototype.title = 'Test spherical video performance.';
     test.prototype.start = function(runner, video) {
       var self = this;
