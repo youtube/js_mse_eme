@@ -63,15 +63,13 @@ util.getToken = function(onSuccess, interval) {
       if (this.status === 200) {
         onSuccess();
         window.clearInterval(interval);
+      } else if (this.status !== 428 && this.status !== 403) {
+        // 428 means not ready, we can continue to call if it's not ready.
+        // 403 means slow down.
+        window.LOG(this, ["Login:", this.responseText]);
+        window.clearInterval(interval);
+        document.getElementById("login-pop-up").style.display = "none";
       }
-    }
-  };
-  xhr.onerror = function() {
-    if (this.status != 428 || this.status != 403) {
-      // 428 means not ready, we can continue to call if it's not ready.
-      // 403 means slow down.
-      window.LOG(this, ["Login:", this.responseText]);
-      window.clearInterval(interval);
     }
   };
   xhr.send();
