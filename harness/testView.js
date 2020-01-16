@@ -194,7 +194,7 @@ function TestView(testSuiteVer) {
     }
 
     document.addEventListener('keyup', e => {
-      if (e.code === 'Esc') {
+      if (translateKeycode(e) === 'Back') {
         document.getElementById("login-pop-up").style.display = "none";
         if (util.tokenInterval) {
           window.clearInterval(util.tokenInterval);
