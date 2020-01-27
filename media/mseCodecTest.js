@@ -1485,8 +1485,7 @@ createDASHLatencyTest(
     '2.5.4.1', Media.AV1.Bunny240p30fps, Media.AAC.Audio1MB,
     util.requireAV1());
 createDurationAfterAppendTest(
-    '2.5.5.1', Media.AV1.Bunny144p30fps, Media.AAC.Audio1MB,
-    util.requireAV1());
+    '2.5.5.1', Media.AV1.VideoSmall, Media.AAC.Audio1MB, util.requireAV1());
 createPausedTest(
     '2.5.6.1', Media.AV1.Bunny144p30fps, util.requireAV1());
 createVideoDimensionTest(
