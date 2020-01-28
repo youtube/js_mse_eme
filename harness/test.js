@@ -512,6 +512,11 @@ TestExecutor.prototype.timeout = function() {
 
   if (isTestTimedOut) {
     ++this.testList[this.currentTestIdx].prototype.timeouts;
+    if (this.testList[this.currentTestIdx].prototype.mandatory) {
+      this.testList[this.currentTestIdx].prototype.outcome = TestOutcome.FAILED;
+    } else {
+      this.testList[this.currentTestIdx].prototype.outcome = TestOutcome.OPTIONAL_FAILED;
+    }
     this.updateStatus();
     this.error('Test ' + (this.currentTest.index + 1) + ':' +
         this.currentTest.desc + ' TIMED OUT!', true);
