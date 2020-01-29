@@ -236,7 +236,8 @@ var PlaybackperfTest = function(subgroup, suite) {
       }
       video.playbackRate = playbackRate;
       video.addEventListener('timeupdate', function onTimeUpdate(e) {
-        if (video.currentTime > 0 && video.currentTime < 10) {
+        if (drmScheme && video.currentTime > 0 && video.currentTime < 10) {
+          // Skip first 10 seconds for DRM
           video.currentTime = 10;
           return;
         }
@@ -345,11 +346,11 @@ var PlaybackperfTest = function(subgroup, suite) {
   var playbackSpeeds = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
 
   function shouldStopPlayback(video) {
-    return !video.paused && video.currentTime >= 25;
+    return !video.paused && video.currentTime >= 15;
   }
 
   function shouldStopDrmPlayback(video, emeHandler) {
-    return shouldStopPlayback(video) && !emeHandler.keyUnusable;
+    return !video.paused && video.currentTime >= 25 && !emeHandler.keyUnusable;
   }
 
   function defaultTestAssertion(perfTestUtil) {
