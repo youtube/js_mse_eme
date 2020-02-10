@@ -55,6 +55,7 @@ function Test(desc, style) {
                              this.index + 1 + '. ' + this.desc.desc);
     link.classList.add('focusable');
     link.setAttribute('tabindex', '0');
+    link.setAttribute('testId', desc.id);
     link.exec = desc.onclick;
     link.onclick = desc.onclick;
     link.title = desc.title;
