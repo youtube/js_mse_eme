@@ -91,10 +91,13 @@ var SphericalOnCobaltTest = function() {
    * Ensure performance of given spherical video format on Cobalt by
    * comparing the playback frame rate with threshold values.
    */
-  var createSphericalPerformanceTest = function(testId, videoStream) {
-    var mandatory = (videoStream.get('fps') == 30)?
-        true :
-        isTypeSupported(videoStream) ? util.isCobalt() : false;
+  var createSphericalPerformanceTest = function(
+      testId, videoStream, mandatory) {
+    if (mandatory == null) {
+      mandatory = (videoStream.get('fps') == 30)?
+          true :
+          isTypeSupported(videoStream) ? util.isCobalt() : false;
+    }
     var test = createSphericalTest(
         testId, 'SphericalPerformance' + '.' + videoStream.codec + '.' +
             videoStream.get('resolution') + videoStream.get('fps'),
@@ -181,9 +184,11 @@ var SphericalOnCobaltTest = function() {
   createSphericalPerformanceTest('5.2.6.1', Media.H264.Spherical720s60fps);
   createSphericalPerformanceTest('5.2.7.1', Media.H264.Spherical1080s30fps);
   createSphericalPerformanceTest('5.2.8.1', Media.H264.Spherical1080s60fps);
-  createSphericalPerformanceTest('5.2.9.1', Media.H264.Spherical1440s30fps);
+  createSphericalPerformanceTest(
+      '5.2.9.2', Media.H264.Spherical1440s30fps, false);
   createSphericalPerformanceTest('5.2.10.1', Media.H264.Spherical1440s60fps);
-  createSphericalPerformanceTest('5.2.11.1', Media.H264.Spherical2160s30fps);
+  createSphericalPerformanceTest(
+      '5.2.11.2', Media.H264.Spherical2160s30fps, false);
   createSphericalPerformanceTest('5.2.12.1', Media.H264.Spherical2160s60fps);
 
   return {
