@@ -94,9 +94,13 @@ var SphericalOnCobaltTest = function() {
   var createSphericalPerformanceTest = function(
       testId, videoStream, mandatory) {
     if (mandatory == null) {
-      mandatory = (videoStream.get('fps') == 30)?
-          true :
-          isTypeSupported(videoStream) ? util.isCobalt() : false;
+      if (videoStream.get('fps') == 30) {
+        mandatory = ((util.getMaxWindow()[0] * util.getMaxWindow()[1]) >=
+            (videoStream.get('width') * videoStream.get('height')));
+      } else {
+        mandatory = isTypeSupported(videoStream);
+      }
+      mandatory = mandatory && util.isCobalt();
     }
     var test = createSphericalTest(
         testId, 'SphericalPerformance' + '.' + videoStream.codec + '.' +
@@ -171,9 +175,9 @@ var SphericalOnCobaltTest = function() {
   createSphericalPerformanceTest('5.1.6.1', Media.VP9.Spherical720s60fps);
   createSphericalPerformanceTest('5.1.7.1', Media.VP9.Spherical1080s30fps);
   createSphericalPerformanceTest('5.1.8.1', Media.VP9.Spherical1080s60fps);
-  createSphericalPerformanceTest('5.1.9.1', Media.VP9.Spherical1440s30fps);
+  createSphericalPerformanceTest('5.1.9.2', Media.VP9.Spherical1440s30fps);
   createSphericalPerformanceTest('5.1.10.1', Media.VP9.Spherical1440s60fps);
-  createSphericalPerformanceTest('5.1.11.1', Media.VP9.Spherical2160s30fps);
+  createSphericalPerformanceTest('5.1.11.2', Media.VP9.Spherical2160s30fps);
   createSphericalPerformanceTest('5.1.12.1', Media.VP9.Spherical2160s60fps);
 
   createSphericalPerformanceTest('5.2.1.1', Media.H264.Spherical144s30fps);
