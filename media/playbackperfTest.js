@@ -94,18 +94,27 @@ var PlaybackperfTest = function(subgroup, suite) {
       }
     }
 
-    assertMaxDroppedFrames(maxDroppedFrames) {
-      this.runner_.checkLE(
+    assertMaxDroppedFrames(maxDroppedFrames, allowRetry) {
+      if (allowRetry) {
+        return this.getTotalDroppedFrames() <= maxDroppedFrames;
+      } else {
+        this.runner_.checkLE(
           this.getTotalDroppedFrames(),
           maxDroppedFrames,
           'Total dropped frames');
+      }
     }
 
-    assertMaxDroppedFramesRatio(maxRatio) {
-      this.runner_.checkLE(
-          this.getTotalDroppedFrames() / this.getTotalDecodedFrames(),
+    assertMaxDroppedFramesRatio(maxRatio, allowRetry) {
+      var ratio = this.getTotalDroppedFrames() / this.getTotalDecodedFrames();
+      if (allowRetry) {
+        return ratio <= maxRatio;
+      } else {
+        this.runner_.checkLE(
+          ratio,
           maxRatio,
           'Total dropped frames / total decoded frames');
+      }
     }
   }
 
@@ -203,7 +212,7 @@ var PlaybackperfTest = function(subgroup, suite) {
    */
   var createPlaybackPerfTest = function(
       testId, videoStream, playbackRate, category,
-      stopPlayback, assertTest, drmScheme, mandatory) {
+      stopPlayback, isHFR, drmScheme, mandatory) {
     // H264 tests that are greater than 1080p are optional
     var isOptionalPlayBackPerfStream = function(videoStream) {
       return videoStream.codec == 'H264' &&
@@ -228,31 +237,52 @@ var PlaybackperfTest = function(subgroup, suite) {
         mandatory);
     test.prototype.title = 'Playback performance test';
     test.prototype.start = function(runner, video) {
-      var testEmeHandler = this.emeHandler;
-      var perfTestUtil = new PerfTestUtil_(test, runner, video);
-      setupMse(video, runner, videoStream, Media.AAC.AudioNormal, 6);
-      if (drmScheme) {
-        setupEme(runner, testEmeHandler, video, videoStream, drmScheme);
+      var MAX_ATTEMPTS = 5;
+      var currentAttempt = 1;
+      var self = this;
+      var highSpeed = isHFR && playbackRate > 1;
+      var assertTest;
+      if (highSpeed) {
+        assertTest = HFRHighSpeedPlaybackTestAssertion;
+      } else {
+        assertTest = defaultTestAssertion;
       }
-      video.playbackRate = playbackRate;
-      video.addEventListener('timeupdate', function onTimeUpdate(e) {
-        if (drmScheme && video.currentTime > 0 && video.currentTime < 10) {
-          // Skip first 10 seconds for DRM
-          video.currentTime = 10;
-          return;
+      function attempt() {
+        var testEmeHandler = self.emeHandler;
+        var perfTestUtil = new PerfTestUtil_(test, runner, video);
+        setupMse(video, runner, videoStream, Media.AAC.AudioNormal, 6);
+        if (drmScheme) {
+          setupEme(runner, testEmeHandler, video, videoStream, drmScheme);
         }
-        perfTestUtil.updateVideoPerfMetricsStatus();
-        if (stopPlayback(video, testEmeHandler)) {
-          video.removeEventListener('timeupdate', onTimeUpdate);
-          video.pause();
-          if (video.playbackRate != playbackRate) {
-            runner.fail('playbackRate is not set');
+        video.playbackRate = playbackRate;
+        video.addEventListener('timeupdate', function onTimeUpdate(e) {
+          if (drmScheme && video.currentTime > 0 && video.currentTime < 10) {
+            // Skip first 10 seconds for DRM
+            video.currentTime = 10;
+            return;
           }
-          assertTest(perfTestUtil);
-          runner.succeed();
-        }
-      });
-      video.play();
+          perfTestUtil.updateVideoPerfMetricsStatus();
+          var attemptFailed = !highSpeed && !assertTest(perfTestUtil, true);
+          if (attemptFailed || stopPlayback(video, testEmeHandler)) {
+            video.removeEventListener('timeupdate', onTimeUpdate);
+            video.pause();
+            if (video.playbackRate != playbackRate) {
+              runner.fail('playbackRate is not set');
+            }
+            if (attemptFailed && currentAttempt < MAX_ATTEMPTS) {
+              currentAttempt++;
+              runner.log(`Dropped too many frames, ` +
+                  `retrying (attempt ${currentAttempt} of ${MAX_ATTEMPTS}).`);
+              setTimeout(attempt, 1000);
+            } else {
+              assertTest(perfTestUtil);
+              runner.succeed();
+            }
+          }
+        });
+        video.play();
+      }
+      attempt();
     };
   };
 
@@ -353,21 +383,14 @@ var PlaybackperfTest = function(subgroup, suite) {
     return !video.paused && video.currentTime >= 25 && !emeHandler.keyUnusable;
   }
 
-  function defaultTestAssertion(perfTestUtil) {
+  function defaultTestAssertion(perfTestUtil, allowRetry) {
     perfTestUtil.assertAtLeastOneFrameDecoded();
-    perfTestUtil.assertMaxDroppedFrames(1);
+    return perfTestUtil.assertMaxDroppedFrames(1, allowRetry);
   }
 
-  function HFRHighSpeedPlaybackTestAssertion(perfTestUtil) {
+  function HFRHighSpeedPlaybackTestAssertion(perfTestUtil, allowRetry) {
     perfTestUtil.assertAtLeastOneFrameDecoded();
-    perfTestUtil.assertMaxDroppedFramesRatio(0.5);
-  }
-
-  function getTestAssertion(playbackSpeed, isHFR) {
-    if (isHFR && playbackSpeed > 1)
-      return HFRHighSpeedPlaybackTestAssertion;
-    else
-      return defaultTestAssertion;
+    return perfTestUtil.assertMaxDroppedFramesRatio(0.5, allowRetry);
   }
 
   /**
@@ -396,7 +419,7 @@ var PlaybackperfTest = function(subgroup, suite) {
             playbackSpeeds[s],
             category,
             stopPlayback,
-            getTestAssertion(playbackSpeeds[s], isHFR),
+            isHFR,
             drmScheme);
         testCaseId++;
       }
