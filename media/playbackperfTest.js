@@ -230,8 +230,8 @@ var PlaybackperfTest = function(subgroup, suite) {
 
     var test = createPerfTest(
         testId,
-        `PlaybackPerf${videoStream.codec}${videoStream.get('resolution')}` +
-            `${videoStream.get('quality') ? videoStream.get('quality') : ''}` +
+        `PlaybackPerf${videoStream.codec}.${videoStream.get('resolution')}.` +
+            `${videoStream.get('quality') ? videoStream.get('quality') : ''}.` +
             `${videoStream.get('fps')}fps@${playbackRate}X`,
         category,
         mandatory);
