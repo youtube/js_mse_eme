@@ -1476,59 +1476,36 @@ createDelayedTest('2.4.20.1', Media.H264.VideoNormal, Media.AAC.AudioNormal);
 createSingleSourceBufferPlaybackTest('2.4.21.1', Media.H264.VideoTiny)
 
 // AV1 Specific tests.
-createAppendTest('2.5.1.1', Media.AV1.Video1MB, Media.AAC.Audio1MB,
-    util.requireAV1());
-createAbortTest('2.5.2.1', Media.AV1.Video1MB, Media.AAC.Audio1MB,
-    util.requireAV1());
+createAppendTest('2.5.1.1', Media.AV1.Video1MB, Media.AAC.Audio1MB);
+createAbortTest('2.5.2.1', Media.AV1.Video1MB, Media.AAC.Audio1MB);
 createTimestampOffsetTest(
-    '2.5.3.1', Media.AV1.Bunny144p30fps, Media.AAC.Audio1MB,
-    util.requireAV1());
-createDASHLatencyTest(
-    '2.5.4.1', Media.AV1.Bunny240p30fps, Media.AAC.Audio1MB,
-    util.requireAV1());
+    '2.5.3.1', Media.AV1.Bunny144p30fps, Media.AAC.Audio1MB);
+createDASHLatencyTest('2.5.4.1', Media.AV1.Bunny240p30fps, Media.AAC.Audio1MB);
 createDurationAfterAppendTest(
-    '2.5.5.1', Media.AV1.VideoSmall, Media.AAC.Audio1MB, util.requireAV1());
-createPausedTest(
-    '2.5.6.1', Media.AV1.Bunny144p30fps, util.requireAV1());
+    '2.5.5.1', Media.AV1.VideoSmall, Media.AAC.Audio1MB);
+createPausedTest('2.5.6.1', Media.AV1.Bunny144p30fps);
 createVideoDimensionTest(
-    '2.5.7.1', Media.AV1.Bunny360p30fps, Media.AAC.Audio1MB,
-    util.requireAV1());
-createPlaybackStateTest(
-    '2.5.8.1', Media.AV1.Bunny360p30fps, util.requireAV1());
-createPlayPartialSegmentTest(
-    '2.5.9.1', Media.AV1.Bunny240p30fps, util.requireAV1());
+    '2.5.7.1', Media.AV1.Bunny360p30fps, Media.AAC.Audio1MB);
+createPlaybackStateTest('2.5.8.1', Media.AV1.Bunny360p30fps);
+createPlayPartialSegmentTest('2.5.9.1', Media.AV1.Bunny240p30fps);
 createAppendVideoOffsetTest(
     '2.5.10.1', Media.AV1.Bunny360p30fps, Media.AV1.Bunny240p30fps,
-    Media.AAC.Audio1MB, util.requireAV1());
+    Media.AAC.Audio1MB);
 createAppendMultipleInitTest(
-    '2.5.11.1', Media.AV1.Bunny144p30fps, Media.AAC.Audio1MB,
-    util.requireAV1());
+    '2.5.11.1', Media.AV1.Bunny144p30fps, Media.AAC.Audio1MB);
 createAppendOutOfOrderTest(
-    '2.5.12.1', Media.AV1.Bunny360p30fps, Media.AAC.Audio1MB,
-    util.requireAV1());
+    '2.5.12.1', Media.AV1.Bunny360p30fps, Media.AAC.Audio1MB);
 createBufferedRangeTest(
-    '2.5.13.1', Media.AV1.Bunny360p30fps, Media.AAC.Audio1MB,
-    util.requireAV1());
+    '2.5.13.1', Media.AV1.Bunny360p30fps, Media.AAC.Audio1MB);
 createMediaSourceDurationTest(
-    '2.5.14.1', Media.AV1.Bunny360p30fps, Media.AAC.Audio1MB,
-    util.requireAV1());
-createOverlapTest(
-    '2.5.15.1', Media.AV1.Bunny360p30fps, Media.AAC.Audio1MB,
-    util.requireAV1());
-createSmallGapTest(
-    '2.5.16.1', Media.AV1.Bunny360p30fps, Media.AAC.Audio1MB,
-    util.requireAV1());
-createLargeGapTest(
-    '2.5.17.1', Media.AV1.Bunny360p30fps, Media.AAC.Audio1MB,
-    util.requireAV1());
-createSeekTest('2.5.18.1', Media.AV1.Bunny360p30fps, util.requireAV1());
-createBufUnbufSeekTest(
-    '2.5.19.1', Media.AV1.Bunny360p30fps, util.requireAV1());
-createDelayedTest(
-    '2.5.20.1', Media.AV1.Bunny360p30fps, Media.AAC.AudioNormal,
-    util.requireAV1());
-createSingleSourceBufferPlaybackTest(
-    '2.5.21.1', Media.AV1.Bunny240p30fps, util.requireAV1());
+    '2.5.14.1', Media.AV1.Bunny360p30fps, Media.AAC.Audio1MB);
+createOverlapTest('2.5.15.1', Media.AV1.Bunny360p30fps, Media.AAC.Audio1MB);
+createSmallGapTest('2.5.16.1', Media.AV1.Bunny360p30fps, Media.AAC.Audio1MB);
+createLargeGapTest('2.5.17.1', Media.AV1.Bunny360p30fps, Media.AAC.Audio1MB);
+createSeekTest('2.5.18.1', Media.AV1.Bunny360p30fps);
+createBufUnbufSeekTest('2.5.19.1', Media.AV1.Bunny360p30fps);
+createDelayedTest('2.5.20.1', Media.AV1.Bunny360p30fps, Media.AAC.AudioNormal);
+createSingleSourceBufferPlaybackTest('2.5.21.1', Media.AV1.Bunny240p30fps);
 
 return {tests: tests, info: info, fields: fields, viewType: 'default'};
 

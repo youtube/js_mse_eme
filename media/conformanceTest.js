@@ -935,7 +935,7 @@ createSupportTest('1.5.1.1', Media.AAC.mimetype, 'AAC');
 createSupportTest('1.5.2.1', Media.H264.mimetype, 'H264');
 createSupportTest('1.5.3.1', Media.VP9.mimetype, 'VP9');
 createSupportTest('1.5.4.1', Media.Opus.mimetype, 'Opus');
-createSupportTest('1.5.5.1', Media.AV1.mimetype, 'AV1', util.requireAV1());
+createSupportTest('1.5.5.1', Media.AV1.mimetype, 'AV1', true);
 
 /**
  * Ensure AudioContext is supported.
@@ -1022,12 +1022,10 @@ var createCreateMESTest = function(testId, audioStream, videoStream) {
 }
 
 createCreateMESTest('1.7.1.1', Media.Opus.CarLow, Media.VP9.VideoNormal);
-createCreateMESTest('1.7.2.1', Media.Opus.CarLow, Media.AV1.Bunny360p30fps,
-    util.requireAV1());
+createCreateMESTest('1.7.2.1', Media.Opus.CarLow, Media.AV1.Bunny360p30fps);
 createCreateMESTest('1.7.3.1', Media.AAC.Audio1MB, Media.VP9.VideoNormal);
 createCreateMESTest('1.7.4.1', Media.AAC.Audio1MB, Media.H264.VideoNormal);
-createCreateMESTest('1.7.5.1', Media.AAC.Audio1MB, Media.AV1.Bunny360p30fps,
-    util.requireAV1());
+createCreateMESTest('1.7.5.1', Media.AAC.Audio1MB, Media.AV1.Bunny360p30fps);
 
 /**
  * Test media with mismatched frame duration and segment timing.

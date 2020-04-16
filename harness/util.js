@@ -451,13 +451,6 @@ util.createAudioFormatStr = function(audio, codec, suffix) {
       'audio/' + audio, codec, null, null, null, null, suffix);
 };
 
-util.requireAV1 = function() {
-  if (util.isGt4K()) {
-    return true;
-  }
-  return util.isGtFHD() && util.supportHdr();
-};
-
 util.supportHdr = function() {
   var supportEotf = eotf => {
     return MediaSource.isTypeSupported(
