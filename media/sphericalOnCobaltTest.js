@@ -17,6 +17,8 @@
 
 'use strict';
 
+// LINT.IfChange
+
 /**
  * Spherical video playback on Cobalt Test Suite.
  * @class
@@ -32,8 +34,6 @@ var SphericalOnCobaltTest = function() {
     info = 'webkit prefix: ' + webkitPrefix.toString();
   }
   info += ' | Default Timeout: ' + TestBase.timeout + 'ms';
-
-  var fields = ['passes', 'failures', 'timeouts'];
 
   var createSphericalTest =
       function(testId, name, category = 'Playback Performance', mandatory = true) {
@@ -198,11 +198,11 @@ var SphericalOnCobaltTest = function() {
   return {
     tests: tests,
     info: info,
-    fields: fields,
     viewType: 'expanded-test-status'
   };
 
 };
+window.SphericalOnCobaltTest = SphericalOnCobaltTest;
 
 try {
   exports.getTest = SphericalOnCobaltTest;
@@ -210,3 +210,5 @@ try {
   // do nothing, this function is not supposed to work for browser, but it's for
   // Node js to generate json file instead.
 }
+
+// LINT.ThenChange(//depot/google3/third_party/javascript/yts/media/sphericalOnCobaltTest.json)

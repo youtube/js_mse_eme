@@ -1,0 +1,898 @@
+{
+    "test_case": [
+        {
+            "test_case_id": "2.1.1.1",
+            "test_case": {
+                "test_category": "MSE (Opus)",
+                "test_title": "AppendOpusAudio",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.1.2.1",
+            "test_case": {
+                "test_category": "MSE (Opus)",
+                "test_title": "AbortOpusAudio",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.1.3.1",
+            "test_case": {
+                "test_category": "MSE (Opus)",
+                "test_title": "TimestampOffsetOpusAudio",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.1.4.1",
+            "test_case": {
+                "test_category": "MSE (Opus)",
+                "test_title": "DurationAfterAppendOpusAudio",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.1.5.1",
+            "test_case": {
+                "test_category": "MSE (Opus)",
+                "test_title": "PausedStateWithOpusAudio",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.1.6.1",
+            "test_case": {
+                "test_category": "MSE (Opus)",
+                "test_title": "IncrementalOpusAudio",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.1.6.2",
+            "test_case": {
+                "test_category": "MSE (Opus)",
+                "test_title": "LimitedOpusAudio",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.1.6.3",
+            "test_case": {
+                "test_category": "MSE (Opus)",
+                "test_title": "IncrementalLimitedOpusAudio",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.1.7.1",
+            "test_case": {
+                "test_category": "MSE (Opus)",
+                "test_title": "AppendOpusAudioOffset",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.1.8.1",
+            "test_case": {
+                "test_category": "MSE (Opus)",
+                "test_title": "AppendMultipleInitOpusAudio",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.1.9.1",
+            "test_case": {
+                "test_category": "MSE (Opus)",
+                "test_title": "AppendOpusAudioOutOfOrder",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.1.10.1",
+            "test_case": {
+                "test_category": "MSE (Opus)",
+                "test_title": "BufferedRangeOpusAudio",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.1.11.1",
+            "test_case": {
+                "test_category": "MSE (Opus)",
+                "test_title": "OpusAudioWithOverlap",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.1.12.1",
+            "test_case": {
+                "test_category": "MSE (Opus)",
+                "test_title": "OpusAudioWithSmallGap",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.1.13.1",
+            "test_case": {
+                "test_category": "MSE (Opus)",
+                "test_title": "OpusAudioWithLargeGap",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.1.14.1",
+            "test_case": {
+                "test_category": "MSE (Opus)",
+                "test_title": "DelayedOpusAudio",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.1.15.1",
+            "test_case": {
+                "test_category": "MSE (Opus)",
+                "test_title": "PlaybackOnlyOpusAudio",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.2.1.1",
+            "test_case": {
+                "test_category": "MSE (AAC)",
+                "test_title": "AppendAACAudio",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.2.2.1",
+            "test_case": {
+                "test_category": "MSE (AAC)",
+                "test_title": "AbortAACAudio",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.2.3.1",
+            "test_case": {
+                "test_category": "MSE (AAC)",
+                "test_title": "TimestampOffsetAACAudio",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.2.4.1",
+            "test_case": {
+                "test_category": "MSE (AAC)",
+                "test_title": "DurationAfterAppendAACAudio",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.2.5.1",
+            "test_case": {
+                "test_category": "MSE (AAC)",
+                "test_title": "PausedStateWithAACAudio",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.2.6.1",
+            "test_case": {
+                "test_category": "MSE (AAC)",
+                "test_title": "IncrementalAACAudio",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.2.6.2",
+            "test_case": {
+                "test_category": "MSE (AAC)",
+                "test_title": "LimitedAACAudio",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.2.6.3",
+            "test_case": {
+                "test_category": "MSE (AAC)",
+                "test_title": "IncrementalLimitedAACAudio",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.2.7.1",
+            "test_case": {
+                "test_category": "MSE (AAC)",
+                "test_title": "AppendAACAudioOffset",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.2.8.1",
+            "test_case": {
+                "test_category": "MSE (AAC)",
+                "test_title": "AppendMultipleInitAACAudio",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.2.9.1",
+            "test_case": {
+                "test_category": "MSE (AAC)",
+                "test_title": "AppendAACAudioOutOfOrder",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.2.10.1",
+            "test_case": {
+                "test_category": "MSE (AAC)",
+                "test_title": "BufferedRangeAACAudio",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.2.11.1",
+            "test_case": {
+                "test_category": "MSE (AAC)",
+                "test_title": "AACAudioWithOverlap",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.2.12.1",
+            "test_case": {
+                "test_category": "MSE (AAC)",
+                "test_title": "AACAudioWithSmallGap",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.2.13.1",
+            "test_case": {
+                "test_category": "MSE (AAC)",
+                "test_title": "AACAudioWithLargeGap",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.2.14.1",
+            "test_case": {
+                "test_category": "MSE (AAC)",
+                "test_title": "DelayedAACAudio",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.2.15.1",
+            "test_case": {
+                "test_category": "MSE (AAC)",
+                "test_title": "PlaybackOnlyAACAudio",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.3.1.1",
+            "test_case": {
+                "test_category": "MSE (VP9)",
+                "test_title": "AppendVP9Video",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.3.2.1",
+            "test_case": {
+                "test_category": "MSE (VP9)",
+                "test_title": "AbortVP9Video",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.3.3.1",
+            "test_case": {
+                "test_category": "MSE (VP9)",
+                "test_title": "TimestampOffsetVP9Video",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.3.4.1",
+            "test_case": {
+                "test_category": "MSE (VP9)",
+                "test_title": "DASHLatencyVP9",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.3.5.1",
+            "test_case": {
+                "test_category": "MSE (VP9)",
+                "test_title": "DurationAfterAppendVP9Video",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.3.6.1",
+            "test_case": {
+                "test_category": "MSE (VP9)",
+                "test_title": "PausedStateWithVP9Video",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.3.7.1",
+            "test_case": {
+                "test_category": "MSE (VP9)",
+                "test_title": "VideoDimensionVP9",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.3.8.1",
+            "test_case": {
+                "test_category": "MSE (VP9)",
+                "test_title": "PlaybackStateVP9",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.3.9.1",
+            "test_case": {
+                "test_category": "MSE (VP9)",
+                "test_title": "PlayPartialVP9Segment",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.3.10.1",
+            "test_case": {
+                "test_category": "MSE (VP9)",
+                "test_title": "AppendVP9VideoOffset",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.3.11.1",
+            "test_case": {
+                "test_category": "MSE (VP9)",
+                "test_title": "AppendMultipleInitVP9Video",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.3.12.1",
+            "test_case": {
+                "test_category": "MSE (VP9)",
+                "test_title": "AppendVP9VideoOutOfOrder",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.3.13.1",
+            "test_case": {
+                "test_category": "MSE (VP9)",
+                "test_title": "BufferedRangeVP9Video",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.3.14.1",
+            "test_case": {
+                "test_category": "MSE (VP9)",
+                "test_title": "MediaSourceDurationVP9",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.3.15.1",
+            "test_case": {
+                "test_category": "MSE (VP9)",
+                "test_title": "VP9VideoWithOverlap",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.3.16.1",
+            "test_case": {
+                "test_category": "MSE (VP9)",
+                "test_title": "VP9VideoWithSmallGap",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.3.17.1",
+            "test_case": {
+                "test_category": "MSE (VP9)",
+                "test_title": "VP9VideoWithLargeGap",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.3.18.1",
+            "test_case": {
+                "test_category": "MSE (VP9)",
+                "test_title": "SeekVP9",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.3.19.1",
+            "test_case": {
+                "test_category": "MSE (VP9)",
+                "test_title": "BufUnbufSeekVP9",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.3.20.1",
+            "test_case": {
+                "test_category": "MSE (VP9)",
+                "test_title": "DelayedVP9Video",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.3.21.1",
+            "test_case": {
+                "test_category": "MSE (VP9)",
+                "test_title": "PlaybackOnlyVP9Video",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.4.1.1",
+            "test_case": {
+                "test_category": "MSE (H264)",
+                "test_title": "AppendH264Video",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.4.2.1",
+            "test_case": {
+                "test_category": "MSE (H264)",
+                "test_title": "AbortH264Video",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.4.3.1",
+            "test_case": {
+                "test_category": "MSE (H264)",
+                "test_title": "TimestampOffsetH264Video",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.4.4.1",
+            "test_case": {
+                "test_category": "MSE (H264)",
+                "test_title": "DASHLatencyH264",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.4.5.1",
+            "test_case": {
+                "test_category": "MSE (H264)",
+                "test_title": "DurationAfterAppendH264Video",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.4.6.1",
+            "test_case": {
+                "test_category": "MSE (H264)",
+                "test_title": "PausedStateWithH264Video",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.4.7.1",
+            "test_case": {
+                "test_category": "MSE (H264)",
+                "test_title": "VideoDimensionH264",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.4.8.1",
+            "test_case": {
+                "test_category": "MSE (H264)",
+                "test_title": "PlaybackStateH264",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.4.9.1",
+            "test_case": {
+                "test_category": "MSE (H264)",
+                "test_title": "PlayPartialH264Segment",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.4.10.1",
+            "test_case": {
+                "test_category": "MSE (H264)",
+                "test_title": "AppendH264VideoOffset",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.4.11.1",
+            "test_case": {
+                "test_category": "MSE (H264)",
+                "test_title": "AppendMultipleInitH264Video",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.4.12.1",
+            "test_case": {
+                "test_category": "MSE (H264)",
+                "test_title": "AppendH264VideoOutOfOrder",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.4.13.1",
+            "test_case": {
+                "test_category": "MSE (H264)",
+                "test_title": "BufferedRangeH264Video",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.4.14.1",
+            "test_case": {
+                "test_category": "MSE (H264)",
+                "test_title": "MediaSourceDurationH264",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.4.15.1",
+            "test_case": {
+                "test_category": "MSE (H264)",
+                "test_title": "H264VideoWithOverlap",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.4.16.1",
+            "test_case": {
+                "test_category": "MSE (H264)",
+                "test_title": "H264VideoWithSmallGap",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.4.17.1",
+            "test_case": {
+                "test_category": "MSE (H264)",
+                "test_title": "H264VideoWithLargeGap",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.4.18.1",
+            "test_case": {
+                "test_category": "MSE (H264)",
+                "test_title": "SeekH264",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.4.19.1",
+            "test_case": {
+                "test_category": "MSE (H264)",
+                "test_title": "BufUnbufSeekH264",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.4.20.1",
+            "test_case": {
+                "test_category": "MSE (H264)",
+                "test_title": "DelayedH264Video",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.4.21.1",
+            "test_case": {
+                "test_category": "MSE (H264)",
+                "test_title": "PlaybackOnlyH264Video",
+                "test_suite": "MSE Codec Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "2.5.1.1",
+            "test_case": {
+                "test_category": "MSE (AV1)",
+                "test_title": "AppendAV1Video",
+                "test_suite": "MSE Codec Tests",
+                "status": 1,
+                "capabilities": ["AV1"]
+            }
+        },
+        {
+            "test_case_id": "2.5.2.1",
+            "test_case": {
+                "test_category": "MSE (AV1)",
+                "test_title": "AbortAV1Video",
+                "test_suite": "MSE Codec Tests",
+                "status": 1,
+                "capabilities": ["AV1"]
+            }
+        },
+        {
+            "test_case_id": "2.5.3.1",
+            "test_case": {
+                "test_category": "MSE (AV1)",
+                "test_title": "TimestampOffsetAV1Video",
+                "test_suite": "MSE Codec Tests",
+                "status": 1,
+                "capabilities": ["AV1"]
+            }
+        },
+        {
+            "test_case_id": "2.5.4.1",
+            "test_case": {
+                "test_category": "MSE (AV1)",
+                "test_title": "DASHLatencyAV1",
+                "test_suite": "MSE Codec Tests",
+                "status": 1,
+                "capabilities": ["AV1"]
+            }
+        },
+        {
+            "test_case_id": "2.5.5.1",
+            "test_case": {
+                "test_category": "MSE (AV1)",
+                "test_title": "DurationAfterAppendAV1Video",
+                "test_suite": "MSE Codec Tests",
+                "status": 1,
+                "capabilities": ["AV1"]
+            }
+        },
+        {
+            "test_case_id": "2.5.6.1",
+            "test_case": {
+                "test_category": "MSE (AV1)",
+                "test_title": "PausedStateWithAV1Video",
+                "test_suite": "MSE Codec Tests",
+                "status": 1,
+                "capabilities": ["AV1"]
+            }
+        },
+        {
+            "test_case_id": "2.5.7.1",
+            "test_case": {
+                "test_category": "MSE (AV1)",
+                "test_title": "VideoDimensionAV1",
+                "test_suite": "MSE Codec Tests",
+                "status": 1,
+                "capabilities": ["AV1"]
+            }
+        },
+        {
+            "test_case_id": "2.5.8.1",
+            "test_case": {
+                "test_category": "MSE (AV1)",
+                "test_title": "PlaybackStateAV1",
+                "test_suite": "MSE Codec Tests",
+                "status": 1,
+                "capabilities": ["AV1"]
+            }
+        },
+        {
+            "test_case_id": "2.5.9.1",
+            "test_case": {
+                "test_category": "MSE (AV1)",
+                "test_title": "PlayPartialAV1Segment",
+                "test_suite": "MSE Codec Tests",
+                "status": 1,
+                "capabilities": ["AV1"]
+            }
+        },
+        {
+            "test_case_id": "2.5.10.1",
+            "test_case": {
+                "test_category": "MSE (AV1)",
+                "test_title": "AppendAV1VideoOffset",
+                "test_suite": "MSE Codec Tests",
+                "status": 1,
+                "capabilities": ["AV1"]
+            }
+        },
+        {
+            "test_case_id": "2.5.11.1",
+            "test_case": {
+                "test_category": "MSE (AV1)",
+                "test_title": "AppendMultipleInitAV1Video",
+                "test_suite": "MSE Codec Tests",
+                "status": 1,
+                "capabilities": ["AV1"]
+            }
+        },
+        {
+            "test_case_id": "2.5.12.1",
+            "test_case": {
+                "test_category": "MSE (AV1)",
+                "test_title": "AppendAV1VideoOutOfOrder",
+                "test_suite": "MSE Codec Tests",
+                "status": 1,
+                "capabilities": ["AV1"]
+            }
+        },
+        {
+            "test_case_id": "2.5.13.1",
+            "test_case": {
+                "test_category": "MSE (AV1)",
+                "test_title": "BufferedRangeAV1Video",
+                "test_suite": "MSE Codec Tests",
+                "status": 1,
+                "capabilities": ["AV1"]
+            }
+        },
+        {
+            "test_case_id": "2.5.14.1",
+            "test_case": {
+                "test_category": "MSE (AV1)",
+                "test_title": "MediaSourceDurationAV1",
+                "test_suite": "MSE Codec Tests",
+                "status": 1,
+                "capabilities": ["AV1"]
+            }
+        },
+        {
+            "test_case_id": "2.5.15.1",
+            "test_case": {
+                "test_category": "MSE (AV1)",
+                "test_title": "AV1VideoWithOverlap",
+                "test_suite": "MSE Codec Tests",
+                "status": 1,
+                "capabilities": ["AV1"]
+            }
+        },
+        {
+            "test_case_id": "2.5.16.1",
+            "test_case": {
+                "test_category": "MSE (AV1)",
+                "test_title": "AV1VideoWithSmallGap",
+                "test_suite": "MSE Codec Tests",
+                "status": 1,
+                "capabilities": ["AV1"]
+            }
+        },
+        {
+            "test_case_id": "2.5.17.1",
+            "test_case": {
+                "test_category": "MSE (AV1)",
+                "test_title": "AV1VideoWithLargeGap",
+                "test_suite": "MSE Codec Tests",
+                "status": 1,
+                "capabilities": ["AV1"]
+            }
+        },
+        {
+            "test_case_id": "2.5.18.1",
+            "test_case": {
+                "test_category": "MSE (AV1)",
+                "test_title": "SeekAV1",
+                "test_suite": "MSE Codec Tests",
+                "status": 1,
+                "capabilities": ["AV1"]
+            }
+        },
+        {
+            "test_case_id": "2.5.19.1",
+            "test_case": {
+                "test_category": "MSE (AV1)",
+                "test_title": "BufUnbufSeekAV1",
+                "test_suite": "MSE Codec Tests",
+                "status": 1,
+                "capabilities": ["AV1"]
+            }
+        },
+        {
+            "test_case_id": "2.5.20.1",
+            "test_case": {
+                "test_category": "MSE (AV1)",
+                "test_title": "DelayedAV1Video",
+                "test_suite": "MSE Codec Tests",
+                "status": 1,
+                "capabilities": ["AV1"]
+            }
+        },
+        {
+            "test_case_id": "2.5.21.1",
+            "test_case": {
+                "test_category": "MSE (AV1)",
+                "test_title": "PlaybackOnlyAV1Video",
+                "test_suite": "MSE Codec Tests",
+                "status": 1,
+                "capabilities": ["AV1"]
+            }
+        }
+    ]
+}

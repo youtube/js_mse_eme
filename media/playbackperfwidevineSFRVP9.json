@@ -1,0 +1,1068 @@
+{
+    "test_case": [{
+        "branch": "2021",
+        "test_case_id": "11.1.1.1",
+        "test_case": {
+            "test_category": "Media Playback Quality",
+            "test_title": "TotalVideoFrames",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.1.2.1",
+        "test_case": {
+            "test_category": "Media Playback Quality",
+            "test_title": "FrameDrop",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.1.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.240p.30fps@1X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.2.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.360p.30fps@1X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.3.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.480p.30fps@1X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.4.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.480p.MQ.30fps@1X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.5.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.480p.HQ.30fps@1X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.6.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.720p.30fps@0.25X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.7.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.720p.30fps@0.5X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.8.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.720p.30fps@0.75X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.9.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.720p.30fps@1X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.10.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.720p.30fps@1.25X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.11.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.720p.30fps@1.5X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.12.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.720p.30fps@1.75X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.13.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.720p.30fps@2X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.14.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.720p.MQ.30fps@0.25X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.15.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.720p.MQ.30fps@0.5X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.16.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.720p.MQ.30fps@0.75X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.17.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.720p.MQ.30fps@1X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.18.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.720p.MQ.30fps@1.25X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.19.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.720p.MQ.30fps@1.5X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.20.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.720p.MQ.30fps@1.75X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.21.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.720p.MQ.30fps@2X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.22.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.720p.HQ.30fps@0.25X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.23.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.720p.HQ.30fps@0.5X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.24.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.720p.HQ.30fps@0.75X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.25.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.720p.HQ.30fps@1X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.26.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.720p.HQ.30fps@1.25X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.27.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.720p.HQ.30fps@1.5X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.28.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.720p.HQ.30fps@1.75X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.29.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.720p.HQ.30fps@2X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.30.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1080p.30fps@0.25X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.31.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1080p.30fps@0.5X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.32.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1080p.30fps@0.75X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.33.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1080p.30fps@1X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.34.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1080p.30fps@1.25X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.35.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1080p.30fps@1.5X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.36.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1080p.30fps@1.75X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.37.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1080p.30fps@2X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.38.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1080p.MQ.30fps@0.25X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.39.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1080p.MQ.30fps@0.5X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.40.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1080p.MQ.30fps@0.75X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.41.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1080p.MQ.30fps@1X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.42.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1080p.MQ.30fps@1.25X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.43.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1080p.MQ.30fps@1.5X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.44.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1080p.MQ.30fps@1.75X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.45.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1080p.MQ.30fps@2X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.46.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1080p.HQ.30fps@0.25X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.47.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1080p.HQ.30fps@0.5X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.48.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1080p.HQ.30fps@0.75X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.49.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1080p.HQ.30fps@1X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.50.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1080p.HQ.30fps@1.25X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.51.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1080p.HQ.30fps@1.5X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.52.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1080p.HQ.30fps@1.75X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.53.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1080p.HQ.30fps@2X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.54.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1440p.24fps@0.25X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.55.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1440p.24fps@0.5X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.56.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1440p.24fps@0.75X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.57.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1440p.24fps@1X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.58.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1440p.24fps@1.25X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.59.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1440p.24fps@1.5X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.60.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1440p.24fps@1.75X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.61.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.1440p.24fps@2X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.62.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.2160p.24fps@0.25X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.63.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.2160p.24fps@0.5X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.64.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.2160p.24fps@0.75X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.65.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.2160p.24fps@1X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.66.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.2160p.24fps@1.25X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.67.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.2160p.24fps@1.5X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.68.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.2160p.24fps@1.75X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }, {
+        "branch": "2021",
+        "test_case_id": "11.2.69.1",
+        "test_case": {
+            "test_category": "VP9 Widevine SFR Playback Performance",
+            "test_title": "PlaybackPerfVP9.2160p.24fps@2X",
+            "test_description": "",
+            "passing_criteria": "",
+            "is_manual": false,
+            "file_href": "",
+            "test_suite": "VP9 Widevine SFR Tests",
+            "status": 1,
+            "test_instruction": "",
+            "capabilities": ["VP9"]
+        }
+    }]
+}

@@ -1,0 +1,454 @@
+{
+    "test_case": [
+        {
+            "test_case_id": "6.1.1.1",
+            "test_case": {
+                "test_category": "state before initial",
+                "test_title": "src",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.1.2.1",
+            "test_case": {
+                "test_category": "state before initial",
+                "test_title": "currentSrc",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.1.3.1",
+            "test_case": {
+                "test_category": "state before initial",
+                "test_title": "defaultPlaybackRate",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.1.4.1",
+            "test_case": {
+                "test_category": "state before initial",
+                "test_title": "playbackRate",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.1.5.1",
+            "test_case": {
+                "test_category": "state before initial",
+                "test_title": "duration",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.1.6.1",
+            "test_case": {
+                "test_category": "state before initial",
+                "test_title": "paused",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.1.7.1",
+            "test_case": {
+                "test_category": "state before initial",
+                "test_title": "seeking",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.1.8.1",
+            "test_case": {
+                "test_category": "state before initial",
+                "test_title": "ended",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.1.9.1",
+            "test_case": {
+                "test_category": "state before initial",
+                "test_title": "videoWidth",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.1.10.1",
+            "test_case": {
+                "test_category": "state before initial",
+                "test_title": "videoHeight",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.1.11.1",
+            "test_case": {
+                "test_category": "state before initial",
+                "test_title": "buffered.length",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.1.12.1",
+            "test_case": {
+                "test_category": "state before initial",
+                "test_title": "played.length",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.1.13.1",
+            "test_case": {
+                "test_category": "state before initial",
+                "test_title": "seekable.length",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.1.14.1",
+            "test_case": {
+                "test_category": "state before initial",
+                "test_title": "networkState",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.1.15.1",
+            "test_case": {
+                "test_category": "state before initial",
+                "test_title": "readyState",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.2.1.1",
+            "test_case": {
+                "test_category": "state after src assigned",
+                "test_title": "networkState",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.2.2.1",
+            "test_case": {
+                "test_category": "state after src assigned",
+                "test_title": "readyState",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.2.3.1",
+            "test_case": {
+                "test_category": "state after src assigned",
+                "test_title": "src",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.3.1.1",
+            "test_case": {
+                "test_category": "state in loadstart",
+                "test_title": "networkState",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.3.2.1",
+            "test_case": {
+                "test_category": "state in loadstart",
+                "test_title": "readyState",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.3.3.1",
+            "test_case": {
+                "test_category": "state in loadstart",
+                "test_title": "currentSrc",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.4.1.1",
+            "test_case": {
+                "test_category": "event",
+                "test_title": "onprogress",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.4.2.1",
+            "test_case": {
+                "test_category": "event",
+                "test_title": "ontimeupdate",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.4.3.1",
+            "test_case": {
+                "test_category": "event",
+                "test_title": "canplay",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.5.1.1",
+            "test_case": {
+                "test_category": "control",
+                "test_title": "autoplay",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.6.1.1",
+            "test_case": {
+                "test_category": "state",
+                "test_title": "networkState",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.7.1.1",
+            "test_case": {
+                "test_category": "play without data",
+                "test_title": "paused",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.7.2.1",
+            "test_case": {
+                "test_category": "play without data",
+                "test_title": "onwaiting",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.8.1.1",
+            "test_case": {
+                "test_category": "timeupdate",
+                "test_title": "maxGranularityPlaybackRate0.25",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.8.2.1",
+            "test_case": {
+                "test_category": "timeupdate",
+                "test_title": "maxGranularityPlaybackRate0.50",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.8.3.1",
+            "test_case": {
+                "test_category": "timeupdate",
+                "test_title": "maxGranularityPlaybackRate1.00",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.8.4.1",
+            "test_case": {
+                "test_category": "timeupdate",
+                "test_title": "maxGranularityPlaybackRate1.25",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.8.5.1",
+            "test_case": {
+                "test_category": "timeupdate",
+                "test_title": "maxGranularityPlaybackRate1.50",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.8.6.1",
+            "test_case": {
+                "test_category": "timeupdate",
+                "test_title": "maxGranularityPlaybackRate2.00",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.8.7.1",
+            "test_case": {
+                "test_category": "timeupdate",
+                "test_title": "minGranularityPlaybackRate0.25",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.8.8.1",
+            "test_case": {
+                "test_category": "timeupdate",
+                "test_title": "minGranularityPlaybackRate0.50",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.8.9.1",
+            "test_case": {
+                "test_category": "timeupdate",
+                "test_title": "minGranularityPlaybackRate1.00",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.8.10.1",
+            "test_case": {
+                "test_category": "timeupdate",
+                "test_title": "minGranularityPlaybackRate1.25",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.8.11.1",
+            "test_case": {
+                "test_category": "timeupdate",
+                "test_title": "minGranularityPlaybackRate1.50",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.8.12.1",
+            "test_case": {
+                "test_category": "timeupdate",
+                "test_title": "minGranularityPlaybackRate2.00",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.8.13.1",
+            "test_case": {
+                "test_category": "timeupdate",
+                "test_title": "accuracy",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.8.14.1",
+            "test_case": {
+                "test_category": "timeupdate",
+                "test_title": "progressing",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.8.15.1",
+            "test_case": {
+                "test_category": "timeupdate",
+                "test_title": "progressing after seek",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.8.16.1",
+            "test_case": {
+                "test_category": "timeupdate",
+                "test_title": "duration on timeupdate",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.9.1.1",
+            "test_case": {
+                "test_category": "playbackRate",
+                "test_title": "PlaybackRate0.25",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.9.2.1",
+            "test_case": {
+                "test_category": "playbackRate",
+                "test_title": "PlaybackRate0.50",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.9.3.1",
+            "test_case": {
+                "test_category": "playbackRate",
+                "test_title": "PlaybackRate1.00",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.9.4.1",
+            "test_case": {
+                "test_category": "playbackRate",
+                "test_title": "PlaybackRate1.25",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.9.5.1",
+            "test_case": {
+                "test_category": "playbackRate",
+                "test_title": "PlaybackRate1.50",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        },
+        {
+            "test_case_id": "6.9.6.1",
+            "test_case": {
+                "test_category": "playbackRate",
+                "test_title": "PlaybackRate2.00",
+                "test_suite": "Progressive Tests",
+                "status": 1
+            }
+        }
+    ]
+}

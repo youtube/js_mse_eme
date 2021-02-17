@@ -1,0 +1,6 @@
+[submodule "third_party/closure-library"]
+	path = third_party/closure-library
+	url = sso://team/ytlr-cert/test/third_party/closure-library
+[submodule "third_party/protocolbuffers"]
+	path = third_party/protocolbuffers
+	url = sso://team/ytlr-cert/test/third_party/protocolbuffers

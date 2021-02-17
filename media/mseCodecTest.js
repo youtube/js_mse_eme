@@ -17,6 +17,8 @@
 
 'use strict';
 
+// LINT.IfChange
+
 /**
  * MSE Codec Test Suite.
  * @class
@@ -32,8 +34,6 @@ if (window.MediaSource) {
   info += ' | webkit prefix: ' + webkitPrefix.toString();
 }
 info += ' | Default Timeout: ' + TestBase.timeout + 'ms';
-
-var fields = ['passes', 'failures', 'timeouts'];
 
 /**
  * @param {!string} name
@@ -1418,34 +1418,36 @@ createDelayedTest('2.2.14.1', Media.AAC.AudioNormal, Media.VP9.VideoNormal);
 createSingleSourceBufferPlaybackTest('2.2.15.1', Media.AAC.Audio1MB)
 
 // VP9 Specific tests.
-createAppendTest('2.3.1.1', Media.VP9.Video1MB, Media.AAC.Audio1MB);
-createAbortTest('2.3.2.1', Media.VP9.Video1MB, Media.AAC.Audio1MB);
-createTimestampOffsetTest('2.3.3.1', Media.VP9.Video1MB, Media.AAC.Audio1MB);
-createDASHLatencyTest('2.3.4.1', Media.VP9.VideoTiny, Media.AAC.Audio1MB);
-createDurationAfterAppendTest(
-    '2.3.5.1', Media.VP9.Video1MB, Media.AAC.Audio1MB);
-createPausedTest('2.3.6.1', Media.VP9.Video1MB);
-createVideoDimensionTest(
-    '2.3.7.1', Media.VP9.VideoNormal, Media.AAC.AudioNormal);
-createPlaybackStateTest('2.3.8.1', Media.VP9.VideoNormal);
-createPlayPartialSegmentTest('2.3.9.1', Media.VP9.VideoTiny);
-createAppendVideoOffsetTest('2.3.10.1',
-    Media.VP9.VideoNormal, Media.VP9.VideoTiny, Media.AAC.AudioNormal);
-createAppendMultipleInitTest(
-    '2.3.11.1', Media.VP9.Video1MB, Media.AAC.Audio1MB);
-createAppendOutOfOrderTest(
-    '2.3.12.1', Media.VP9.VideoNormal, Media.AAC.AudioNormal);
-createBufferedRangeTest(
-    '2.3.13.1', Media.VP9.VideoNormal, Media.AAC.AudioNormal);
-createMediaSourceDurationTest(
-    '2.3.14.1', Media.VP9.VideoNormal, Media.AAC.AudioNormal);
-createOverlapTest('2.3.15.1', Media.VP9.VideoNormal, Media.AAC.AudioNormal);
-createSmallGapTest('2.3.16.1', Media.VP9.VideoNormal, Media.AAC.AudioNormal);
-createLargeGapTest('2.3.17.1', Media.VP9.VideoNormal, Media.AAC.AudioNormal);
-createSeekTest('2.3.18.1', Media.VP9.VideoNormal);
-createBufUnbufSeekTest('2.3.19.1', Media.VP9.VideoNormal);
-createDelayedTest('2.3.20.1', Media.VP9.VideoNormal, Media.AAC.AudioNormal);
-createSingleSourceBufferPlaybackTest('2.3.21.1', Media.VP9.VideoTiny)
+if (!harnessConfig.novp9) {
+  createAppendTest('2.3.1.1', Media.VP9.Video1MB, Media.AAC.Audio1MB);
+  createAbortTest('2.3.2.1', Media.VP9.Video1MB, Media.AAC.Audio1MB);
+  createTimestampOffsetTest('2.3.3.1', Media.VP9.Video1MB, Media.AAC.Audio1MB);
+  createDASHLatencyTest('2.3.4.1', Media.VP9.VideoTiny, Media.AAC.Audio1MB);
+  createDurationAfterAppendTest(
+      '2.3.5.1', Media.VP9.Video1MB, Media.AAC.Audio1MB);
+  createPausedTest('2.3.6.1', Media.VP9.Video1MB);
+  createVideoDimensionTest(
+      '2.3.7.1', Media.VP9.VideoNormal, Media.AAC.AudioNormal);
+  createPlaybackStateTest('2.3.8.1', Media.VP9.VideoNormal);
+  createPlayPartialSegmentTest('2.3.9.1', Media.VP9.VideoTiny);
+  createAppendVideoOffsetTest('2.3.10.1',
+      Media.VP9.VideoNormal, Media.VP9.VideoTiny, Media.AAC.AudioNormal);
+  createAppendMultipleInitTest(
+      '2.3.11.1', Media.VP9.Video1MB, Media.AAC.Audio1MB);
+  createAppendOutOfOrderTest(
+      '2.3.12.1', Media.VP9.VideoNormal, Media.AAC.AudioNormal);
+  createBufferedRangeTest(
+      '2.3.13.1', Media.VP9.VideoNormal, Media.AAC.AudioNormal);
+  createMediaSourceDurationTest(
+      '2.3.14.1', Media.VP9.VideoNormal, Media.AAC.AudioNormal);
+  createOverlapTest('2.3.15.1', Media.VP9.VideoNormal, Media.AAC.AudioNormal);
+  createSmallGapTest('2.3.16.1', Media.VP9.VideoNormal, Media.AAC.AudioNormal);
+  createLargeGapTest('2.3.17.1', Media.VP9.VideoNormal, Media.AAC.AudioNormal);
+  createSeekTest('2.3.18.1', Media.VP9.VideoNormal);
+  createBufUnbufSeekTest('2.3.19.1', Media.VP9.VideoNormal);
+  createDelayedTest('2.3.20.1', Media.VP9.VideoNormal, Media.AAC.AudioNormal);
+  createSingleSourceBufferPlaybackTest('2.3.21.1', Media.VP9.VideoTiny)
+}
 
 // H264 Specific tests.
 createAppendTest('2.4.1.1', Media.H264.Video1MB, Media.AAC.Audio1MB);
@@ -1507,9 +1509,10 @@ createBufUnbufSeekTest('2.5.19.1', Media.AV1.Bunny360p30fps);
 createDelayedTest('2.5.20.1', Media.AV1.Bunny360p30fps, Media.AAC.AudioNormal);
 createSingleSourceBufferPlaybackTest('2.5.21.1', Media.AV1.Bunny240p30fps);
 
-return {tests: tests, info: info, fields: fields, viewType: 'default'};
+return {tests: tests, info: info, viewType: 'default'};
 
 };
+window.MsecodecTest = MsecodecTest;
 
 try {
   exports.getTest = MsecodecTest;
@@ -1517,3 +1520,6 @@ try {
   // do nothing, this function is not supposed to work for browser, but it's for
   // Node js to generate json file instead.
 }
+
+
+// LINT.ThenChange(//depot/google3/third_party/javascript/yts/media/mseCodecTest.json)

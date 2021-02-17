@@ -34,9 +34,10 @@ var createOption = function(text, value) {
   return option;
 };
 
-function TestView(testSuiteVer) {
+function TestView(testSuiteVer, testViewInfo) {
   this.testSuiteVer = testSuiteVer;
   this.testList = null;
+  this.testViewInfo = testViewInfo;
 
   var selectors = [];
   var switches = [];
@@ -81,17 +82,20 @@ function TestView(testSuiteVer) {
       };
     }
 
+    var current_url_param = "?" + util.dumpNonAuthQueryParamsFromURL();
+
     for (var index in testSuites) {
+      var url_param = current_url_param;
       var testSuite = testSuites[index];
       var testSuiteName = testSuiteDescriptions[testSuite].name;
       if (testSuite !== harnessConfig.testType) {
-        var url_param = '?test_type=' + testSuite;
+        url_param += '&test_type=' + testSuite;
         for (var key in auth_params) {
           url_param += '&' + key + '=' + auth_params[key];
         }
         this.addTestSuite(testSuiteName, url_param);
-      }
-      else {
+      } else {
+        // Do not add a link for the current test suite
         this.addTestSuite(testSuiteName, null);
       }
     }
@@ -102,8 +106,11 @@ function TestView(testSuiteVer) {
   };
 
   this.generate = function() {
-    var heading = '[' + this.testSuiteVer + '] ' +
-        testSuiteDescriptions[harnessConfig.testType].heading + ' (v REVISION)';
+    var heading = '[' + this.testSuiteVer + ']';
+    if (this.testViewInfo) {
+      heading += this.testViewInfo;
+    }
+    heading += ' ' + testSuiteDescriptions[harnessConfig.testType].heading + ' (v REVISION)';
     try {
       document.title = testSuiteDescriptions[harnessConfig.testType].title;
     } catch (e) {
@@ -215,8 +222,10 @@ function TestView(testSuiteVer) {
 };
 
 return {
-  create: function(testSuiteVer) {
-    return new TestView(testSuiteVer);
-  }};
+  create: function(testSuiteVer, testViewInfo) {
+    return new TestView(testSuiteVer, testViewInfo);
+  }
+};
 
 })();
+window.TestView = TestView;

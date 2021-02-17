@@ -18,7 +18,7 @@
 'use strict';
 
 var compactTestView = (function() {
-  function CompactTestView(fields, style) {
+  function CompactTestView(style) {
     var self = this;
     this.divId = 'testview';
     this.testCount = 0;
@@ -40,26 +40,13 @@ var compactTestView = (function() {
           if (self.onrunselected)
             self.onrunselected.call(self, e);
         });
-      // Begin non GitHub files
-      this.addCommand('Login', 'login', 'login to get user token.', function(e) {
-        util.login(() => {
-          if (document.getElementById('login-pop-up')) {
-            document.getElementById('login-pop-up').style.display = 'none';
-            util.uploadTestResult(() => { window.LOG(this, ['Login:', 'Successful']); });
-          }
-        });
-      });
-      this.addCommand('Submit', 'submit', 'submit test results.', function(e) {
-        util.uploadTestResult(() => { window.LOG(this, ['TestResult:', 'Sent']); });
-      });
-      //End non GitHub files
 
 
-      this.addLink('Links', 'links.html');
-      this.addLink('Instructions', 'instructions.html');
+      this.addLink('Links', '/links.html');
+      this.addLink('Instructions', '/instructions.html');
       this.addLink('Changelog', 'changelog.html');
       this.addLink('Download-Source', 'download.tar.gz');
-      this.addLink('Download-Media-files', 'YTS-media-files.tar.gz');
+      this.addLink('Download-Media-files', 'https://storage.cloud.google.com/ytlr-cert.appspot.com/test-materials/YTS-media-files.tar.gz');
       if (harnessConfig.novp9) {
         this.addLink('No VP9', 'main.html');
       }
@@ -105,11 +92,12 @@ var compactTestView = (function() {
   CompactTestView.prototype.constructor = CompactTestView;
 
   return {
-    create: function(testSuiteVer, fields, style) {
-      CompactTestView.prototype = TestView.create(testSuiteVer);
+    create: function(testSuiteVer, style, testViewInfo) {
+      CompactTestView.prototype = TestView.create(testSuiteVer, testViewInfo);
       CompactTestView.prototype.constructor = CompactTestView;
-      return new CompactTestView(fields, style);
+      return new CompactTestView(style);
     }
   };
 
 })();
+window.compactTestView = compactTestView;

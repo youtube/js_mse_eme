@@ -74,13 +74,14 @@ function Test(desc, style) {
       if (this.desc.running) {
         status.innerHTML = text || '...';
         status.className = 'test-status-running';
-      } else if (this.desc.failures) {
+      } else if (this.desc.outcome == TestOutcome.FAILED ||
+                 this.desc.outcome == TestOutcome.OPTIONAL_FAILED) {
         status.innerHTML = text || 'Fail';
         status.className = failureStatus;
-      } else if (this.desc.timeouts) {
+      } else if (this.desc.outcome == TestOutcome.TIMEOUT) {
         status.innerHTML = text || 'Fail';
         status.className = failureStatus;
-      } else if (this.desc.passes) {
+      } else if (this.desc.outcome == TestOutcome.PASSED) {
         status.innerHTML = text || 'Pass';
         status.className = 'test-status-pass';
       } else {
@@ -92,11 +93,12 @@ function Test(desc, style) {
           'test-status-optional-fail';
       if (this.desc.running) {
         status.className = 'test-status-running';
-      } else if (this.desc.failures) {
+      } else if (this.desc.outcome == TestOutcome.FAILED ||
+                 this.desc.outcome == TestOutcome.OPTIONAL_FAILED) {
         status.className = failureStatus;
-      } else if (this.desc.timeouts) {
+      } else if (this.desc.outcome == TestOutcome.TIMEOUT) {
         status.className = failureStatus;
-      } else if (this.desc.passes) {
+      } else if (this.desc.outcome == TestOutcome.PASSED) {
         status.className = 'test-status-pass';
       } else {
         status.className = 'test-status-none';

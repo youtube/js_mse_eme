@@ -17,6 +17,8 @@
 
 'use strict';
 
+// LINT.IfChange
+
 /**
  * Playback Performance Test Suite.
  * @class
@@ -25,8 +27,6 @@ var PlaybackperfTest = function(subgroup, suite) {
 
   var webkitPrefix = MediaSource.prototype.version.indexOf('webkit') >= 0;
   var tests = [];
-  // 100 sec to compensate for 0.25 playbackRate tests.
-  TestBase.timeout = 100000;
   var info = 'No MSE Support!';
   if (window.MediaSource) {
     info = 'webkit prefix: ' + webkitPrefix.toString();
@@ -47,6 +47,8 @@ var PlaybackperfTest = function(subgroup, suite) {
       });
       this.baseTearDown(testSuiteVer, cb);
     };
+    // 100 sec to compensate for 0.25 playbackRate tests.
+    t.prototype.timeout = 100000;
     tests.push(t);
     return t;
   };
@@ -165,18 +167,22 @@ var PlaybackperfTest = function(subgroup, suite) {
    * implementing the DroppedFrameCount API.
    */
   var createFrameDropValidationTest = function(
-      testId, videoStream1, videoStream2) {
+      testId, videoStream1, videoStream2, videoStream3) {
     var test = createPerfTest(testId, 'FrameDrop', 'Media Playback Quality');
     test.prototype.title = 'Frame Drop Validation';
     test.prototype.start = function(runner, video) {
       var perfTestUtil = new PerfTestUtil_(test, runner, video);
       var playVideo = function(videoStream) {
         setupMse(video, runner, videoStream, Media.AAC.AudioNormal);
-        video.playbackRate = 2.0;
+        if (videoStream1.src == videoStream.src) {
+          video.playbackRate = 1.0;
+        } else {
+          video.playbackRate = 2.0;
+        }
         video.addEventListener('timeupdate', function onTimeUpdate(e) {
           perfTestUtil.updateVideoPerfMetricsStatus();
 
-          if (!video.paused && video.currentTime >= 15) {
+          if (!video.paused && video.currentTime >= 10) {
             video.removeEventListener('timeupdate', onTimeUpdate);
             video.pause();
             perfTestUtil.assertAtLeastOneFrameDecoded();
@@ -184,6 +190,8 @@ var PlaybackperfTest = function(subgroup, suite) {
             if (totalDroppedFrames > 2) {
               runner.succeed();
             } else if (videoStream2.src == videoStream.src) {
+              playVideo(videoStream3);
+            } else if (videoStream3.src == videoStream.src) {
               runner.fail('UserAgent produced ' + totalDroppedFrames +
                   ' dropped frames.');
             } else {
@@ -267,6 +275,10 @@ var PlaybackperfTest = function(subgroup, suite) {
     Media.VP9.Webgl2160p30fps
   ];
 
+  if (harnessConfig.novp9) {
+    mediaFormatsVP9 = [];
+  }
+
   var mediaFormatsH264 = [
     Media.H264.Webgl144p15fps,
     Media.H264.Webgl240p30fps,
@@ -301,6 +313,20 @@ var PlaybackperfTest = function(subgroup, suite) {
     Media.AV1.Bunny1440p60fps,
   ];
 
+  if (harnessConfig.novp9) {
+    mediaFormatsHfr = [
+    Media.H264.Webgl720p60fps,
+    Media.H264.Webgl1080p60fps,
+    Media.H264.Webgl1440p30fps,
+    Media.H264.Webgl2160p30fps,
+    Media.H264.Webgl720p60fps,
+    Media.H264.Webgl1080p60fps,
+    Media.AV1.Bunny720p60fps,
+    Media.AV1.Bunny1080p60fps,
+    Media.AV1.Bunny1440p60fps,
+  ];
+  }
+
   var widevineMediaFormatsVP9 = [
     Media.VP9.DrmL3NoHDCP240p30fpsEnc,
     Media.VP9.DrmL3NoHDCP360p30fpsEnc,
@@ -316,6 +342,10 @@ var PlaybackperfTest = function(subgroup, suite) {
     Media.VP9.Sintel2kEnc,
     Media.VP9.Sintel4kEnc
   ];
+
+  if (harnessConfig.novp9) {
+    widevineMediaFormatsVP9 = [];
+  }
 
   var widevineMediaFormatsH264 = [
     Media.H264.DrmL3NoHDCP144p30fpsCenc,
@@ -342,6 +372,19 @@ var PlaybackperfTest = function(subgroup, suite) {
     Media.H264.DrmL3NoHDCP1080p60fpsCenc,
     Media.H264.DrmL3NoHDCP1080p60fpsMqCenc
   ];
+
+  if (harnessConfig.novp9) {
+    widevineMediaFormatsHfr = [
+      Media.H264.DrmL3NoHDCP720p60fpsCenc,
+      Media.H264.DrmL3NoHDCP720p60fpsMqCenc,
+      Media.H264.DrmL3NoHDCP1080p60fpsCenc,
+      Media.H264.DrmL3NoHDCP1080p60fpsMqCenc,
+      Media.H264.DrmL3NoHDCP720p60fpsCenc,
+      Media.H264.DrmL3NoHDCP720p60fpsMqCenc,
+      Media.H264.DrmL3NoHDCP1080p60fpsCenc,
+      Media.H264.DrmL3NoHDCP1080p60fpsMqCenc
+    ];
+  }
 
   var playbackSpeeds = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
 
@@ -379,7 +422,7 @@ var PlaybackperfTest = function(subgroup, suite) {
     createTotalVideoFramesValidationTest(
         `${suiteId}.1.1.1`, Media.H264.Video1MB, 25);
     createFrameDropValidationTest(
-        `${suiteId}.1.2.1`,
+        `${suiteId}.1.2.1`, Media.H264.Webgl1080p240fps,
         Media.H264.Webgl1080p60fps,
         Media.VP9.Webgl2160p60fps);
     var testCaseId = 1;
@@ -473,6 +516,7 @@ var PlaybackperfTest = function(subgroup, suite) {
   };
 
 };
+window.PlaybackperfTest = PlaybackperfTest;
 
 var PlaybackperfTestAll = function() {
   PlaybackperfTest('sfr-vp9', 'VP9 SFR Tests');
@@ -490,3 +534,12 @@ try {
   // do nothing, this function is not supposed to work for browser, but it's for
   // Node js to generate json file instead.
 }
+
+
+// LINT.ThenChange(playbackperfAV1.json,
+//                 playbackperfH264Test.json,
+//                 playbackperfHFR.json,
+//                 playbackperfVP9.json,
+//                 playbackperfwidevineHFR.json,
+//                 playbackperfwidevineSFRH264.json,
+//                 playbackperfwidevineSFRVP9.json)

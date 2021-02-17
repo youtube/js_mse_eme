@@ -22,10 +22,58 @@ limitations under the License.
   <body>
     <div id="testArea" style="display: none"></div>
     <script type="text/javascript" async defer>
+      // Set global variable before loading closure scripts.
+      var goog = goog || {};
+      goog.global = this || self;
+      goog.global.CLOSURE_NO_DEPS = true;
+
       // Do NOT Change order of script sources!
       var scriptSources = [
-        "third_party/Shaka/shaka-player.compiled.js",
-        "third_party/beatgammit/base64.min.js",
+        "third_party/closure-library/closure-library/closure/goog/base.js",
+        "third_party/closure-library/closure-library/closure/goog/debug/error.js",
+        "third_party/closure-library/closure-library/closure/goog/dom/nodetype.js",
+        "third_party/closure-library/closure-library/closure/goog/asserts/asserts.js",
+        "third_party/closure-library/closure-library/closure/goog/array/array.js",
+        "third_party/closure-library/closure-library/closure/goog/crypt/crypt.js",
+        "third_party/closure-library/closure-library/closure/goog/string/typedstring.js",
+        "third_party/closure-library/closure-library/closure/goog/string/const.js",
+        "third_party/closure-library/closure-library/closure/goog/fs/url.js",
+        "third_party/closure-library/closure-library/closure/goog/html/trustedtypes.js",
+        "third_party/closure-library/closure-library/closure/goog/i18n/bidi.js",
+        "third_party/closure-library/closure-library/closure/goog/html/trustedresourceurl.js",
+        "third_party/closure-library/closure-library/closure/goog/string/internal.js",
+        "third_party/closure-library/closure-library/closure/goog/html/safeurl.js",
+        "third_party/closure-library/closure-library/closure/goog/html/safestyle.js",
+        "third_party/closure-library/closure-library/closure/goog/dom/asserts.js",
+        "third_party/closure-library/closure-library/closure/goog/functions/functions.js",
+        "third_party/closure-library/closure-library/closure/goog/dom/htmlelement.js",
+        "third_party/closure-library/closure-library/closure/goog/dom/tagname.js",
+        "third_party/closure-library/closure-library/closure/goog/object/object.js",
+        "third_party/closure-library/closure-library/closure/goog/dom/tags.js",
+        "third_party/closure-library/closure-library/closure/goog/html/safescript.js",
+        "third_party/closure-library/closure-library/closure/goog/html/safestylesheet.js",
+        "third_party/closure-library/closure-library/closure/goog/labs/useragent/util.js",
+        "third_party/closure-library/closure-library/closure/goog/labs/useragent/browser.js",
+        "third_party/closure-library/closure-library/closure/goog/html/safehtml.js",
+        "third_party/closure-library/closure-library/closure/goog/html/uncheckedconversions.js",
+        "third_party/closure-library/closure-library/closure/goog/dom/safe.js",
+        "third_party/closure-library/closure-library/closure/goog/string/string.js",
+        "third_party/closure-library/closure-library/closure/goog/labs/useragent/engine.js",
+        "third_party/closure-library/closure-library/closure/goog/labs/useragent/platform.js",
+        "third_party/closure-library/closure-library/closure/goog/reflect/reflect.js",
+        "third_party/closure-library/closure-library/closure/goog/useragent/useragent.js",
+        "third_party/closure-library/closure-library/closure/goog/useragent/product.js",
+        "third_party/closure-library/closure-library/closure/goog/crypt/base64.js",
+        "third_party/protocolbuffers/protobuf/js/binary/constants.js",
+        "third_party/protocolbuffers/protobuf/js/binary/utils.js",
+        "third_party/protocolbuffers/protobuf/js/binary/arith.js",
+        "third_party/protocolbuffers/protobuf/js/binary/decoder.js",
+        "third_party/protocolbuffers/protobuf/js/binary/encoder.js",
+        "third_party/protocolbuffers/protobuf/js/binary/reader.js",
+        "third_party/protocolbuffers/protobuf/js/binary/writer.js",
+        "third_party/protocolbuffers/protobuf/js/map.js",
+        "third_party/protocolbuffers/protobuf/js/message.js",
+        "harness/polyfill.js",
         "harness/util.js",
         "harness/constants.js",
         "harness/key.js",
@@ -39,13 +87,25 @@ limitations under the License.
         "harness/compactTestView.js",
         "harness/test.js",
         "harness/testTypes.js",
+        "lib/codecs/av1Codec.js",
+        "lib/codecs/vp9Codec.js",
+        "lib/streams/aac.js",
+        "lib/streams/opus.js",
+        "lib/streams/ac3.js",
+        "lib/streams/eac3.js",
+        "lib/streams/h264.js",
+        "lib/streams/vp9.js",
+        "lib/streams/av1/clear.js",
+        "lib/streams/av1/senc.js",
+        "lib/streams/av1.js",
         "lib/streams/mediaStreams.js",
         "lib/mse/msutil.js",
         "lib/mse/mediaSourcePortability.js",
         "lib/mse/videoPerformance.js",
+        "lib/eme/licenseRequestReader.js",
         "lib/eme/encryptedMediaPortability.js",
         "lib/eme/licenseManager.js",
-        "lib/eme/emeManager.js",
+        "lib/eme/emeHandler.js",
         "lib/eme/emutil.js",
         "lib/parsers/mp4.js",
         "lib/parsers/webm.js",
@@ -77,14 +137,5 @@ limitations under the License.
         }
       })();
     </script>
-    <div id="login-pop-up" style="display: none">
-      <div id="client-id-div">
-        <p class="step">1) On your phone or computer, go to youtube.com/activate</p>
-        <br>
-        <p class="step" id="client-id">2) Enter this code</p>
-        <br>
-        <p class="step">3) Sign in with your Google account</p>
-      </div>
-    </div>
   </body>
 </html>

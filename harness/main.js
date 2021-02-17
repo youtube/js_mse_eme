@@ -26,7 +26,7 @@ var loadTests = function(testType) {
   if (testName == "playbackperf") {
     var subgroup =
       testType.substring(testType.indexOf('-') + 1, testType.lastIndexOf('-'));
-    return window['PlaybackperfTest'](subgroup)
+    return window['PlaybackperfTest'](subgroup);
   } else {
     testName = util.MakeCapitalName(testName) + 'Test';
     return window[testName]();
@@ -60,6 +60,7 @@ var parseParams = function(testSuiteConfig) {
   config.cert_scope = parseParam('cert_scope', null);
   config.sig = parseParam('sig', null);
   config.start_time = parseParam('start_time', null);
+  config.test_plan_id = parseParam('test_plan', '');
 
   config.is_cobalt = util.isCobalt();
   config.support_hdr = util.supportHdr();
@@ -149,8 +150,10 @@ var createLogger = function() {
 
 window.globalRunner = null;
 
-var createRunner = function(testSuite, testSuiteVer, testsMask) {
-  var runner = new TestExecutor(testSuite, testsMask, testSuiteVer);
+var createRunner = function(
+    testSuite, testSuiteVer, testsMask, testAllowList = [], testPlanId = '') {
+  var runner = new TestExecutor(
+      testSuite, testsMask, testSuiteVer, testAllowList, testPlanId);
 
   // Expose the runner so outside/injected scripts can read it.
   window.globalRunner = runner;
@@ -190,6 +193,14 @@ var addTimestampHash = function() {
   window.location.hash = newTimeStamp;
 };
 
+var loadTestsAndCreateRunner = function(testSuiteVer) {
+  var testSuite = loadTests(harnessConfig.testType);
+  var runner = createRunner(testSuite, testSuiteVer, harnessConfig.testsMask);
+  if (harnessConfig.command === 'run')
+    runner.startTest(0, runner.testList.length);
+};
+
+
 window.startMseTest = function(testSuiteVer) {
   setupMsePortability(testSuiteVer);
   var testSuiteVersion = testSuiteVersions[testSuiteVer];
@@ -210,11 +221,7 @@ window.startMseTest = function(testSuiteVer) {
 
   configureHarness(testSuiteVersion.config);
   createLogger();
-
-  var testSuite = loadTests(harnessConfig.testType);
-  var runner = createRunner(testSuite, testSuiteVer, harnessConfig.testsMask);
-  if (harnessConfig.command === 'run')
-    runner.startTest(0, runner.testList.length);
+  loadTestsAndCreateRunner(testSuiteVer);
 };
 
 })();

@@ -15,6 +15,10 @@
  * limitations under the License.
  */
 
-'use strict';
-
-window.testVersion = '2021';
+describe('createTest', function() {
+  it('works', function() {
+    var Test = createTest('Test Test');
+    var test = new Test();
+    expect(test.timeout).toBe(30000);
+  });
+});

@@ -15,6 +15,4 @@
  * limitations under the License.
  */
 
-'use strict';
-
-window.testVersion = '2021';
+startMseTest(testVersion);

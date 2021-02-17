@@ -317,6 +317,27 @@ function FocusManager() {
 
       return true;
     };
+    this.clear = function() {
+      for(let i = 0; i < elements.length; i++) {
+        let elem = elements[i];
+        if (elem.rect) {
+          delete elem.rect;
+        }
+      }
+      elements = [];
+    };
+
+    this.initFocusManager = function() {
+      var elements = document.getElementsByClassName('focusable');
+      if (elements.length === 0) {
+        return;
+      }
+      elements[0].focus();
+      this.clear();
+      for (var i = 0; i < elements.length; ++i) {
+        this.add(elements[i]);
+      }
+    };
 
     this.add = function(element) {
       if (elements.indexOf(element) === -1) {
@@ -326,6 +347,8 @@ function FocusManager() {
       }
     };
   };
+
+  window.focusManager = new FocusManager;
 
   window.navigate = function(e) {
     var activeElement = document.activeElement;
@@ -342,10 +365,6 @@ function FocusManager() {
   }
 
   window.addEventListener('load', function() {
-    var focusManager = new FocusManager;
-    var elements = document.getElementsByClassName('focusable');
-    elements[0].focus();
-    for (var i = 0; i < elements.length; ++i)
-      focusManager.add(elements[i]);
+    window.focusManager.initFocusManager();
   });
 })();

@@ -33,7 +33,8 @@ var TestOutcome = {
   UNKNOWN: 0,
   PASSED: 1,
   FAILED: 2,
-  OPTIONAL_FAILED: 3
+  OPTIONAL_FAILED: 3,
+  TIMEOUT: 4
 };
 
 TestBase.onsourceopen = function() {
@@ -115,9 +116,6 @@ window.createTest = function (name, category = '', mandatory = true, id = '',
   t.prototype.id = id;
   t.prototype.desc = name;
   t.prototype.running = false;
-  t.prototype.passes = 0;
-  t.prototype.failures = 0;
-  t.prototype.timeouts = 0;
   t.prototype.outcome = TestOutcome.UNKNOWN;
   t.prototype.category = category;
   t.prototype.mandatory = mandatory;
@@ -139,7 +137,10 @@ window.createMSTest = function (testId, name, category = '', mandatory = true,
   return t;
 };
 
-var TestExecutor = function(testSuite, testsMask, testSuiteVer) {
+var TestExecutor = function(
+    testSuite, testsMask, testSuiteVer, testAllowList = [], testPlanId = null) {
+  this.fullTestList = testSuite;
+  this.testPlanId = testPlanId;
   this.testView = null;
   this.currentTest = null;
   this.currentTestIdx = 0;
@@ -150,17 +151,33 @@ var TestExecutor = function(testSuite, testsMask, testSuiteVer) {
   this.lastResult = 'pass';
   this.testSuiteVer = testSuiteVer;
 
-  if (testsMask) {
+  if (testsMask && testsMask != '1') {
     this.testList = [];
     testsMask = util.resize(testsMask, testSuite.tests.length,
                             testsMask.substr(-1));
-    for (var i = 0; i < testSuite.tests.length; ++i)
+    for (let i = 0; i < testSuite.tests.length; ++i)
       if (testsMask[i] === '1')
         this.testList.push(testSuite.tests[i]);
+  } else if (testAllowList.length > 0) {
+    this.testList = [];
+    for (let i = 0; i < testSuite.tests.length; i++) {
+      if (testAllowList.includes(testSuite.tests[i].prototype.id)) {
+        this.testList.push(testSuite.tests[i]);
+      }
+    }
   } else {
     this.testList = testSuite.tests;
   }
-  this.fields = testSuite.fields;
+
+  if (testsMask != '1') {
+    this.testViewInfo = '[Displaying Test Mask]';
+  } else if (this.testPlanId && testAllowList.length > 0) {
+    this.testViewInfo = '[Test Plan ID: ' + this.testPlanId + ']';
+  } else if (this.testPlanId) {
+    this.testViewInfo = '[No valid test plan found for device]';
+  }
+
+
   this.info = testSuite.info;
   this.viewType = testSuite.viewType;
 };
@@ -272,8 +289,8 @@ TestExecutor.prototype.updateStatus = function() {
 
 TestExecutor.prototype.initialize = function() {
   var self = this;
-  this.testView = compactTestView.create(this.testSuiteVer, this.fields,
-                                         this.viewType);
+  this.testView = compactTestView.create(
+      this.testSuiteVer, this.viewType, this.testViewInfo);
 
   this.testView.onrunselected = function() {
     self.startTest(0, self.testList.length);
@@ -292,6 +309,47 @@ TestExecutor.prototype.initialize = function() {
 
   this.longestTimeRatio = -1;
   this.longestTest = null;
+};
+
+TestExecutor.prototype.reinitializeWithTestCaseIdAllowList = function(
+    allowList, testPlanId) {
+  if (!allowList || allowList.length == 0) {
+    return;
+  }
+  // Filter out tests that do not exist in allowlist
+  var filteredTestList = [];
+  for (var i = 0; i < this.fullTestList.tests.length; i++) {
+    var test = this.fullTestList.tests[i];
+    if (allowList.includes(test.prototype.id)) {
+      filteredTestList.push(test);
+    }
+  }
+  this.testList = filteredTestList;
+
+  // Re-index tests
+  for (var i = 0; i < this.testList.length; i++) {
+    this.testList[i].prototype.index = i;
+  }
+
+  if (testPlanId) {
+    this.testPlanId = testPlanId;
+  }
+
+  // Clear elements created by initialization
+  let title = document.querySelector('span#title');
+  title.parentElement.removeChild(title);
+  let info = document.querySelector('span#info');
+  info.parentElement.removeChild(info);
+  let usage = document.querySelector('span#usage');
+  usage.parentElement.removeChild(usage);
+  let testView = document.querySelector('div#testview');
+  testView.parentElement.removeChild(testView);
+
+  // Reinitialize page
+  this.initialize();
+
+  // After the page has been initialized, tell the focusmanager to reinitialize
+  window.focusManager.initFocusManager();
 };
 
 TestExecutor.prototype.onfinished = function() {
@@ -313,9 +371,11 @@ TestExecutor.prototype.onfinished = function() {
     this.log('All tests are completed');
     for (var i = 0; i < window.globalRunner.testList.length; i++) {
       var test =  window.globalRunner.testList[i];
-      if (test.prototype.failures > 0) {
+      if (test.prototype.outcome == TestOutcome.FAILED ||
+          test.prototype.outcome == TestOutcome.OPTIONAL_FAILED) {
         this.log((test.prototype.index + 1) + ':' + test.prototype.name +
-           ': Failed with "' + test.prototype.lastError.message + '"');
+           ': ' + (test.prototype.mandatory ? 'FAILED' : 'OPTIONAL_FAILED') +
+           ' with "' + test.prototype.lastError.message + '"');
       }
     }
   }
@@ -411,7 +471,6 @@ TestExecutor.prototype.succeed = function() {
   }
   this.blockTestResults = true;
   this.lastResult = 'pass';
-  ++this.testList[this.currentTestIdx].prototype.passes;
   this.testList[this.currentTestIdx].prototype.outcome = TestOutcome.PASSED;
   this.updateStatus();
   this.log('Test ' + (this.currentTest.index + 1) + ':' +
@@ -455,8 +514,8 @@ TestExecutor.prototype.error = function(msg, isTimeout) {
 };
 
 TestExecutor.prototype.fail = function(msg) {
-  ++this.testList[this.currentTestIdx].prototype.failures;
-  if (this.testList[this.currentTestIdx].prototype.mandatory) {
+  var testIsMandatory = this.testList[this.currentTestIdx].prototype.mandatory;
+  if (testIsMandatory) {
     this.testList[this.currentTestIdx].prototype.outcome = TestOutcome.FAILED;
   } else {
     this.testList[this.currentTestIdx].prototype.outcome = TestOutcome.OPTIONAL_FAILED;
@@ -464,7 +523,7 @@ TestExecutor.prototype.fail = function(msg) {
 
   this.updateStatus();
   this.log('Test ' + (this.currentTest.index + 1) + ':' +
-      this.currentTest.desc + ' FAILED');
+           this.currentTest.desc + ' ' + (testIsMandatory ? 'FAILED' : 'OPTIONAL_FAILED'));
   this.error(msg, false);
 };
 
@@ -511,7 +570,6 @@ TestExecutor.prototype.timeout = function() {
   }
 
   if (isTestTimedOut) {
-    ++this.testList[this.currentTestIdx].prototype.timeouts;
     if (this.testList[this.currentTestIdx].prototype.mandatory) {
       this.testList[this.currentTestIdx].prototype.outcome = TestOutcome.FAILED;
     } else {
@@ -556,6 +614,7 @@ TestExecutor.prototype.teardownCurrentTest = function(isTimeout, errorMsg) {
 
 window.TestBase = TestBase;
 window.TestExecutor = TestExecutor;
+window.TestOutcome = TestOutcome;
 
 window.getTestResults = function(testStartId, testEndId) {
   testStartId = testStartId || 0;
@@ -581,12 +640,13 @@ window.getTestResults = function(testStartId, testEndId) {
       var test = window.globalRunner.testList[i];
       var category = test.prototype.category;
       var name = test.prototype.name;
-      if (test.prototype.failures > 0) {
+      if (test.prototype.outcome == TestOutcome.FAILED ||
+          test.prototype.outcome == TestOutcome.OPTIONAL_FAILED) {
         if (!failResults[category]) {
           failResults[category] = [];
         }
         failResults[category].push(name);
-      } else if (test.prototype.passes > 0) {
+      } else if (test.prototype.outcome == TestOutcome.PASSED) {
         if (!passResults[category]) {
           passResults[category] = [];
         }
@@ -601,6 +661,7 @@ window.getTestResults = function(testStartId, testEndId) {
 })();
 
 try {
+  exports.TestOutcome = window.TestOutcome;
   exports.TestBase = window.TestBase;
   exports.createTest = window.createTest;
   exports.createMSTest = window.createMSTest;

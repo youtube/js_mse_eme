@@ -17,6 +17,8 @@
 
 'use strict';
 
+// LINT.IfChange
+
 /**
  * Progressive Test Suite.
  * @class
@@ -25,8 +27,6 @@ var ProgressiveTest = function() {
 
 var tests = [];
 var info = 'Default Timeout: ' + TestBase.timeout + 'ms';
-
-var fields = ['passes', 'failures', 'timeouts'];
 
 var createProgressiveTest = function(testId, category, name, mandatory = true) {
   var t = createTest(name, category, mandatory, testId, 'Progressive Tests');
@@ -518,9 +518,10 @@ createPlaybackRateTest('6.9.5.1', 1.50);
 createPlaybackRateTest('6.9.6.1', 2.0);
 
 
-return {tests: tests, info: info, fields: fields, viewType: 'default'};
+return {tests: tests, info: info, viewType: 'default'};
 
 };
+window.ProgressiveTest = ProgressiveTest;
 
 try {
   exports.getTest = ProgressiveTest;
@@ -528,3 +529,5 @@ try {
   // do nothing, this function is not supposed to work for browser, but it's for
   // Node js to generate json file instead.
 }
+
+// LINT.ThenChange(//depot/google3/third_party/javascript/yts/media/progressiveTest.json)

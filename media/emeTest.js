@@ -17,6 +17,8 @@
 
 'use strict';
 
+// LINT.IfChange
+
 /**
  * Encrypted Media Test Suite.
  * @class
@@ -32,8 +34,6 @@ if (window.MediaSource) {
   info += ' | webkit prefix: ' + webkitPrefix.toString();
 }
 info += ' | Default Timeout: ' + TestBase.timeout + 'ms';
-
-var fields = ['passes', 'failures', 'timeouts'];
 
 var createEmeTest = function(
     testId, name, category = 'EME', mandatory = true, streams = []) {
@@ -63,7 +63,7 @@ var createEncryptedCodecTest = function(
   var test = createEmeTest(
       testId,
       `${keySystemTitle}${encStream.codec}${desc}` +
-          `${util.MakeCapitalName(encStream.mediatype)}`,
+      `${util.MakeCapitalName(encStream.mediatype)}`,
       `${keySystemTitle}${mandatory ? '' : ' (Optional)'}`,
       mandatory,
       [videoStream, audioStream]);
@@ -95,12 +95,15 @@ createEncryptedCodecTest(
 createEncryptedCodecTest(
     '3.1.3.1', Media.Opus.SintelEncrypted, Media.VP9.VideoNormal,
     LicenseManager.WIDEVINE);
+// VP9 Specific tests.
+if (!harnessConfig.novp9) {
 createEncryptedCodecTest(
     '3.1.4.1', Media.VP9.VideoHighEnc, Media.Opus.CarMed,
     LicenseManager.WIDEVINE);
 createEncryptedCodecTest(
     '3.1.5.1', Media.VP9.VideoHighSubSampleEnc, Media.Opus.CarMed,
     LicenseManager.WIDEVINE, true, 'Subsample');
+}
 
 /**
  * Validate device supports key rotation with 16 MediaKeySesssion objects and
@@ -181,8 +184,51 @@ var createWidevineLicenseDelayTest = function(testId, videoStream) {
 
 
 createWidevineLicenseDelayTest('3.1.7.1', Media.H264.VideoStreamYTCenc);
-createWidevineLicenseDelayTest('3.1.8.1', Media.VP9.VideoHighSubSampleEnc);
+// VP9 Specific tests.
+if (!harnessConfig.novp9) {
+  createWidevineLicenseDelayTest('3.1.8.1', Media.VP9.VideoHighSubSampleEnc);
+}
+/**
+ * Ensure setServerCertificate() is implemented properly.
+ * Test passes if it's not supported.
+ */
+var createSetServerCertificateTest = function(
+    testId, testName, assertion, certificateSrc) {
+  var videoStream = Media.VP9.DrmL3NoHDCP360p30fpsEnc;
+  var audioStream = Media.AAC.AudioNormal;
 
+  var test = createEmeTest(
+      testId,
+      testName,
+      'Widevine',
+      true,
+      [videoStream, audioStream]);
+  test.prototype.title = 'Test support for setServerCertificate';
+  test.prototype.start = function(runner, video) {
+    var testEmeHandler = this.emeHandler;
+
+    setupMse(video, runner, videoStream, audioStream);
+    setupEme(
+        runner, testEmeHandler, video, videoStream, LicenseManager.WIDEVINE);
+    testEmeHandler.setCertificateSrc(certificateSrc);
+    video.addEventListener('timeupdate', function onTimeUpdate(e) {
+      if (!video.paused && video.currentTime >= 5) {
+        video.removeEventListener('timeupdate', onTimeUpdate);
+        assertion(runner, testEmeHandler);
+        runner.succeed();
+      }
+    });
+    video.play();
+  };
+};
+if (!harnessConfig.novp9) {
+  createSetServerCertificateTest(
+      '3.1.10.2', 'setServerCertificate', function(runner, emeHandler) {
+        if (emeHandler.isSetServerCertificateSupported) {
+          runner.assert(emeHandler.messageEncrypted, 'Message is not encrypted');
+        }
+      }, util.getCertificatePath('valid_widevine_cert.bin'))
+}
 createEncryptedCodecTest(
     '3.2.1.1', Media.H264.VideoSmallCenc, Media.AAC.AudioNormal,
     LicenseManager.PLAYREADY, false);
@@ -274,12 +320,227 @@ createWidevineCreateMESTest(
     '3.4.2.1', Media.AAC.AudioSmallCenc, Media.H264.VideoNormal);
 createWidevineCreateMESTest(
     '3.4.3.1', Media.Opus.SintelEncrypted, Media.VP9.VideoNormal);
-createWidevineCreateMESTest(
-    '3.4.4.1', Media.VP9.VideoHighEnc, Media.Opus.CarMed);
+// VP9 Specific tests.
+if (!harnessConfig.novp9) {
+  createWidevineCreateMESTest(
+      '3.4.4.1', Media.VP9.VideoHighEnc, Media.Opus.CarMed);
+}
+/**
+ * Validates the required encryption scheme is supported by device and can play
+ * the associated encrypted media.
+ */
+var createEncryptionSchemeTest =
+    function(
+        testId, videoStream, videoEncryptionScheme, audioStream,
+        audioEncryptionScheme, mandatory = true) {
+  var validEncryptionScheme = ['cenc', 'cbcs', null];
+  var appendToTestName = function(encryptionScheme) {
+    var name = '';
+    if (validEncryptionScheme.includes(encryptionScheme)) {
+      if (encryptionScheme) {
+        name += util.MakeCapitalName(encryptionScheme);
+      } else {
+        name += 'UnsetScheme';
+      }
+    } else {
+      name += 'InvalidScheme';
+    }
+    return name;
+  };
+  var testName = ''
+  var mediaStreams = [];
+  if (videoStream) {
+    mediaStreams.push(videoStream);
+    testName += `${videoStream.codec}Video`;
+    testName += appendToTestName(videoEncryptionScheme);
+  }
+  if (audioStream) {
+    mediaStreams.push(audioStream);
+    testName += `${audioStream.codec}Audio`;
+    testName += appendToTestName(audioEncryptionScheme);
+  }
 
-return {tests: tests, info: info, fields: fields, viewType: 'default'};
+  var test = createEmeTest(
+      testId, testName, 'EncryptionScheme', mandatory, mediaStreams);
+  test.prototype.title = 'Test EncryptionScheme support for various codecs';
+  test.prototype.start = function(runner, video) {
+    var playbackStreams = function(video, runner, videoStream, audioStream) {
+      setupMse(video, runner, videoStream, audioStream);
+      video.addEventListener('timeupdate', function onTimeUpdate(e) {
+        if (!video.paused && video.currentTime >= 12 &&
+            !testEmeHandler.keyUnusable) {
+          video.removeEventListener('timeupdate', onTimeUpdate);
+          runner.checkGE(video.currentTime, 12, 'currentTime');
+          runner.succeed();
+        }
+      });
+      video.play();
+    };
+    var createCapabilities = function(mimetype, encryptionScheme) {
+      return [{
+        'contentType': mimetype,
+        'encryptionScheme': encryptionScheme,
+      }];
+    };
+    var createConfig = function(
+        initDataTypes, audioCapabilities, videoCapabilities) {
+      var config = {
+        'initDataTypes': initDataTypes,
+      };
+      if (audioCapabilities != null) {
+        config['audioCapabilities'] = audioCapabilities;
+      }
+      if (videoCapabilities != null) {
+        config['videoCapabilities'] = videoCapabilities;
+      }
+      return [config];
+    };
+    var initDataTypes = ['cenc'];
+    for (var stream of mediaStreams) {
+      if (stream.container == 'webm') {
+        initDataTypes.push('webm');
+        break;
+      }
+    }
+    var videoCapabilities = null;
+    var audioCapabilities = null;
+    var videoHasValidScheme = false;
+    var audioHasValidScheme = false;
+    if (videoStream) {
+      videoCapabilities =
+          createCapabilities(videoStream.mimetype, videoEncryptionScheme);
+      if (validEncryptionScheme.includes(videoEncryptionScheme)) {
+        videoHasValidScheme = true;
+      }
+    } else {
+      videoHasValidScheme = true;
+    }
+    if (audioStream) {
+      audioCapabilities =
+          createCapabilities(audioStream.mimetype, audioEncryptionScheme);
+      if (validEncryptionScheme.includes(audioEncryptionScheme)) {
+        audioHasValidScheme = true;
+      }
+    } else {
+      audioHasValidScheme = true;
+    }
+    var config =
+        createConfig(initDataTypes, audioCapabilities, videoCapabilities);
+    var testEmeHandler = this.emeHandler;
+    setupEme(
+        runner, testEmeHandler, video, mediaStreams, LicenseManager.WIDEVINE);
+    testEmeHandler.checkKeySystem(config).then(
+        (result) => {
+          if (!videoHasValidScheme || !audioHasValidScheme) {
+            runner.fail(
+                "checkKeySystem succeeded with invalid EncryptionScheme.");
+          }
+          playbackStreams(video, runner, videoStream, audioStream)
+        },
+        (rejected) => {
+          this.log(`rejected KeySystem for ${videoEncryptionScheme} and ${
+              audioEncryptionScheme} EncryptionScheme.`)
+          if (videoHasValidScheme && audioHasValidScheme) {
+            runner.fail(rejected);
+          } else {
+            runner.succeed();
+          }
+        });
+  }
+}
+
+// createEncryptionSchemeTest last test number: 23
+// Video only
+createEncryptionSchemeTest('3.5.1.1', Media.H264.VideoStreamYTCenc, 'cenc');
+createEncryptionSchemeTest('3.5.2.1', Media.H264.VideoStreamYTCenc, null);
+createEncryptionSchemeTest(
+    '3.5.4.1', Media.H264.VideoStreamYTCenc, 'invalid99');
+// VP9 Specific tests.
+if (!harnessConfig.novp9) {
+  createEncryptionSchemeTest(
+      '3.5.5.1', Media.VP9.DrmL3NoHDCP240p30fpsEnc, 'cenc');
+  createEncryptionSchemeTest(
+      '3.5.6.1', Media.VP9.DrmL3NoHDCP240p30fpsEnc, null);
+  createEncryptionSchemeTest('3.5.7.1', Media.VP9.DrmCbcs1080p60fps, 'cbcs');
+  createEncryptionSchemeTest(
+      '3.5.8.1', Media.VP9.DrmL3NoHDCP240p30fpsEnc, 'invalid99');
+}
+createEncryptionSchemeTest('3.5.9.1', Media.AV1.SencSdr1080p30, 'cbcs');
+createEncryptionSchemeTest('3.5.10.1', Media.AV1.SencSdr1080p30, null);
+createEncryptionSchemeTest('3.5.11.1', Media.AV1.SencSdr1080p30, 'invalid99');
+
+// Audio only
+createEncryptionSchemeTest(
+    '3.5.12.1', null, null, Media.AAC.AudioSmallCenc, 'cenc');
+createEncryptionSchemeTest(
+    '3.5.13.1', null, null, Media.AAC.AudioSmallCenc, null);
+createEncryptionSchemeTest('3.5.14.1', null, null, Media.AAC.DrmCbcs, 'cbcs');
+createEncryptionSchemeTest(
+    '3.5.15.1', null, null, Media.AAC.AudioSmallCenc, 'invalid99');
+createEncryptionSchemeTest(
+    '3.5.16.1', null, null, Media.Opus.SintelEncrypted, 'cenc');
+createEncryptionSchemeTest(
+    '3.5.17.1', null, null, Media.Opus.SintelEncrypted, null);
+createEncryptionSchemeTest(
+    '3.5.19.1', null, null, Media.Opus.SintelEncrypted, 'invalid99');
+createEncryptionSchemeTest('3.5.18.1', null, null, Media.AC3.DrmCbcs, 'cbcs');
+createEncryptionSchemeTest('3.5.3.1', null, null, Media.EAC3.DrmCbcs, 'cbcs');
+
+// Both video and audio
+createEncryptionSchemeTest(
+    '3.5.20.1', Media.H264.VideoStreamYTCenc, 'cenc', Media.AAC.AudioSmallCenc,
+    'cenc');
+// VP9 Specific tests.
+if (!harnessConfig.novp9) {
+  createEncryptionSchemeTest(
+      '3.5.21.1', Media.VP9.VideoHighEnc, 'cenc', Media.Opus.SintelEncrypted,
+      'cenc');
+  createEncryptionSchemeTest(
+      '3.5.22.1', Media.VP9.DrmCbcs1080p60fps, 'cbcs', Media.AAC.DrmCbcs,
+      'cbcs');
+}
+createEncryptionSchemeTest(
+    '3.5.23.1', Media.AV1.SencSdr1080p30, 'cbcs', Media.AAC.DrmCbcs, 'cbcs');
+createEncryptionSchemeTest(
+    '3.5.24.1', Media.AV1.SencSdr1080p30, 'cbcs', Media.AAC.AudioSmallCenc,
+    'cenc');
+
+/**
+ * Ensure encrypted AV1 video can be played with a Widevine license.
+ */
+var createWidevineAV1Test = function(testId, videoStream, mandatory = true) {
+  const keySystem = LicenseManager.WIDEVINE;
+  const audioStream = Media.Opus.CarMed;
+  const codecMetadata = videoStream.get('codecMetadata');
+  const bitDepth = codecMetadata.bitDepth ? codecMetadata.bitDepth : 8;
+  const title = [
+    'WidevineAV1', `${bitDepth}bit`, videoStream.get('transferFunction'),
+    videoStream.get('resolution'), `${Math.round(videoStream.get('fps'))}fps`
+  ].join('.');
+  const test = createEmeTest(
+      testId, title, 'Widevine AV1', mandatory, [videoStream, audioStream]);
+  test.prototype.title = 'Test if we can play AV1 encrypted with Widevine.';
+  test.prototype.start = function(runner, video) {
+    const testEmeHandler = this.emeHandler;
+
+    setupMse(video, runner, videoStream, audioStream);
+    setupEme(runner, testEmeHandler, video, videoStream, keySystem);
+    video.addEventListener('timeupdate', function onTimeUpdate(e) {
+      if (!video.paused && video.currentTime >= 15 &&
+          !testEmeHandler.keyUnusable) {
+        video.removeEventListener('timeupdate', onTimeUpdate);
+        runner.checkGE(video.currentTime, 15, 'currentTime');
+        runner.succeed();
+      }
+    });
+    video.play();
+  };
+};
+
+return {tests: tests, info: info, viewType: 'default'};
 
 };
+window.EncryptedmediaTest = EncryptedmediaTest;
 
 try {
   exports.getTest = EncryptedmediaTest;
@@ -287,3 +548,6 @@ try {
   // do nothing, this function is not supposed to work for browser, but it's for
   // Node js to generate json file instead.
 }
+
+
+// LINT.ThenChange(//depot/google3/third_party/javascript/yts/media/emeTest.json)
