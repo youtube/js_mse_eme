@@ -161,7 +161,8 @@ var TestExecutor = function(
   } else if (testAllowList.length > 0) {
     this.testList = [];
     for (let i = 0; i < testSuite.tests.length; i++) {
-      if (testAllowList.includes(testSuite.tests[i].prototype.id)) {
+      if (!testSuite.tests[i].prototype.id ||
+          testAllowList.includes(testSuite.tests[i].prototype.id)) {
         this.testList.push(testSuite.tests[i]);
       }
     }
