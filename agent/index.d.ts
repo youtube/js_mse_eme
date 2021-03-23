@@ -11,4 +11,11 @@ declare namespace yts {
    * logic on both sides (on the host and on the device).
    */
   function script(name: string, func: Function): void;
+
+  /**
+   * When ignoreDeepLink is set to true, default deep link behavior (which is to
+   * redirect to main app) is suppressed. This allows individual tests to handle
+   * deep link event and test it.
+   */
+  let ignoreDeepLink: boolean;
 }
