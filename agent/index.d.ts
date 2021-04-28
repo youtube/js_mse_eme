@@ -18,4 +18,9 @@ declare namespace yts {
    * deep link event and test it.
    */
   let ignoreDeepLink: boolean;
+
+  /**
+   * Set of tests that have been marked as optional. Do not use this property.
+   */
+  let optional_do_not_use: {[fullName: string]: boolean};
 }

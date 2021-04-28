@@ -28,5 +28,6 @@ declare namespace yts {
     name: string;
     category: string;
     timeout: number;
+    mandatory: boolean;
   }
 }
