@@ -1,0 +1,61 @@
+# proto-file: google3/devtools/codemaker/proto/schematic.proto
+# proto-message: codemaker.Schematic
+
+name: "YTS manual test"
+
+var {
+  name: "test_category"
+  string_option {
+    description: "The category of the new test belong to."
+    valid_regex: "[a-zA-Z0-9 ]*"
+  }
+}
+
+var {
+  name: "test_title"
+  string_option {
+    description: "The unique test title for this test"
+    valid_regex: "[a-zA-Z0-9 ]*"
+  }
+}
+
+var {
+  name: "test_description"
+  string_option {
+    description: "A quick TLDR on what this test is doing"
+  }
+}
+
+var {
+  name: "test_suite"
+  string_option {
+    description: "Which test suite does this test case belongs to"
+    valid_regex: "[a-zA-Z0-9 ]*"
+    default_value: "Manual Tests"
+  }
+}
+
+var {
+  name: "file_path"
+  string_option {
+    description: "The json file path this test will be added into"
+    default_value: "//depot/google3/third_party/javascript/yts/test_json/manual.json"
+  }
+}
+
+
+
+# Inject new test case into JSON file
+insert_at_regex {
+  path: "{{ .file_path }}"
+  replace_regex:
+  "        }\n"
+  "    ]\n"
+  "}\n"
+  "$"
+  template_path: "tmpl/new_manual_test.json.tmpl"
+}
+
+user_message {
+  template: "Successfully inserted new test case with uuid {{ StableUUID | UpperCase}}"
+}
