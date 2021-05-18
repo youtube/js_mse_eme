@@ -60,7 +60,7 @@ var parseParams = function(testSuiteConfig) {
   config.cert_scope = parseParam('cert_scope', null);
   config.sig = parseParam('sig', null);
   config.start_time = parseParam('start_time', null);
-  config.test_plan_id = parseParam('test_plan', '');
+  config.test_plan_id = parseParam('test_plan', 'default');
 
   config.is_cobalt = util.isCobalt();
   config.support_hdr = util.supportHdr();
