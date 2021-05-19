@@ -61,6 +61,7 @@ var parseParams = function(testSuiteConfig) {
   config.sig = parseParam('sig', null);
   config.start_time = parseParam('start_time', null);
   config.test_plan_id = parseParam('test_plan', 'default');
+  config.nonprod_api = parseParam('nonprodApi', false);
 
   config.is_cobalt = util.isCobalt();
   config.support_hdr = util.supportHdr();
