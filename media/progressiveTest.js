@@ -17,8 +17,6 @@
 
 'use strict';
 
-// LINT.IfChange
-
 /**
  * Progressive Test Suite.
  * @class
@@ -529,5 +527,3 @@ try {
   // do nothing, this function is not supposed to work for browser, but it's for
   // Node js to generate json file instead.
 }
-
-// LINT.ThenChange(//depot/google3/third_party/javascript/yts/media/progressiveTest.json)

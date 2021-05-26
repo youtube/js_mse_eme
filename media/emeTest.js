@@ -17,8 +17,6 @@
 
 'use strict';
 
-// LINT.IfChange
-
 /**
  * Encrypted Media Test Suite.
  * @class
@@ -549,5 +547,3 @@ try {
   // Node js to generate json file instead.
 }
 
-
-// LINT.ThenChange(//depot/google3/third_party/javascript/yts/media/emeTest.json)

@@ -17,8 +17,6 @@
 
 'use strict';
 
-// LINT.IfChange
-
 /**
  * MSE Codec Test Suite.
  * @class
@@ -1521,5 +1519,3 @@ try {
   // Node js to generate json file instead.
 }
 
-
-// LINT.ThenChange(//depot/google3/third_party/javascript/yts/media/mseCodecTest.json)

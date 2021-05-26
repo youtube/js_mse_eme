@@ -17,8 +17,6 @@
 
 'use strict';
 
-// LINT.IfChange
-
 /**
  * Spherical video playback on Cobalt Test Suite.
  * @class
@@ -205,5 +203,3 @@ try {
   // do nothing, this function is not supposed to work for browser, but it's for
   // Node js to generate json file instead.
 }
-
-// LINT.ThenChange(//depot/google3/third_party/javascript/yts/media/sphericalOnCobaltTest.json)

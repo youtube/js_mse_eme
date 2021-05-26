@@ -17,8 +17,6 @@
 
 'use strict';
 
-// LINT.IfChange
-
 /**
  * Playback Performance Test Suite.
  * @class
@@ -534,12 +532,3 @@ try {
   // do nothing, this function is not supposed to work for browser, but it's for
   // Node js to generate json file instead.
 }
-
-
-// LINT.ThenChange(playbackperfAV1.json,
-//                 playbackperfH264Test.json,
-//                 playbackperfHFR.json,
-//                 playbackperfVP9.json,
-//                 playbackperfwidevineHFR.json,
-//                 playbackperfwidevineSFRH264.json,
-//                 playbackperfwidevineSFRVP9.json)
