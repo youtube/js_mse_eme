@@ -94,12 +94,7 @@ var SphericalOnCobaltTest = function() {
   var createSphericalPerformanceTest = function(
       testId, videoStream, mandatory) {
     if (mandatory == null) {
-      if (videoStream.get('fps') == 30) {
-        mandatory = ((util.getMaxWindow()[0] * util.getMaxWindow()[1]) >=
-            (videoStream.get('width') * videoStream.get('height')));
-      } else {
-        mandatory = isTypeSupported(videoStream);
-      }
+      mandatory = isTypeSupported(videoStream);
       mandatory = mandatory && util.isCobalt();
     }
     var test = createSphericalTest(
