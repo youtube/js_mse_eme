@@ -20,13 +20,6 @@ var {
 }
 
 var {
-  name: "test_description"
-  string_option {
-    description: "A quick TLDR on what this test is doing"
-  }
-}
-
-var {
   name: "test_suite"
   string_option {
     description: "Which test suite does this test case belongs to"
