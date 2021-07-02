@@ -19,6 +19,7 @@ declare interface TestCaseJson {
     effective_start_year?: number,
     effective_end_year?: number,
     is_manual?: boolean,
+    template?: {name: string, tokens?: Map<string, string>}
   };
 }
 
@@ -154,6 +155,66 @@ describe('json', () => {
         compare('test_suite');
         compare('test_category');
         compare('test_title');
+      }
+    }
+
+    expect(true).toBe(true);  // suppress 'no expectations' warning
+  });
+
+  //
+  // Ensure manual.json is properly formatted, the {{TOKENS}} are properly
+  // defined, and the template files exist.
+  //
+  it('manual', async () => {
+    const tcRootDir = 'third_party/javascript/yts/test_json/';
+    const jsonFile = tcRootDir + 'manual.json';
+    const s = fs.readFileSync(jsonFile, {encoding: 'utf8'});
+    const json = JSON.parse(s) as TestFileJson;
+    const tokenRgx = /{{(.+?)}}/gi;
+
+    for (const test of json.test_case) {
+      if (!test.test_case.template) {
+        fail('Template missing for test case ' + test.test_case_id);
+      } else if (!test.test_case.template.name) {
+        fail('Template name missing for test case ' + test.test_case_id);
+      } else {
+        const mdPath = tcRootDir + 'templates/' + test.test_case.template.name;
+        if (!fs.existsSync(mdPath)) {
+          fail('Template file not found: ' + mdPath);
+        }
+        const mdFile = fs.readFileSync(mdPath, {encoding: 'utf8'});
+        const mdTokens = new Set<string>();
+        const jsonTokens = new Set<string>();
+
+        // console.log('reading ' + mdPath);
+        if (test.test_case.template.tokens) {
+          for (const jsonToken of Object.keys(test.test_case.template.tokens)) {
+            jsonTokens.add(jsonToken);
+            if (jsonToken !== jsonToken.toUpperCase()) {
+              fail(
+                  'JSON token in ' + test.test_case_id + ', ' + jsonToken +
+                  ', is poorly formatted: must be upper-case.');
+            }
+          }
+        }
+
+        let rgxMatch;
+        while ((rgxMatch = tokenRgx.exec(mdFile))) {
+          const tokenStr = rgxMatch[1];
+          mdTokens.add(tokenStr);
+          if (!jsonTokens.has(tokenStr)) {
+            fail(`Template file ${mdPath} is using an undefined token: ${
+                tokenStr}`);
+          }
+        }
+
+        for (const jsonToken of jsonTokens) {
+          if (!mdTokens.has(jsonToken)) {
+            fail(`Template file ${
+                mdPath} is not using a token defined in manual.json: ${
+                jsonToken}`);
+          }
+        }
       }
     }
 
