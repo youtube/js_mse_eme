@@ -45,8 +45,12 @@ var PlaybackperfTest = function(subgroup, suite) {
       });
       this.baseTearDown(testSuiteVer, cb);
     };
-    // 100 sec to compensate for 0.25 playbackRate tests.
-    t.prototype.timeout = 100000;
+    if (harnessConfig.timeout) {
+      t.prototype.timeout = harnessConfig.timeout;
+    } else {
+      // 100 sec to compensate for 0.25 playbackRate tests.
+      t.prototype.timeout = 100000;
+    }
     tests.push(t);
     return t;
   };
